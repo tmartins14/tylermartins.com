@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Design handoff bundles are reference-only prototypes (.dc.html + a
+    // prototyping runtime), never shipped — not application code to lint.
+    "design_handoff_*/**",
   ]),
 ]);
 

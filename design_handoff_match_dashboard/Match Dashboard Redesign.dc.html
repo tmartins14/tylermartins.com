@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="design_doc_mode" content="canvas">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #EDEAE3; }
+  a { color: #9F1239; text-decoration: none; }
+  a:hover { color: #171717; }
+  .wonk { font-variation-settings: "opsz" 144; }
+  input[type=range] { height: 4px; cursor: pointer; }
+</style>
+</helmet>
+
+<div style="min-height: 100vh;">
+  <div style="padding: 28px 40px 4px;">
+    <div style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #9F1239;">Redesign · Match dashboard</div>
+    <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 900; font-size: 32px; color: #171717; margin: 6px 0 8px; letter-spacing: -0.01em;">Three directions</div>
+    <div style="font-family: 'Geist', sans-serif; font-size: 13px; color: #525252; max-width: 74ch; line-height: 1.6;">Same team&nbsp;·&nbsp;center&nbsp;·&nbsp;team spine, elevated three ways so the charts finally have room. Every panel is live — flip the segmented controls, hover the shots and the momentum timeline, scrub the goals. Reference by id: <a href="#1a">1a</a> Broadcast · <a href="#1b">1b</a> Cockpit · <a href="#1c">1c</a> Momentum-led.</div>
+  </div>
+
+  <section style="display: flex; gap: 44px; align-items: flex-start; padding: 26px 40px 64px;">
+
+    <!-- ============================ 1A · BROADCAST ============================ -->
+    <div id="1a" style="--bg:#FAF7F0;--surface:#FFFDF8;--elev:#FFFFFF;--border:#E5E5E5;--bstrong:#D6D3CC;--text:#171717;--muted:#525252;--faint:#8A8578;--focal:#9F1239;--focalsoft:rgba(159,18,57,0.13);--navy:#1E3A5F;--navysoft:rgba(30,58,95,0.12); width: 1180px; flex: 0 0 auto; background: var(--bg); color: var(--text); border: 1px solid var(--bstrong); border-radius: 16px; overflow: hidden; box-shadow: 0 40px 90px -50px rgba(23,23,23,0.55); font-family: 'Geist', system-ui, sans-serif; scroll-margin: 40px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 11px 20px; border-bottom: 1px solid var(--border); background: var(--surface);">
+        <span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 600; color: var(--focal); border: 1px solid var(--focal); border-radius: 5px; padding: 2px 9px;">1A</span>
+        <span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint);">Broadcast · spacious &amp; editorial</span>
+      </div>
+      <div style="padding: 26px 30px 30px;">
+        <!-- hero -->
+        <div style="border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 24px 28px; margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
+            <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--focal);">UEFA Euro 2024 · Final</div>
+            <div style="font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint); text-align: right; line-height: 1.6;">Olympiastadion, Berlin<br>14 Jul 2024</div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin: 12px 0 8px;">
+            <div style="text-align: right;">
+              <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 900; font-size: 32px; line-height: 1;">Spain</div>
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint); margin-top: 5px;">xG 1.62</div>
+            </div>
+            <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 900; font-size: 48px; letter-spacing: 0.02em;"><span style="color: var(--focal);">2</span> <span style="color: var(--faint); font-size: 27px;">–</span> <span style="color: var(--navy);">1</span></div>
+            <div style="text-align: left;">
+              <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 900; font-size: 32px; line-height: 1;">England</div>
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint); margin-top: 5px;">xG 0.71</div>
+            </div>
+          </div>
+          <div style="margin-top: 8px;">{{ a_timeline }}</div>
+        </div>
+        <!-- grid -->
+        <div style="display: grid; grid-template-columns: 1fr 360px 1fr; gap: 18px; align-items: stretch;">
+          <div style="border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 20px 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px;">
+              <div>
+                <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--focal);">Spain</div>
+                <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 19px; margin-top: 2px;">In possession</div>
+              </div>
+              {{ a_homeToggle }}
+            </div>
+            {{ a_homeChart }}
+            <div style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px;">
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-bottom: 10px;">Shot map · xG</div>
+              {{ a_homeShots }}
+            </div>
+          </div>
+          <div style="border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 20px 22px; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 16px;">
+              <div>
+                <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">Match</div>
+                <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 19px; margin-top: 2px;">Story of the game</div>
+              </div>
+              {{ a_centerToggle }}
+            </div>
+            {{ a_centerBody }}
+            <div style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px; flex: 1; display: flex; flex-direction: column; min-height: 160px;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 8px;">
+                <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint);">Cumulative xG · race</div>
+                <div style="font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--faint);">always on</div>
+              </div>
+              {{ a_xgrace }}
+            </div>
+          </div>
+          <div style="border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 20px 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px;">
+              <div>
+                <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy);">England</div>
+                <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 19px; margin-top: 2px;">In possession</div>
+              </div>
+              {{ a_awayToggle }}
+            </div>
+            {{ a_awayChart }}
+            <div style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px;">
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-bottom: 10px;">Shot map · xG</div>
+              {{ a_awayShots }}
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <div style="display: inline-flex; align-items: center; gap: 8px;">
+            <span style="width: 16px; height: 16px; border-radius: 3px; background: var(--focal); display: inline-block;"></span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--muted);">Data provided by <a href="https://statsbomb.com" style="text-decoration: underline;">StatsBomb</a></span>
+          </div>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint);">Euro 2024 Final · match 3943043 · sample dataset</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================ 1B · COCKPIT ============================ -->
+    <div id="1b" style="--bg:#1A1613;--surface:#211D18;--elev:#2A2521;--border:#34302A;--bstrong:#403A32;--text:#F5F0E6;--muted:#A39E95;--faint:#78716C;--focal:#F43F5E;--focalsoft:rgba(244,63,94,0.17);--navy:#5B8AC0;--navysoft:rgba(91,138,192,0.16); width: 1060px; flex: 0 0 auto; background: var(--bg); color: var(--text); border: 1px solid var(--bstrong); border-radius: 16px; overflow: hidden; box-shadow: 0 40px 90px -50px rgba(0,0,0,0.7); font-family: 'Geist', system-ui, sans-serif; scroll-margin: 40px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 11px 20px; border-bottom: 1px solid var(--border); background: var(--surface);">
+        <span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 600; color: var(--focal); border: 1px solid var(--focal); border-radius: 5px; padding: 2px 9px;">1B</span>
+        <span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint);">Cockpit · dense &amp; dark</span>
+      </div>
+      <div style="padding: 20px 22px 22px;">
+        <!-- hero (compact bar) -->
+        <div style="border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 14px 20px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 22px;">
+            <div style="text-align: right;">
+              <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 900; font-size: 22px; line-height: 1;">Spain</div>
+              <div style="font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--faint); margin-top: 3px;">xG 1.62</div>
+            </div>
+            <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 900; font-size: 36px;"><span style="color: var(--focal);">2</span> <span style="color: var(--faint); font-size: 20px;">–</span> <span style="color: var(--navy);">1</span></div>
+            <div style="text-align: left;">
+              <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 900; font-size: 22px; line-height: 1;">England</div>
+              <div style="font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--faint); margin-top: 3px;">xG 0.71</div>
+            </div>
+          </div>
+          <div style="font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--muted); text-align: right; line-height: 1.7;"><span style="color: var(--focal);">UEFA EURO 2024 · FINAL</span><br>Olympiastadion, Berlin · 14 Jul</div>
+        </div>
+        <div style="margin-bottom: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 12px 18px;">{{ b_timeline }}</div>
+        <!-- grid -->
+        <div style="display: grid; grid-template-columns: 1fr 300px 1fr; gap: 14px; align-items: start;">
+          <div style="border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 15px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--focal);">Spain</div>
+              {{ b_homeToggle }}
+            </div>
+            {{ b_homeChart }}
+            <div style="margin-top: 13px; border-top: 1px solid var(--border); padding-top: 11px;">
+              <div style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-bottom: 8px;">Shots · xG</div>
+              {{ b_homeShots }}
+            </div>
+          </div>
+          <div style="border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 15px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 14px;">
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">Match</div>
+              {{ b_centerToggle }}
+            </div>
+            {{ b_centerBody }}
+          </div>
+          <div style="border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 15px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px;">
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy);">England</div>
+              {{ b_awayToggle }}
+            </div>
+            {{ b_awayChart }}
+            <div style="margin-top: 13px; border-top: 1px solid var(--border); padding-top: 11px;">
+              <div style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-bottom: 8px;">Shots · xG</div>
+              {{ b_awayShots }}
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-top: 1px solid var(--border); padding-top: 14px;">
+          <div style="display: inline-flex; align-items: center; gap: 8px;">
+            <span style="width: 15px; height: 15px; border-radius: 3px; background: var(--focal); display: inline-block;"></span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--muted);">Data provided by <a href="https://statsbomb.com" style="text-decoration: underline;">StatsBomb</a></span>
+          </div>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; color: var(--faint);">match 3943043 · sample dataset · reproducible</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================ 1C · MOMENTUM-LED ============================ -->
+    <div id="1c" style="--bg:#F5F1E8;--surface:#FFFDF8;--elev:#FFFFFF;--border:#E5E1D8;--bstrong:#D6D3CC;--text:#171717;--muted:#525252;--faint:#8A8578;--focal:#9F1239;--focalsoft:rgba(159,18,57,0.13);--navy:#1E3A5F;--navysoft:rgba(30,58,95,0.12); width: 1240px; flex: 0 0 auto; background: var(--bg); color: var(--text); border: 1px solid var(--bstrong); border-radius: 16px; overflow: hidden; box-shadow: 0 40px 90px -50px rgba(23,23,23,0.55); font-family: 'Geist', system-ui, sans-serif; scroll-margin: 40px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 11px 20px; border-bottom: 1px solid var(--border); background: var(--surface);">
+        <span style="font-family: 'Geist Mono', monospace; font-size: 12px; font-weight: 600; color: var(--focal); border: 1px solid var(--focal); border-radius: 5px; padding: 2px 9px;">1C</span>
+        <span style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint);">Momentum-led · narrative</span>
+      </div>
+      <div style="padding: 26px 30px 30px;">
+        <!-- hero -->
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 18px;">
+          <div style="display: flex; align-items: center; gap: 30px;">
+            <div style="text-align: right;">
+              <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 900; font-size: 30px; line-height: 1;">Spain</div>
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint); margin-top: 4px;">xG 1.62</div>
+            </div>
+            <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 900; font-size: 46px; letter-spacing: 0.02em;"><span style="color: var(--focal);">2</span> <span style="color: var(--faint); font-size: 26px;">–</span> <span style="color: var(--navy);">1</span></div>
+            <div style="text-align: left;">
+              <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 900; font-size: 30px; line-height: 1;">England</div>
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint); margin-top: 4px;">xG 0.71</div>
+            </div>
+          </div>
+          <div style="font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--muted); text-align: right; line-height: 1.7;"><span style="color: var(--focal); letter-spacing: 0.12em; text-transform: uppercase;">UEFA Euro 2024 · Final</span><br><span style="color: var(--faint);">Olympiastadion, Berlin · 14 Jul 2024</span></div>
+        </div>
+        <!-- momentum hero band -->
+        <div style="border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 20px 24px; margin-bottom: 18px;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; gap: 12px;">
+            <div>
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--focal);">momentumChart · xT per minute</div>
+              <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 21px; margin-top: 3px;">Attacking momentum</div>
+            </div>
+            <div style="font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint);">0'&nbsp;————&nbsp;90'+ET</div>
+          </div>
+          {{ c_momentumBand }}
+        </div>
+        <!-- grid -->
+        <div style="display: grid; grid-template-columns: 1fr 340px 1fr; gap: 18px; align-items: start;">
+          <div style="border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 20px 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px;">
+              <div>
+                <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--focal);">Spain</div>
+                <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 19px; margin-top: 2px;">Shape &amp; shots</div>
+              </div>
+              {{ c_homeToggle }}
+            </div>
+            {{ c_homeChart }}
+            <div style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px;">
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-bottom: 10px;">Shot map · xG</div>
+              {{ c_homeShots }}
+            </div>
+          </div>
+          <div style="border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 20px 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 16px;">
+              <div>
+                <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);">Match</div>
+                <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 19px; margin-top: 2px;">Numbers &amp; goals</div>
+              </div>
+              {{ c_centerToggle }}
+            </div>
+            {{ c_centerBody }}
+          </div>
+          <div style="border: 1px solid var(--border); border-radius: 14px; background: var(--surface); padding: 20px 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px;">
+              <div>
+                <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--navy);">England</div>
+                <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 600; font-size: 19px; margin-top: 2px;">Shape &amp; shots</div>
+              </div>
+              {{ c_awayToggle }}
+            </div>
+            {{ c_awayChart }}
+            <div style="margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px;">
+              <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-bottom: 10px;">Shot map · xG</div>
+              {{ c_awayShots }}
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-top: 1px solid var(--border); padding-top: 16px;">
+          <div style="display: inline-flex; align-items: center; gap: 8px;">
+            <span style="width: 16px; height: 16px; border-radius: 3px; background: var(--focal); display: inline-block;"></span>
+            <span style="font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--muted);">Data provided by <a href="https://statsbomb.com" style="text-decoration: underline;">StatsBomb</a></span>
+          </div>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--faint);">Euro 2024 Final · match 3943043 · sample dataset</span>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:1000},&quot;alignDividers&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;upperHeight&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:226,&quot;min&quot;:200,&quot;max&quot;:320,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;shotScale&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:1,&quot;min&quot;:0.6,&quot;max&quot;:1.6,&quot;step&quot;:0.05,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Charts&quot;}}">
+class Component extends DCLogic {
+  state = {
+    view: {
+      a_home: 'formation', a_away: 'passnetwork', a_center: 'stats',
+      b_home: 'passnetwork', b_away: 'teamshape', b_center: 'momentum',
+      c_home: 'teamshape', c_away: 'formation', c_center: 'goals',
+    },
+    hover: {},
+    mom: {},
+    goalSel: { a: 2, b: 2, c: 2 },
+    goalStep: { a: 4, b: 4, c: 4 },
+  };
+
+  h(t, a, ...k) { return React.createElement(t, a, ...k); }
+
+  setView(key, val) { this.setState((s) => ({ view: { ...s.view, [key]: val } })); }
+  setHover(key, val) { this.setState((s) => ({ hover: { ...s.hover, [key]: val } })); }
+  setMom(key, val) { this.setState((s) => ({ mom: { ...s.mom, [key]: val } })); }
+  setGoalSel(opt, i) { this.setState((s) => ({ goalSel: { ...s.goalSel, [opt]: i }, goalStep: { ...s.goalStep, [opt]: this.D().goals[i].path.length - 1 } })); }
+  setStep(opt, v) { this.setState((s) => ({ goalStep: { ...s.goalStep, [opt]: v } })); }
+
+  D() {
+    if (this._d) return this._d;
+    const homeNodes = [
+      [1, 'Simón', 50, 90, 42], [2, 'Carvajal', 80, 72, 55], [3, 'Le Norm.', 60, 77, 61],
+      [4, 'Laporte', 40, 77, 66], [5, 'Cucurella', 20, 72, 58], [6, 'Rodri', 68, 55, 74],
+      [7, 'Fabián', 50, 50, 69], [8, 'Olmo', 34, 52, 63], [9, 'Yamal', 78, 28, 47],
+      [10, 'Morata', 50, 24, 39], [11, 'N. Williams', 22, 28, 52],
+    ];
+    const homeEdges = [[0,2,7],[0,3,7],[2,5,9],[3,4,8],[5,6,11],[6,7,9],[5,1,8],[1,8,7],[8,9,6],[4,10,8],[7,10,6],[6,9,7]];
+    const awayNodes = [
+      [1, 'Pickford', 50, 90, 30], [2, 'Walker', 82, 72, 40], [3, 'Stones', 62, 77, 48],
+      [4, 'Guéhi', 38, 77, 45], [5, 'Shaw', 18, 72, 36], [6, 'Rice', 60, 60, 55],
+      [7, 'Mainoo', 40, 60, 50], [8, 'Saka', 76, 42, 42], [9, 'Belling.', 50, 40, 47],
+      [10, 'Foden', 24, 42, 44], [11, 'Kane', 50, 26, 33],
+    ];
+    const awayEdges = [[0,2,6],[0,3,6],[2,5,7],[3,6,8],[4,7,7],[5,6,8],[6,8,7],[7,10,6],[8,10,6],[9,10,6],[5,7,5]];
+    const shotsHome = [
+      { p: 'N. Williams', m: 47, xg: 0.22, o: 'goal', x: 40, y: 18 },
+      { p: 'M. Oyarzabal', m: 86, xg: 0.35, o: 'goal', x: 54, y: 12 },
+      { p: 'Morata', m: 30, xg: 0.12, o: 'saved', x: 50, y: 26 },
+      { p: 'Yamal', m: 55, xg: 0.08, o: 'off', x: 68, y: 30 },
+      { p: 'Olmo', m: 62, xg: 0.10, o: 'saved', x: 44, y: 34 },
+      { p: 'N. Williams', m: 20, xg: 0.05, o: 'off', x: 34, y: 40 },
+      { p: 'Morata', m: 78, xg: 0.06, o: 'blocked', x: 60, y: 44 },
+    ];
+    const shotsAway = [
+      { p: 'C. Palmer', m: 73, xg: 0.14, o: 'goal', x: 56, y: 22 },
+      { p: 'Bellingham', m: 90, xg: 0.09, o: 'saved', x: 48, y: 28 },
+      { p: 'Kane', m: 36, xg: 0.20, o: 'off', x: 50, y: 16 },
+      { p: 'Saka', m: 80, xg: 0.07, o: 'blocked', x: 66, y: 34 },
+      { p: 'Foden', m: 68, xg: 0.11, o: 'saved', x: 38, y: 30 },
+      { p: 'Guéhi', m: 82, xg: 0.18, o: 'off', x: 52, y: 10 },
+    ];
+    const goals = [
+      { m: 47, team: 'ESP', p: 'Nico Williams', a: 'Yamal', xg: 0.22, path: [[78,46],[66,36],[54,28],[44,21],[40,18]] },
+      { m: 73, team: 'ENG', p: 'Cole Palmer', a: 'Bellingham', xg: 0.14, path: [[28,52],[38,42],[48,32],[54,26],[56,22]] },
+      { m: 86, team: 'ESP', p: 'Mikel Oyarzabal', a: 'Cucurella', xg: 0.35, path: [[22,44],[34,34],[46,24],[52,16],[54,12]] },
+    ];
+    const rows = [
+      { l: 'Shots', h: 16, a: 8, f: 'int' },
+      { l: 'On target', h: 5, a: 3, f: 'int' },
+      { l: 'xG', h: 1.62, a: 0.71, f: 'f2' },
+      { l: 'Possession', h: 65, a: 35, f: 'pct' },
+      { l: 'Passes', h: 619, a: 331, f: 'int' },
+      { l: 'Pass acc.', h: 89, a: 78, f: 'pct' },
+      { l: 'Corners', h: 4, a: 2, f: 'int' },
+      { l: 'Fouls', h: 12, a: 15, f: 'int' },
+    ];
+    this._d = { homeNodes, homeEdges, awayNodes, awayEdges, shotsHome, shotsAway, goals, rows };
+    return this._d;
+  }
+
+  series() {
+    if (this._s) return this._s;
+    const s = [];
+    for (let m = 0; m <= 96; m += 2) {
+      let v = 0.30 * Math.sin(m / 6.5) + 0.09 * Math.sin(m / 2.1);
+      v += 0.55 * Math.exp(-Math.pow((m - 46) / 6, 2));
+      v += 0.60 * Math.exp(-Math.pow((m - 85) / 6, 2));
+      v += 0.22 * Math.exp(-Math.pow((m - 15) / 7, 2));
+      v -= 0.55 * Math.exp(-Math.pow((m - 72) / 6, 2));
+      v -= 0.28 * Math.exp(-Math.pow((m - 60) / 8, 2));
+      v = Math.max(-0.95, Math.min(0.95, v));
+      s.push({ min: m, v: +v.toFixed(3) });
+    }
+    this._s = s;
+    return s;
+  }
+
+  hull(pts) {
+    const p = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const cross = (o, a, b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]);
+    const lo = []; for (const q of p) { while (lo.length >= 2 && cross(lo[lo.length-2], lo[lo.length-1], q) <= 0) lo.pop(); lo.push(q); }
+    const up = []; for (let i = p.length-1; i >= 0; i--) { const q = p[i]; while (up.length >= 2 && cross(up[up.length-2], up[up.length-1], q) <= 0) up.pop(); up.push(q); }
+    lo.pop(); up.pop(); return lo.concat(up);
+  }
+
+  buildPitchV(pal, w, ph) {
+    const H = (t, a) => this.h(t, a);
+    const c = pal.pitch, s = { stroke: c, strokeWidth: 1.1, fill: 'none', strokeOpacity: 0.5 };
+    const bw = w*0.55, bx = (w-bw)/2, bh = ph*0.16, sw = w*0.26, sx = (w-sw)/2, sh = ph*0.06;
+    return [
+      H('rect', { key: 'b', x: 2, y: 2, width: w-4, height: ph-4, rx: 4, ...s }),
+      H('line', { key: 'm', x1: 2, y1: ph/2, x2: w-2, y2: ph/2, ...s }),
+      H('circle', { key: 'cc', cx: w/2, cy: ph/2, r: ph*0.085, ...s }),
+      H('circle', { key: 'cs', cx: w/2, cy: ph/2, r: 1.5, fill: c, fillOpacity: 0.5, stroke: 'none' }),
+      H('rect', { key: 'tb', x: bx, y: 2, width: bw, height: bh, ...s }),
+      H('rect', { key: 'ts', x: sx, y: 2, width: sw, height: sh, ...s }),
+      H('rect', { key: 'bb', x: bx, y: ph-2-bh, width: bw, height: bh, ...s }),
+      H('rect', { key: 'bs', x: sx, y: ph-2-sh, width: sw, height: sh, ...s }),
+    ];
+  }
+
+  buildHalf(pal, w, ph) {
+    const H = (t, a) => this.h(t, a);
+    const c = pal.pitch, s = { stroke: c, strokeWidth: 1.1, fill: 'none', strokeOpacity: 0.5 };
+    const bw = w*0.6, bx = (w-bw)/2, bh = ph*0.32, sw = w*0.28, sx = (w-sw)/2, sh = ph*0.11;
+    return [
+      H('rect', { key: 'b', x: 2, y: 2, width: w-4, height: ph-4, rx: 4, ...s }),
+      H('rect', { key: 'g', x: w*0.43, y: 2, width: w*0.14, height: 3, stroke: c, strokeWidth: 1.6, fill: 'none', strokeOpacity: 0.85 }),
+      H('rect', { key: 'pb', x: bx, y: 2, width: bw, height: bh, ...s }),
+      H('rect', { key: '6', x: sx, y: 2, width: sw, height: sh, ...s }),
+      H('circle', { key: 'sp', cx: w/2, cy: ph*0.22, r: 1.5, fill: c, fillOpacity: 0.5, stroke: 'none' }),
+      H('path', { key: 'arc', d: `M ${bx} ${bh} A ${w*0.16} ${w*0.16} 0 0 0 ${bx+bw} ${bh}`, ...s }),
+    ];
+  }
+
+  formationEl(pal, accent, nodes, w, ph, names) {
+    const H = (t, a, ...k) => this.h(t, a, ...k);
+    const px = (x) => x/100*w, py = (y) => y/100*ph;
+    const r = Math.max(8, w*0.032);
+    const dots = nodes.map((n, i) => H('g', { key: i },
+      H('circle', { cx: px(n[2]), cy: py(n[3]), r, fill: accent, opacity: 0.92 }),
+      H('text', { x: px(n[2]), y: py(n[3]) + r*0.35, fill: '#fff', fontSize: r*0.95, fontFamily: "'Geist Mono', monospace", fontWeight: 600, textAnchor: 'middle' }, n[0]),
+      names ? H('text', { x: px(n[2]), y: py(n[3]) + r + 11, fill: pal.faint, fontSize: 8.5, fontFamily: "'Geist Mono', monospace", textAnchor: 'middle' }, n[1]) : null,
+    ));
+    return H('svg', { viewBox: `0 0 ${w} ${ph}`, width: '100%', height: ph, style: { display: 'block' } }, this.buildPitchV(pal, w, ph), dots);
+  }
+
+  networkEl(pal, accent, nodes, edges, w, ph) {
+    const H = (t, a, ...k) => this.h(t, a, ...k);
+    const px = (x) => x/100*w, py = (y) => y/100*ph;
+    const maxP = Math.max(...nodes.map((n) => n[4]));
+    const lines = edges.map((e, i) => H('line', { key: 'e'+i, x1: px(nodes[e[0]][2]), y1: py(nodes[e[0]][3]), x2: px(nodes[e[1]][2]), y2: py(nodes[e[1]][3]), stroke: accent, strokeWidth: 1 + e[2]*0.5, opacity: 0.38, strokeLinecap: 'round' }));
+    const dots = nodes.map((n, i) => H('g', { key: 'n'+i },
+      H('circle', { cx: px(n[2]), cy: py(n[3]), r: 4 + n[4]/maxP*10, fill: accent }),
+      H('text', { x: px(n[2]), y: py(n[3]) + 3.5, fill: '#fff', fontSize: 9, fontFamily: "'Geist Mono', monospace", fontWeight: 600, textAnchor: 'middle' }, n[0]),
+    ));
+    return H('svg', { viewBox: `0 0 ${w} ${ph}`, width: '100%', height: ph, style: { display: 'block' } }, this.buildPitchV(pal, w, ph), lines, dots);
+  }
+
+  shapeEl(pal, accent, soft, nodes, w, ph) {
+    const H = (t, a, ...k) => this.h(t, a, ...k);
+    const px = (x) => x/100*w, py = (y) => y/100*ph;
+    const out = nodes.slice(1);
+    const pts = out.map((n) => [n[2], n[3]]);
+    const hl = this.hull(pts).map((p) => `${px(p[0])},${py(p[1])}`).join(' ');
+    const cx = out.reduce((a, n) => a+n[2], 0)/out.length, cy = out.reduce((a, n) => a+n[3], 0)/out.length;
+    const dots = out.map((n, i) => H('circle', { key: i, cx: px(n[2]), cy: py(n[3]), r: 5, fill: accent, opacity: 0.9 }));
+    return H('svg', { viewBox: `0 0 ${w} ${ph}`, width: '100%', height: ph, style: { display: 'block' } },
+      this.buildPitchV(pal, w, ph),
+      H('polygon', { points: hl, fill: soft, stroke: accent, strokeWidth: 1.2, opacity: 0.85 }),
+      dots,
+      H('line', { x1: px(cx)-6, y1: py(cy), x2: px(cx)+6, y2: py(cy), stroke: accent, strokeWidth: 1.4 }),
+      H('line', { x1: px(cx), y1: py(cy)-6, x2: px(cx), y2: py(cy)+6, stroke: accent, strokeWidth: 1.4 }),
+    );
+  }
+
+  teamChart(pal, accent, soft, view, nodes, edges, w, ph, names) {
+    if (view === 'formation') return this.formationEl(pal, accent, nodes, w, ph, names);
+    if (view === 'passnetwork') return this.networkEl(pal, accent, nodes, edges, w, ph);
+    return this.shapeEl(pal, accent, soft, nodes, w, ph);
+  }
+
+  shotsEl(pal, accent, soft, shots, w, ph, okey, scale) {
+    const sc = scale || 1;
+    const H = (t, a, ...k) => this.h(t, a, ...k);
+    const LAB = { goal: 'Goal', saved: 'On target', off: 'Off target', blocked: 'Blocked' };
+    const px = (x) => x/100*w, py = (y) => y/100*ph;
+    const circles = shots.map((s, i) => {
+      const r = (5 + s.xg*40) * sc, goal = s.o === 'goal', on = s.o === 'saved';
+      return H('circle', { key: i, cx: px(s.x), cy: py(s.y), r,
+        fill: goal ? accent : (on ? soft : 'none'),
+        stroke: goal || on ? accent : pal.muted,
+        strokeWidth: goal ? 1.7 : 1.2,
+        strokeDasharray: (goal || on) ? '0' : '3 2',
+        style: { cursor: 'pointer' },
+        onMouseEnter: () => this.setHover(okey, s), onMouseLeave: () => this.setHover(okey, null) });
+    });
+    const hv = this.state.hover[okey];
+    const gs = shots.filter((s) => s.o === 'goal').length;
+    const xgs = shots.reduce((a, s) => a + s.xg, 0);
+    const readout = hv ? `${hv.p} · ${hv.m}' · xG ${hv.xg.toFixed(2)} · ${LAB[hv.o]}` : `${shots.length} shots · ${gs} goals · xG ${xgs.toFixed(2)}`;
+    return H('div', null,
+      H('svg', { viewBox: `0 0 ${w} ${ph}`, width: '100%', height: ph, style: { display: 'block' } }, this.buildHalf(pal, w, ph), circles),
+      H('div', { style: { marginTop: 8, fontFamily: "'Geist Mono', monospace", fontSize: 11, color: hv ? accent : pal.faint } }, readout),
+    );
+  }
+
+  momentumEl(pal, W, Hh, okey) {
+    const H = (t, a, ...k) => this.h(t, a, ...k);
+    const series = this.series(), goals = this.D().goals;
+    const base = Hh*0.52, sc = Hh*0.4, maxV = 0.95;
+    const x = (m) => 8 + m/96*(W-16);
+    const bw = Math.max(2, (W-16)/series.length*0.62);
+    const bars = series.map((p, i) => {
+      const bh = Math.abs(p.v)/maxV*sc, up = p.v >= 0, col = up ? pal.focal : pal.navy;
+      return H('g', { key: i },
+        H('rect', { x: x(p.min)-bw/2, y: up ? base-bh : base, width: bw, height: bh, fill: col, opacity: 0.85, rx: 1 }),
+        H('rect', { x: x(p.min)-bw/2-1, y: 6, width: bw+2, height: Hh-12, fill: 'transparent', style: { cursor: 'crosshair' }, onMouseEnter: () => this.setMom(okey, p) }),
+      );
+    });
+    const gm = goals.map((g, i) => {
+      const gx = x(g.m), esp = g.team === 'ESP', col = esp ? pal.focal : pal.navy;
+      return H('g', { key: 'g'+i },
+        H('line', { x1: gx, y1: 8, x2: gx, y2: Hh-8, stroke: col, strokeWidth: 1, strokeDasharray: '3 3', opacity: 0.7 }),
+        H('circle', { cx: gx, cy: 12, r: 3.5, fill: col }),
+        H('text', { x: gx, y: Hh-1, fill: pal.faint, fontSize: 9, fontFamily: "'Geist Mono', monospace", textAnchor: 'middle' }, g.m+"'"),
+      );
+    });
+    const mv = this.state.mom[okey];
+    const ro = mv ? `${mv.min}' · ${mv.v >= 0 ? 'Spain' : 'England'} threat ${mv.v >= 0 ? '+' : ''}${mv.v.toFixed(2)}` : 'Hover the timeline · bars lean to the team on top';
+    const chip = (col, label) => H('span', { style: { display: 'flex', alignItems: 'center', gap: 6 } }, H('span', { style: { width: 9, height: 9, borderRadius: 2, background: col, display: 'inline-block' } }), label);
+    return H('div', { onMouseLeave: () => this.setMom(okey, null) },
+      H('svg', { viewBox: `0 0 ${W} ${Hh}`, width: '100%', height: Hh, style: { display: 'block' } },
+        H('line', { x1: 8, y1: base, x2: W-8, y2: base, stroke: pal.bstrong, strokeWidth: 1 }), bars, gm),
+      H('div', { style: { marginTop: 8, fontFamily: "'Geist Mono', monospace", fontSize: 11, color: pal.muted, display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' } },
+        chip(pal.focal, 'Spain'), chip(pal.navy, 'England'), H('span', { style: { color: pal.faint } }, ro)),
+    );
+  }
+
+  xgCum(shots) {
+    const s = shots.slice().sort((a, b) => a.m - b.m);
+    const pts = [[0, 0]]; let c = 0;
+    for (const sh of s) { c += sh.xg; pts.push([sh.m, +c.toFixed(3)]); }
+    pts.push([96, +c.toFixed(3)]);
+    return pts;
+  }
+
+  xgRaceEl(okey, pal, W, ph) {
+    const H = (t, a, ...k) => this.h(t, a, ...k);
+    const d = this.D();
+    const hc = this.xgCum(d.shotsHome), ac = this.xgCum(d.shotsAway);
+    const maxY = Math.max(hc[hc.length-1][1], ac[ac.length-1][1]) * 1.08 || 1;
+    const padL = 30, padB = 16, padT = 6;
+    const x = (m) => padL + m/96*(W-padL-6);
+    const y = (v) => padT + (1 - v/maxY)*(ph-padT-padB);
+    const stepPath = (pts) => {
+      let dd = `M ${x(pts[0][0])} ${y(pts[0][1])}`;
+      for (let i = 1; i < pts.length; i++) { dd += ` L ${x(pts[i][0])} ${y(pts[i-1][1])} L ${x(pts[i][0])} ${y(pts[i][1])}`; }
+      return dd;
+    };
+    const gridY = [0, maxY/2, maxY].map((v, i) => H('g', { key: 'gy'+i },
+      H('line', { x1: padL, y1: y(v), x2: W-6, y2: y(v), stroke: pal.border, strokeWidth: 1, strokeDasharray: i === 0 ? '0' : '2 3' }),
+      H('text', { x: padL-6, y: y(v)+3, fill: pal.faint, fontSize: 8.5, fontFamily: "'Geist Mono', monospace", textAnchor: 'end' }, v.toFixed(1))));
+    const goalMarks = d.goals.map((g, i) => {
+      const esp = g.team === 'ESP', col = esp ? pal.focal : pal.navy;
+      const arr = esp ? hc : ac, cy = arr.reduce((acc, p) => p[0] <= g.m ? p[1] : acc, 0);
+      return H('g', { key: 'gm'+i },
+        H('line', { x1: x(g.m), y1: padT, x2: x(g.m), y2: ph-padB, stroke: col, strokeWidth: 1, strokeDasharray: '3 3', opacity: 0.5 }),
+        H('circle', { cx: x(g.m), cy: y(cy), r: 4, fill: col, stroke: pal.surface, strokeWidth: 1.4 }),
+        H('text', { x: x(g.m), y: padT+8, fill: col, fontSize: 8.5, fontFamily: "'Geist Mono', monospace", textAnchor: 'middle', fontWeight: 600 }, g.m+"'"));
+    });
+    const hv = this.state.mom[okey+'_xg'];
+    const scan = hv ? (() => {
+      const hy = hc.reduce((a, p) => p[0] <= hv ? p[1] : a, 0);
+      const ay = ac.reduce((a, p) => p[0] <= hv ? p[1] : a, 0);
+      return H('g', null,
+        H('line', { x1: x(hv), y1: padT, x2: x(hv), y2: ph-padB, stroke: pal.muted, strokeWidth: 1, opacity: 0.4 }),
+        H('circle', { cx: x(hv), cy: y(hy), r: 3, fill: pal.focal }),
+        H('circle', { cx: x(hv), cy: y(ay), r: 3, fill: pal.navy }));
+    })() : null;
+    const readout = hv ? (() => {
+      const hy = hc.reduce((a, p) => p[0] <= hv ? p[1] : a, 0);
+      const ay = ac.reduce((a, p) => p[0] <= hv ? p[1] : a, 0);
+      return `${hv}' · Spain ${hy.toFixed(2)} — England ${ay.toFixed(2)}`;
+    })() : `Full time · Spain ${hc[hc.length-1][1].toFixed(2)} — England ${ac[ac.length-1][1].toFixed(2)} xG`;
+    return H('div', { style: { display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 } },
+      H('svg', { viewBox: `0 0 ${W} ${ph}`, width: '100%', preserveAspectRatio: 'none', style: { display: 'block', flex: 1, minHeight: 0, width: '100%', cursor: 'crosshair' },
+        onMouseMove: (e) => { const r = e.currentTarget.getBoundingClientRect(); const mx = (e.clientX-r.left)/r.width*W; const m = Math.round(Math.max(0, Math.min(96, (mx-padL)/(W-padL-6)*96))); this.setMom(okey+'_xg', m); },
+        onMouseLeave: () => this.setMom(okey+'_xg', null) },
+        gridY,
+        H('path', { d: stepPath(hc), fill: 'none', stroke: pal.focal, strokeWidth: 2, strokeLinejoin: 'round' }),
+        H('path', { d: stepPath(ac), fill: 'none', stroke: pal.navy, strokeWidth: 2, strokeLinejoin: 'round' }),
+        goalMarks, scan),
+      H('div', { style: { marginTop: 7, fontFamily: "'Geist Mono', monospace", fontSize: 11, color: hv ? pal.text : pal.faint } }, readout));
+  }
+
+  statsEl(pal, rows, W) {
+    const H = (t, a, ...k) => this.h(t, a, ...k);
+    const fmt = (v, f) => f === 'int' ? Math.round(v) : f === 'f2' ? v.toFixed(2) : v+'%';
+    const rowEls = rows.map((r, i) => {
+      const t = r.h + r.a, hf = r.h/t, af = r.a/t;
+      return H('div', { key: i, style: { display: 'grid', gridTemplateColumns: '44px 1fr 88px 1fr 44px', alignItems: 'center', gap: 9 } },
+        H('span', { style: { textAlign: 'right', color: pal.focal, fontFamily: "'Geist Mono', monospace", fontSize: 12.5 } }, fmt(r.h, r.f)),
+        H('div', { style: { display: 'flex', justifyContent: 'flex-end' } }, H('div', { style: { height: 8, width: (hf*100)+'%', background: pal.focal, borderRadius: 4 } })),
+        H('span', { style: { textAlign: 'center', color: pal.faint, fontFamily: "'Geist Mono', monospace", fontSize: 10, letterSpacing: '0.05em', textTransform: 'uppercase' } }, r.l),
+        H('div', { style: { display: 'flex', justifyContent: 'flex-start' } }, H('div', { style: { height: 8, width: (af*100)+'%', background: pal.navy, borderRadius: 4 } })),
+        H('span', { style: { color: pal.navy, fontFamily: "'Geist Mono', monospace", fontSize: 12.5 } }, fmt(r.a, r.f)),
+      );
+    });
+    return H('div', { style: { display: 'flex', flexDirection: 'column', gap: 13 } }, rowEls);
+  }
+
+  goalsEl(okey, pal, W, ph) {
+    const H = (t, a, ...k) => this.h(t, a, ...k);
+    const goals = this.D().goals;
+    const sel = this.state.goalSel[okey] ?? 0, g = goals[sel];
+    const step = this.state.goalStep[okey] ?? (g.path.length - 1);
+    const px = (x) => x/100*W, py = (y) => y/100*ph;
+    const esp = g.team === 'ESP', accent = esp ? pal.focal : pal.navy, soft = esp ? pal.focalsoft : pal.navysoft;
+    const shown = g.path.slice(0, step + 1);
+    const poly = shown.map((p) => `${px(p[0])},${py(p[1])}`).join(' ');
+    const last = step >= g.path.length - 1;
+    const chips = goals.map((gg, i) => {
+      const ac = gg.team === 'ESP' ? pal.focal : pal.navy, sf = gg.team === 'ESP' ? pal.focalsoft : pal.navysoft;
+      return H('button', { key: i, onClick: () => this.setGoalSel(okey, i),
+        style: { border: `1px solid ${i === sel ? ac : pal.border}`, background: i === sel ? sf : 'transparent', color: i === sel ? ac : pal.muted, borderRadius: 5, padding: '4px 9px', fontFamily: "'Geist Mono', monospace", fontSize: 11, cursor: 'pointer' } },
+        `${gg.m}' ${gg.p.split(' ').slice(-1)}`);
+    });
+    return H('div', null,
+      H('div', { style: { display: 'flex', gap: 6, marginBottom: 12, flexWrap: 'wrap' } }, chips),
+      H('svg', { viewBox: `0 0 ${W} ${ph}`, width: '100%', height: ph, style: { display: 'block' } },
+        this.buildHalf(pal, W, ph),
+        H('polyline', { points: poly, fill: 'none', stroke: accent, strokeWidth: 2, strokeDasharray: '4 3', opacity: 0.7, strokeLinecap: 'round' }),
+        shown.map((p, i) => H('circle', { key: i, cx: px(p[0]), cy: py(p[1]), r: i === shown.length-1 ? 5 : 3, fill: i === shown.length-1 ? accent : soft, stroke: accent, strokeWidth: 1.3 })),
+        last ? H('circle', { cx: px(g.path[g.path.length-1][0]), cy: py(g.path[g.path.length-1][1]), r: 11, fill: 'none', stroke: accent, strokeWidth: 1.4, opacity: 0.55 }) : null),
+      H('input', { type: 'range', min: 0, max: g.path.length-1, value: step, onChange: (e) => this.setStep(okey, +e.target.value), style: { width: '100%', marginTop: 10, accentColor: accent } }),
+      H('div', { style: { marginTop: 8, fontFamily: "'Geist Mono', monospace", fontSize: 11, color: pal.muted } },
+        H('span', { style: { color: accent } }, `${g.p} ${g.m}'`), ` · assist ${g.a} · xG ${g.xg.toFixed(2)} · ${esp ? 'Spain' : 'England'}`),
+    );
+  }
+
+  toggleEl(pal, opts, active, onSel) {
+    const H = (t, a, ...k) => this.h(t, a, ...k);
+    return H('div', { style: { display: 'inline-flex' } }, opts.map((o, i) => {
+      const on = o.v === active;
+      return H('button', { key: o.v, onClick: () => onSel(o.v),
+        style: { border: `1px solid ${on ? pal.focal : pal.border}`, marginLeft: i ? -1 : 0,
+          borderTopLeftRadius: i === 0 ? 4 : 0, borderBottomLeftRadius: i === 0 ? 4 : 0,
+          borderTopRightRadius: i === opts.length-1 ? 4 : 0, borderBottomRightRadius: i === opts.length-1 ? 4 : 0,
+          padding: '4px 8px', fontFamily: "'Geist Mono', monospace", fontSize: 10.5, fontWeight: 500, whiteSpace: 'nowrap', cursor: 'pointer',
+          background: on ? pal.focalsoft : 'transparent', color: on ? pal.focal : pal.muted, position: 'relative', zIndex: on ? 1 : 0 } }, o.label);
+    }));
+  }
+
+  centerEl(okey, pal, view, W) {
+    if (view === 'momentum') return this.momentumEl(pal, W, 210, okey);
+    if (view === 'goals') return this.goalsEl(okey, pal, W, 240);
+    return this.statsEl(pal, this.D().rows, W);
+  }
+
+  renderVals() {
+    const L = { bg: '#FAF7F0', surface: '#FFFDF8', elev: '#FFFFFF', border: '#E5E5E5', bstrong: '#D6D3CC', text: '#171717', muted: '#525252', faint: '#8A8578', focal: '#9F1239', focalsoft: 'rgba(159,18,57,0.13)', navy: '#1E3A5F', navysoft: 'rgba(30,58,95,0.12)', pitch: '#1E3A5F' };
+    const D = { bg: '#1A1613', surface: '#211D18', elev: '#2A2521', border: '#34302A', bstrong: '#403A32', text: '#F5F0E6', muted: '#A39E95', faint: '#78716C', focal: '#F43F5E', focalsoft: 'rgba(244,63,94,0.17)', navy: '#5B8AC0', navysoft: 'rgba(91,138,192,0.16)', pitch: '#5B8AC0' };
+    const d = this.D();
+    const TEAM = [{ v: 'formation', label: 'Formation' }, { v: 'passnetwork', label: 'Pass Net' }, { v: 'teamshape', label: 'Shape' }];
+    const CTR_FULL = [{ v: 'stats', label: 'Stats' }, { v: 'momentum', label: 'Momentum' }, { v: 'goals', label: 'Goals' }];
+    const CTR_C = [{ v: 'stats', label: 'Stats' }, { v: 'goals', label: 'Goals' }];
+    const cfg = [
+      { k: 'a', pal: L, tW: 288, tH: 214, sW: 288, sH: 182, cW: 316, ctr: CTR_FULL, names: true },
+      { k: 'b', pal: D, tW: 230, tH: 172, sW: 230, sH: 150, cW: 268, ctr: CTR_FULL, names: false },
+      { k: 'c', pal: L, tW: 270, tH: 200, sW: 270, sH: 172, cW: 300, ctr: CTR_C, names: true },
+    ];
+    const alignD = this.props.alignDividers ?? true;
+    const upperH = this.props.upperHeight ?? 226;
+    const shotScale = this.props.shotScale ?? 1;
+    const out = {};
+    for (const o of cfg) {
+      const { k, pal } = o;
+      const chartH = (alignD && k === 'a') ? upperH : o.tH;
+      out[`${k}_homeToggle`] = this.toggleEl(pal, TEAM, this.state.view[`${k}_home`], (v) => this.setView(`${k}_home`, v));
+      out[`${k}_awayToggle`] = this.toggleEl(pal, TEAM, this.state.view[`${k}_away`], (v) => this.setView(`${k}_away`, v));
+      out[`${k}_centerToggle`] = this.toggleEl(pal, o.ctr, this.state.view[`${k}_center`], (v) => this.setView(`${k}_center`, v));
+      out[`${k}_homeChart`] = this.teamChart(pal, pal.focal, pal.focalsoft, this.state.view[`${k}_home`], d.homeNodes, d.homeEdges, o.tW, chartH, o.names);
+      out[`${k}_awayChart`] = this.teamChart(pal, pal.navy, pal.navysoft, this.state.view[`${k}_away`], d.awayNodes, d.awayEdges, o.tW, chartH, o.names);
+      out[`${k}_homeShots`] = this.shotsEl(pal, pal.focal, pal.focalsoft, d.shotsHome, o.sW, o.sH, `${k}_home`, shotScale);
+      out[`${k}_awayShots`] = this.shotsEl(pal, pal.navy, pal.navysoft, d.shotsAway, o.sW, o.sH, `${k}_away`, shotScale);
+      let cb = this.centerEl(k, pal, this.state.view[`${k}_center`], o.cW);
+      if (alignD && k === 'a') cb = this.h('div', { style: { height: upperH, overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'center' } }, cb);
+      out[`${k}_centerBody`] = cb;
+    }
+    out.a_xgrace = this.xgRaceEl('a', L, 316, 200);
+    out.a_timeline = this.timelineEl(L, d.goals, 1080);
+    out.b_timeline = this.timelineEl(D, d.goals, 980);
+    out.c_momentumBand = this.momentumEl(L, 1160, 230, 'c');
+    return out;
+  }
+
+  timelineEl(pal, goals, W) {
+    const H = (t, a, ...k) => this.h(t, a, ...k);
+    const Hh = 52, y = Hh*0.5, x = (m) => 40 + m/95*(W-80);
+    const axis = H('line', { x1: 40, y1: y, x2: W-40, y2: y, stroke: pal.bstrong, strokeWidth: 1 });
+    const ticks = [0,15,30,45,60,75,90].map((t, i) => H('g', { key: i },
+      H('line', { x1: x(t), y1: y-4, x2: x(t), y2: y+4, stroke: pal.bstrong, strokeWidth: 1 }),
+      H('text', { x: x(t), y: y+18, fill: pal.faint, fontSize: 9, fontFamily: "'Geist Mono', monospace", textAnchor: 'middle' }, t+"'")));
+    const gm = goals.map((g, i) => {
+      const esp = g.team === 'ESP', col = esp ? pal.focal : pal.navy, gy = esp ? y-16 : y+16;
+      return H('g', { key: 'g'+i },
+        H('line', { x1: x(g.m), y1: y, x2: x(g.m), y2: gy, stroke: col, strokeWidth: 1.4 }),
+        H('circle', { cx: x(g.m), cy: gy, r: 4, fill: col }),
+        H('text', { x: x(g.m), y: esp ? gy-6 : gy+13, fill: col, fontSize: 10, fontFamily: "'Geist Mono', monospace", textAnchor: 'middle', fontWeight: 600 }, `${g.p.split(' ').slice(-1)} ${g.m}'`));
+    });
+    return H('svg', { viewBox: `0 0 ${W} ${Hh+18}`, width: '100%', height: Hh+18, style: { display: 'block' } }, axis, ticks, gm);
+  }
+}
+</script>
+</body>
+</html>

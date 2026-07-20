@@ -8,13 +8,32 @@ import formationEnglandData from "@/data/football/formation_3943043_england.json
 import teamShapeSpainData from "@/data/football/team_shape_3943043_spain.json";
 import teamShapeEnglandData from "@/data/football/team_shape_3943043_england.json";
 import goalAnimationData from "@/data/football/goal_animation_3943043.json";
+import cumulativeXgData from "@/data/football/cumulative_xg_3943043.json";
 
+import { MatchHeaderHero } from "@/components/charts/MatchHeaderHero";
 import { TeamColumnCard } from "@/components/charts/TeamColumnCard";
 import { CenterColumnCard } from "@/components/charts/CenterColumnCard";
 import { type Shot } from "@/components/charts/ShotMapPanel";
-import { type MatchStatsData } from "@/components/charts/MatchStatsPanel";
+import { type MatchStatsData } from "@/components/charts/MatchStatsRows";
 import { type GoalClip } from "@/components/charts/PlayAnimationPanel";
+import { type CumulativeXgData } from "@/components/charts/CumulativeXgPanel";
 import { StatsBombAttribution } from "@/components/StatsBombAttribution";
+
+// Tweakable props exposed by the design spec — defaults match "1A Broadcast".
+const ALIGN_DIVIDERS = true;
+// 432px: full-pitch team charts (Formation/Pass Net/Shape) are rendered true-scale
+// at pxPerYard 3.2 to match the shot map's pitch width (304px) below the divider —
+// see FormationPanel/TeamShapePanel/PassNetworkPanel. A true-scale 120yd-tall pitch
+// at that width needs ~432px of height, so upperHeight grows with it (beyond the
+// design doc's 200-320px range) to keep every divider aligned.
+const UPPER_HEIGHT = 432;
+const SHOT_SCALE = 1;
+
+// Real, fixed facts about this specific historical match (not part of any current
+// extraction contract) — not fabricated placeholders, just not yet piped through
+// the Python side. Euro 2024 Final: Spain 2-1 England, Olympiastadion Berlin, 14 Jul 2024.
+const VENUE = "Olympiastadion, Berlin";
+const MATCH_DATE = "14 Jul 2024";
 
 export default function MatchDashboard() {
   const matchStats = matchStatsData as MatchStatsData;
@@ -23,60 +42,76 @@ export default function MatchDashboard() {
   const homeShots = shots.filter((s) => s.team === home.team);
   const awayShots = shots.filter((s) => s.team === away.team);
   const goals = goalAnimationData.goals as GoalClip[];
+  const cumulativeXg = cumulativeXgData as CumulativeXgData;
+
+  const xgRow = matchStats.rows.find((r) => r.label === "xG");
+  const homeXg = xgRow?.home_value ?? 0;
+  const awayXg = xgRow?.away_value ?? 0;
 
   return (
-    <div className="px-9 pt-10 pb-10">
-      {/* Match header */}
-      <div className="mb-[22px] flex flex-wrap items-center justify-between gap-5 rounded-xl border border-border bg-surface px-7 py-6">
-        <div className="flex items-center gap-6">
-          <div className="text-right">
-            <div className="font-display text-2xl font-semibold">{home.team}</div>
-          </div>
-          <div className="font-display text-4xl font-black tracking-[0.02em]">
-            <span className="text-focal">{home.score}</span>{" "}
-            <span className="text-2xl text-faint">—</span>{" "}
-            <span className="text-secondary">{away.score}</span>
-          </div>
-          <div>
-            <div className="font-display text-2xl font-semibold">{away.team}</div>
-          </div>
-        </div>
-        <div className="text-right font-mono text-xs leading-[1.7] text-muted">
-          {metadata.competition}
-          <br />
-          <span className="text-faint">{metadata.match_label}</span>
-        </div>
-      </div>
-
-      {/* 3-column layout: Spain | Center | England */}
-      <div className="grid grid-cols-1 gap-[18px] lg:[grid-template-columns:1fr_clamp(300px,26%,420px)_1fr]">
-        <TeamColumnCard
-          teamName={home.team}
-          colorToken="focal"
-          formation={formationSpainData}
-          passNetwork={passNetworkSpainData}
-          teamShape={teamShapeSpainData}
-          shots={homeShots}
+    <div className="px-9 py-10">
+      <div
+        className="mx-auto max-w-[1180px] overflow-hidden rounded-2xl border border-border-strong bg-background px-[30px] pt-[26px] pb-[30px]"
+        style={{ boxShadow: "0 40px 90px -50px rgba(23,23,23,0.55)" }}
+      >
+        <MatchHeaderHero
+          home={{ team: home.team, score: home.score, xg: homeXg }}
+          away={{ team: away.team, score: away.score, xg: awayXg }}
+          competition={`${metadata.competition} · Final`}
+          venue={VENUE}
+          date={MATCH_DATE}
+          goals={momentumData.goals}
         />
 
-        <CenterColumnCard matchStats={matchStats} momentum={momentumData} goals={goals} />
+        <div
+          className="grid gap-[18px]"
+          style={{
+            gridTemplateColumns: "1fr 360px 1fr",
+            alignItems: ALIGN_DIVIDERS ? "stretch" : "start",
+          }}
+        >
+          <TeamColumnCard
+            teamName={home.team}
+            colorToken="focal"
+            formation={formationSpainData}
+            passNetwork={passNetworkSpainData}
+            teamShape={teamShapeSpainData}
+            shots={homeShots}
+            upperHeight={UPPER_HEIGHT}
+            shotScale={SHOT_SCALE}
+            defaultView="formation"
+          />
 
-        <TeamColumnCard
-          teamName={away.team}
-          colorToken="secondary"
-          formation={formationEnglandData}
-          passNetwork={passNetworkEnglandData}
-          teamShape={teamShapeEnglandData}
-          shots={awayShots}
-        />
+          <CenterColumnCard
+            matchStats={matchStats}
+            momentum={momentumData}
+            goals={goals}
+            cumulativeXg={cumulativeXg}
+            upperHeight={UPPER_HEIGHT}
+          />
+
+          <TeamColumnCard
+            teamName={away.team}
+            colorToken="secondary"
+            formation={formationEnglandData}
+            passNetwork={passNetworkEnglandData}
+            teamShape={teamShapeEnglandData}
+            shots={awayShots}
+            upperHeight={UPPER_HEIGHT}
+            shotScale={SHOT_SCALE}
+            defaultView="passnetwork"
+          />
+        </div>
+
+        <div className="mt-5 border-t border-border pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <StatsBombAttribution size={16} />
+            <span className="font-mono text-[11px] text-faint">
+              {metadata.competition} Final · match {metadata.match_id} · sample dataset
+            </span>
+          </div>
+        </div>
       </div>
-
-      <StatsBombAttribution
-        variant="row"
-        size={18}
-        className="mt-6"
-        rightNote="Sample dataset · committed to repo · reproducible"
-      />
     </div>
   );
 }

@@ -48,12 +48,22 @@ export function FormationPanel({
     container$.selectAll("*").remove();
     const svg = container$.append("svg");
 
+    // pxPerYard matches ShotMapPanel's exactly (3.2) so this full pitch's width
+    // (80yd axis) equals the shot map's half-pitch width (same 80yd axis) — both
+    // render at 304px wide. The tradeoff: at true scale a 120yd-tall full pitch
+    // needs ~432px of height, so upperHeight grows to match (see dashboard page.tsx).
+    const pxPerYard = 3.2;
+    const padding = 24;
+    const renderedWidth = 80 * pxPerYard + padding * 2;
+
     createFormation(svg, data, {
-      pxPerYard: 3.6,
+      pxPerYard,
+      padding,
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 },
       nodeColor: theme[colorToken],
       labelColor: theme.text,
       backgroundColor: theme.elevated,
+      nodeRadius: Math.max(8, renderedWidth * 0.032),
     });
 
     return () => {

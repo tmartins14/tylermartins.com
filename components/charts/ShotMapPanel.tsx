@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useTheme } from "next-themes";
 import { createShotMap } from "footballd3/shotMap";
@@ -20,11 +20,13 @@ export type Shot = {
 type ShotMapPanelProps = {
   shots: Shot[];
   colorToken: "focal" | "secondary";
+  shotScale?: number;
 };
 
-export function ShotMapPanel({ shots, colorToken }: ShotMapPanelProps) {
+export function ShotMapPanel({ shots, colorToken, shotScale = 1 }: ShotMapPanelProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { resolvedTheme } = useTheme();
+  const [hover, setHover] = useState<Shot | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -40,12 +42,33 @@ export function ShotMapPanel({ shots, colorToken }: ShotMapPanelProps) {
       pxPerYard: 3.2,
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.2 },
       color: theme[colorToken],
+      styleMode: "tier",
+      shotScale,
+      mutedColor: theme.muted,
+      showTooltip: false,
+      onHover: setHover,
     });
 
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [shots, colorToken, resolvedTheme]);
+  }, [shots, colorToken, shotScale, resolvedTheme]);
 
-  return <div ref={containerRef} className="flex justify-center" />;
+  const goalCount = shots.filter((s) => s.is_goal).length;
+  const xgSum = shots.reduce((a, s) => a + s.xg, 0);
+  const readout = hover
+    ? `${hover.display_name} · ${hover.minute}' · xG ${hover.xg.toFixed(2)} · ${hover.outcome}`
+    : `${shots.length} shots · ${goalCount} goals · xG ${xgSum.toFixed(2)}`;
+
+  return (
+    <div>
+      <div ref={containerRef} className="flex justify-center" />
+      <div
+        className="mt-2 font-mono text-[11px]"
+        style={{ color: hover ? `var(--${colorToken})` : "var(--faint)" }}
+      >
+        {readout}
+      </div>
+    </div>
+  );
 }
