@@ -22,7 +22,11 @@ export function ToggleGroup<T extends string>({
   className,
 }: ToggleGroupProps<T>) {
   return (
-    <div className={cn("inline-flex", className)}>
+    // isolate: the active button's z-10 (needed to layer its border above its
+    // neighbors' -ml-px collapsed borders) must not compete in the page's global
+    // stacking order — without this it can paint over unrelated sticky elements
+    // (e.g. the mobile dashboard header) as the page scrolls.
+    <div className={cn("isolate inline-flex", className)}>
       {options.map((opt, i) => (
         <button
           key={opt.value}
