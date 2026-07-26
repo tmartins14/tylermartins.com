@@ -33,8 +33,11 @@ export function TeamColumnCard({
   const [view, setView] = useState<View>(defaultView);
 
   return (
-    <div className="flex flex-col rounded-[14px] border border-border bg-surface p-5">
-      <div className="mb-3 flex items-start justify-between gap-3">
+    <div
+      data-testid={`team-column-${colorToken}`}
+      className="flex flex-col rounded-[14px] border border-border bg-surface p-5"
+    >
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
         <div>
           <div
             className={`font-mono text-[11px] tracking-[0.1em] uppercase ${
@@ -56,7 +59,10 @@ export function TeamColumnCard({
         />
       </div>
 
-      <div style={{ height: upperHeight, overflow: "hidden" }} className="flex flex-col justify-center">
+      <div
+        style={{ "--upper-h": `${upperHeight}px` } as React.CSSProperties}
+        className="flex flex-col justify-center overflow-hidden dash:h-[var(--upper-h)]"
+      >
         <div className={view === "formation" ? "" : "hidden"}>
           <FormationPanel data={formation} colorToken={colorToken} />
         </div>

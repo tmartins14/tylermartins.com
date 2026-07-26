@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import * as d3 from "d3";
 import { useTheme } from "next-themes";
 import { createPitch } from "footballd3/pitch";
 import { createPassNetwork } from "footballd3/passNetwork";
 import { CHART_THEME } from "@/lib/chart-theme";
+import { useContainerWidth } from "@/hooks/useContainerWidth";
+import { computePxPerYard } from "@/lib/pitch-scale";
 
 export type PassNetworkData = {
   windows: {
@@ -24,26 +26,28 @@ type PassNetworkPanelProps = {
 };
 
 export function PassNetworkPanel({ data, colorToken }: PassNetworkPanelProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { ref: containerRef, width } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || width == null) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
     const svg = container$.append("svg");
 
-    // pxPerYard/padding match ShotMapPanel's exactly so this full pitch's width
-    // equals the shot map's width (304px) — see FormationPanel for the same math.
+    // pxPerYard is derived from the measured column width, capped at 3.2 (the
+    // desktop-tuned value that matches ShotMapPanel's width) — see FormationPanel
+    // for the same math.
+    const padding = 24;
     const pitch = createPitch(svg, {
       mode: "full",
       orientation: "vertical",
       flipAttack: true,
-      pxPerYard: 3.2,
-      padding: 24,
+      pxPerYard: computePxPerYard(width, 80, padding, 3.2),
+      padding,
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 },
     });
 
@@ -67,7 +71,7 @@ export function PassNetworkPanel({ data, colorToken }: PassNetworkPanelProps) {
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [data, colorToken, resolvedTheme]);
+  }, [data, colorToken, resolvedTheme, width, containerRef]);
 
-  return <div ref={containerRef} className="flex justify-center" />;
+  return <div ref={containerRef} data-testid="pass-network-panel" className="flex justify-center" />;
 }

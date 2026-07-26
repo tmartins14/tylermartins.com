@@ -31,7 +31,7 @@ export function MatchHeaderHero({
         </div>
       </div>
 
-      <div className="mb-4 flex items-center justify-center gap-10">
+      <div className="mb-4 flex flex-col items-center gap-2 dash:flex-row dash:justify-center dash:gap-10">
         <div className="text-right">
           <div className="display text-[32px] leading-none">{home.team}</div>
           <div className="mt-1 font-mono text-[11px] text-faint">xG {home.xg.toFixed(2)}</div>

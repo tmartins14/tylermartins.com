@@ -27,8 +27,11 @@ export function CenterColumnCard({
   const [view, setView] = useState<View>("stats");
 
   return (
-    <div className="flex flex-col rounded-[14px] border border-border bg-surface p-5">
-      <div className="mb-3 flex items-start justify-between gap-3">
+    <div
+      data-testid="center-column"
+      className="flex flex-col rounded-[14px] border border-border bg-surface p-5"
+    >
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
         <div>
           <div className="font-mono text-[11px] tracking-[0.1em] text-muted uppercase">Match</div>
           <div className="display mt-0.5 text-[19px] font-semibold">Story of the game</div>
@@ -45,8 +48,8 @@ export function CenterColumnCard({
       </div>
 
       <div
-        style={{ height: upperHeight, overflow: "hidden" }}
-        className="flex flex-col justify-center"
+        style={{ "--upper-h": `${upperHeight}px` } as React.CSSProperties}
+        className="flex flex-col justify-center overflow-hidden dash:h-[var(--upper-h)]"
       >
         <div className={view === "stats" ? "h-full" : "hidden"}>
           <MatchStatsRows data={matchStats} />

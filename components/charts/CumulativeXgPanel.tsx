@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import * as d3 from "d3";
 import { useTheme } from "next-themes";
 import { createCumulativeXgChart } from "footballd3/cumulativeXgChart";
 import { CHART_THEME } from "@/lib/chart-theme";
+import { useContainerWidth } from "@/hooks/useContainerWidth";
 
 export type CumulativeXgPoint = {
   minute: number;
@@ -30,21 +31,21 @@ export type CumulativeXgData = {
 type HoverPoint = CumulativeXgPoint & { homeCum: number; awayCum: number };
 
 export function CumulativeXgPanel({ data }: { data: CumulativeXgData }) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { ref: containerRef, width, height } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
   const [hover, setHover] = useState<HoverPoint | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || !width || !height) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
 
     createCumulativeXgChart(container$, data, {
-      width: container.clientWidth || 316,
-      height: container.clientHeight || 200,
+      width,
+      height,
       homeColor: theme.secondary,
       awayColor: theme.focal,
       showTooltip: false,
@@ -54,7 +55,7 @@ export function CumulativeXgPanel({ data }: { data: CumulativeXgData }) {
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [data, resolvedTheme]);
+  }, [data, resolvedTheme, width, height, containerRef]);
 
   const readout = hover
     ? `${hover.minute}' · ${data.home_team} ${hover.homeCum.toFixed(2)} — ${data.away_team} ${hover.awayCum.toFixed(2)}`

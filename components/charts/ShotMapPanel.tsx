@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import * as d3 from "d3";
 import { useTheme } from "next-themes";
 import { createShotMap } from "footballd3/shotMap";
 import { CHART_THEME } from "@/lib/chart-theme";
+import { useContainerWidth } from "@/hooks/useContainerWidth";
+import { computePxPerYard } from "@/lib/pitch-scale";
 
 export type Shot = {
   x: number;
@@ -24,22 +26,25 @@ type ShotMapPanelProps = {
 };
 
 export function ShotMapPanel({ shots, colorToken, shotScale = 1 }: ShotMapPanelProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { ref: containerRef, width } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
   const [hover, setHover] = useState<Shot | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || width == null) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
     const svg = container$.append("svg");
 
+    // pxPerYard is derived from the measured column width, capped at 3.2 (the
+    // desktop-tuned value) — padding matches createPitch's own default (24) so the
+    // scale calc and the actual render stay in sync.
     createShotMap(svg, shots, {
       orientation: "vertical",
-      pxPerYard: 3.2,
+      pxPerYard: computePxPerYard(width, 80, 24, 3.2),
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.2 },
       color: theme[colorToken],
       styleMode: "tier",
@@ -52,7 +57,7 @@ export function ShotMapPanel({ shots, colorToken, shotScale = 1 }: ShotMapPanelP
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [shots, colorToken, shotScale, resolvedTheme]);
+  }, [shots, colorToken, shotScale, resolvedTheme, width, containerRef]);
 
   const goalCount = shots.filter((s) => s.is_goal).length;
   const xgSum = shots.reduce((a, s) => a + s.xg, 0);
@@ -62,7 +67,7 @@ export function ShotMapPanel({ shots, colorToken, shotScale = 1 }: ShotMapPanelP
 
   return (
     <div>
-      <div ref={containerRef} className="flex justify-center" />
+      <div ref={containerRef} data-testid="shot-map-panel" className="flex justify-center" />
       <div
         className="mt-2 font-mono text-[11px]"
         style={{ color: hover ? `var(--${colorToken})` : "var(--faint)" }}

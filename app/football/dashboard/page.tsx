@@ -11,6 +11,8 @@ import goalAnimationData from "@/data/football/goal_animation_3943043.json";
 import cumulativeXgData from "@/data/football/cumulative_xg_3943043.json";
 
 import { MatchHeaderHero } from "@/components/charts/MatchHeaderHero";
+import { MobileMatchHeader } from "@/components/charts/MobileMatchHeader";
+import { MobileDashboardTabs } from "@/components/charts/MobileDashboardTabs";
 import { TeamColumnCard } from "@/components/charts/TeamColumnCard";
 import { CenterColumnCard } from "@/components/charts/CenterColumnCard";
 import { type Shot } from "@/components/charts/ShotMapPanel";
@@ -48,59 +50,82 @@ export default function MatchDashboard() {
   const homeXg = xgRow?.home_value ?? 0;
   const awayXg = xgRow?.away_value ?? 0;
 
+  const homeCard = (
+    <TeamColumnCard
+      teamName={home.team}
+      colorToken="focal"
+      formation={formationSpainData}
+      passNetwork={passNetworkSpainData}
+      teamShape={teamShapeSpainData}
+      shots={homeShots}
+      upperHeight={UPPER_HEIGHT}
+      shotScale={SHOT_SCALE}
+      defaultView="formation"
+    />
+  );
+  const matchCard = (
+    <CenterColumnCard
+      matchStats={matchStats}
+      momentum={momentumData}
+      goals={goals}
+      cumulativeXg={cumulativeXg}
+      upperHeight={UPPER_HEIGHT}
+    />
+  );
+  const awayCard = (
+    <TeamColumnCard
+      teamName={away.team}
+      colorToken="secondary"
+      formation={formationEnglandData}
+      passNetwork={passNetworkEnglandData}
+      teamShape={teamShapeEnglandData}
+      shots={awayShots}
+      upperHeight={UPPER_HEIGHT}
+      shotScale={SHOT_SCALE}
+      defaultView="passnetwork"
+    />
+  );
+
   return (
-    <div className="px-9 py-10">
-      <div
-        className="mx-auto max-w-[1180px] overflow-hidden rounded-2xl border border-border-strong bg-background px-[30px] pt-[26px] pb-[30px]"
-        style={{ boxShadow: "0 40px 90px -50px rgba(23,23,23,0.55)" }}
-      >
-        <MatchHeaderHero
-          home={{ team: home.team, score: home.score, xg: homeXg }}
-          away={{ team: away.team, score: away.score, xg: awayXg }}
-          competition={`${metadata.competition} · Final`}
-          venue={VENUE}
-          date={MATCH_DATE}
-          goals={momentumData.goals}
-        />
+    <div className="px-4 py-4 dash:px-9 dash:py-10">
+      <div className="mx-auto max-w-[1180px] dash:overflow-hidden dash:rounded-2xl dash:border dash:border-border-strong dash:bg-background dash:px-[30px] dash:pt-[26px] dash:pb-[30px] dash:shadow-[0_40px_90px_-50px_rgba(23,23,23,0.55)]">
+        <div className="hidden dash:block">
+          <MatchHeaderHero
+            home={{ team: home.team, score: home.score, xg: homeXg }}
+            away={{ team: away.team, score: away.score, xg: awayXg }}
+            competition={`${metadata.competition} · Final`}
+            venue={VENUE}
+            date={MATCH_DATE}
+            goals={momentumData.goals}
+          />
+        </div>
 
         <div
-          className="grid gap-[18px]"
-          style={{
-            gridTemplateColumns: "1fr 360px 1fr",
-            alignItems: ALIGN_DIVIDERS ? "stretch" : "start",
-          }}
+          data-testid="mobile-match-header"
+          className="sticky top-[var(--topbar-h)] z-4 border-b border-border bg-background/95 py-3 backdrop-blur-[8px] dash:hidden"
         >
-          <TeamColumnCard
-            teamName={home.team}
-            colorToken="focal"
-            formation={formationSpainData}
-            passNetwork={passNetworkSpainData}
-            teamShape={teamShapeSpainData}
-            shots={homeShots}
-            upperHeight={UPPER_HEIGHT}
-            shotScale={SHOT_SCALE}
-            defaultView="formation"
+          <MobileMatchHeader
+            home={{ team: home.team, score: home.score, xg: homeXg }}
+            away={{ team: away.team, score: away.score, xg: awayXg }}
+            competition={`${metadata.competition} · Final`}
+            goals={momentumData.goals}
           />
+          <div className="pointer-events-none absolute inset-x-0 top-full h-3 bg-gradient-to-b from-black/5 to-transparent" />
+        </div>
 
-          <CenterColumnCard
-            matchStats={matchStats}
-            momentum={momentumData}
-            goals={goals}
-            cumulativeXg={cumulativeXg}
-            upperHeight={UPPER_HEIGHT}
-          />
+        <div
+          data-testid="dashboard-grid"
+          className={`hidden gap-[18px] dash:grid dash:grid-cols-[minmax(0,1fr)_360px_minmax(0,1fr)] ${
+            ALIGN_DIVIDERS ? "dash:items-stretch" : "dash:items-start"
+          }`}
+        >
+          {homeCard}
+          {matchCard}
+          {awayCard}
+        </div>
 
-          <TeamColumnCard
-            teamName={away.team}
-            colorToken="secondary"
-            formation={formationEnglandData}
-            passNetwork={passNetworkEnglandData}
-            teamShape={teamShapeEnglandData}
-            shots={awayShots}
-            upperHeight={UPPER_HEIGHT}
-            shotScale={SHOT_SCALE}
-            defaultView="passnetwork"
-          />
+        <div className="mt-4 dash:hidden">
+          <MobileDashboardTabs homeLabel={home.team} awayLabel={away.team} home={homeCard} match={matchCard} away={awayCard} />
         </div>
 
         <div className="mt-5 border-t border-border pt-4">
