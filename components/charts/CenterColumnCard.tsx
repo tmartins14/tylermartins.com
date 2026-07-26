@@ -49,7 +49,7 @@ export function CenterColumnCard({
 
       <div
         style={{ "--upper-h": `${upperHeight}px` } as React.CSSProperties}
-        className="flex flex-col justify-center overflow-hidden dash:h-[var(--upper-h)]"
+        className="flex h-[300px] flex-col justify-center overflow-hidden dash:h-[var(--upper-h)]"
       >
         <div className={view === "stats" ? "h-full" : "hidden"}>
           <MatchStatsRows data={matchStats} />
@@ -62,7 +62,7 @@ export function CenterColumnCard({
         </div>
       </div>
 
-      <div className="mt-4 flex min-h-[160px] flex-1 flex-col border-t border-border pt-3.5">
+      <div className="mt-4 flex min-h-[220px] flex-1 flex-col border-t border-border pt-3.5">
         <div className="mb-2 flex items-baseline justify-between">
           <span className="font-mono text-[11px] tracking-[0.1em] text-faint uppercase">
             Cumulative xG · race

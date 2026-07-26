@@ -122,6 +122,25 @@ for (const viewport of VIEWPORTS) {
         await expect(center).toBeHidden();
       });
 
+      test("Momentum view actually renders bars, not just an empty container", async ({
+        page,
+      }) => {
+        // Regression guard: MomentumBarPanel needs a real measured container height to
+        // render (unlike the width-only pitch panels), and the overflow/clipping check
+        // above wouldn't have caught a silently empty chart — only overflow.
+        await page.goto("/football/dashboard");
+        const scope = scopeFor(page, "tabs");
+        await page.getByRole("tab", { name: "Match" }).click();
+        await scope
+          .getByTestId("center-column")
+          .getByRole("button", { name: "Momentum", exact: true })
+          .click();
+
+        const bars = scope.getByTestId("center-column").locator("svg rect");
+        await expect(bars.first()).toBeVisible();
+        expect(await bars.count()).toBeGreaterThan(0);
+      });
+
       test("sticky header stays pinned in place while scrolling", async ({ page }) => {
         await page.goto("/football/dashboard");
         const header = page.getByTestId("mobile-match-header");
