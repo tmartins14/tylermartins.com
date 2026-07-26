@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import * as d3 from "d3";
 import { useTheme } from "next-themes";
 import { createFormation } from "footballd3/formation";
 import { CHART_THEME } from "@/lib/chart-theme";
+import { useContainerWidth } from "@/hooks/useContainerWidth";
+import { computePxPerYard } from "@/lib/pitch-scale";
 
 export type FormationData = {
   periods: {
@@ -36,24 +38,24 @@ export function FormationPanel({
   data: FormationData;
   colorToken: "focal" | "secondary";
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { ref: containerRef, width } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || width == null) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
     const svg = container$.append("svg");
 
-    // pxPerYard matches ShotMapPanel's exactly (3.2) so this full pitch's width
-    // (80yd axis) equals the shot map's half-pitch width (same 80yd axis) — both
-    // render at 304px wide. The tradeoff: at true scale a 120yd-tall full pitch
-    // needs ~432px of height, so upperHeight grows to match (see dashboard page.tsx).
-    const pxPerYard = 3.2;
+    // pxPerYard is derived from the measured column width, capped at 3.2 — the
+    // desktop-tuned value that matches ShotMapPanel's width (both share the 80yd
+    // axis). At/above the cap this renders identically to the old fixed value;
+    // below it, the pitch shrinks to fit narrower viewports instead of overflowing.
     const padding = 24;
+    const pxPerYard = computePxPerYard(width, 80, padding, 3.2);
     const renderedWidth = 80 * pxPerYard + padding * 2;
 
     createFormation(svg, data, {
@@ -69,7 +71,7 @@ export function FormationPanel({
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [data, colorToken, resolvedTheme]);
+  }, [data, colorToken, resolvedTheme, width, containerRef]);
 
-  return <div ref={containerRef} className="flex justify-center" />;
+  return <div ref={containerRef} data-testid="formation-panel" className="flex justify-center" />;
 }

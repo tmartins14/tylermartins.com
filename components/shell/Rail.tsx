@@ -6,11 +6,12 @@ import { sections } from "@/lib/sections";
 import { ThemeToggle } from "@/components/shell/ThemeToggle";
 import { cn } from "@/lib/utils";
 
-export function Rail() {
+/** Nav content shared between the desktop rail and the mobile drawer (MobileNav). */
+export function RailNavContent() {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r border-border bg-surface px-4 py-[22px]">
+    <>
       <Link href="/" className="mb-[30px] flex items-center gap-2.5">
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-focal font-display text-[17px] font-black text-rail-active-fg">
           T
@@ -76,6 +77,15 @@ export function Rail() {
         <span className="font-mono text-[11px] text-faint">theme</span>
         <ThemeToggle />
       </div>
+    </>
+  );
+}
+
+/** Sticky desktop sidebar — hidden below `lg:`, where MobileNav's drawer takes over. */
+export function Rail() {
+  return (
+    <aside className="hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-surface px-4 py-[22px] lg:sticky lg:top-0 lg:flex">
+      <RailNavContent />
     </aside>
   );
 }

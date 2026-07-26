@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { sections } from "@/lib/sections";
+import { MobileNav } from "@/components/shell/MobileNav";
 
 function useBreadcrumb(pathname: string) {
   const segments = pathname.split("/").filter(Boolean);
@@ -23,8 +24,11 @@ export function TopBar() {
   const pathname = usePathname();
 
   return (
-    <div className="sticky top-0 z-5 flex items-center justify-between border-b border-border bg-[color-mix(in_srgb,var(--background)_86%,transparent)] px-9 py-3.5 backdrop-blur-[8px]">
-      <div className="font-mono text-xs text-faint">{useBreadcrumb(pathname)}</div>
+    <div className="sticky top-0 z-5 flex h-[var(--topbar-h)] items-center justify-between border-b border-border bg-[color-mix(in_srgb,var(--background)_86%,transparent)] px-9 backdrop-blur-[8px]">
+      <div className="flex items-center gap-3">
+        <MobileNav />
+        <div className="font-mono text-xs text-faint">{useBreadcrumb(pathname)}</div>
+      </div>
       <div className="flex items-center gap-2 font-mono text-xs text-muted">
         <span className="inline-block h-3.5 w-3.5 rounded-[3px] bg-focal" />
         StatsBomb open data

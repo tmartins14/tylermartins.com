@@ -19,6 +19,8 @@
   --pitch:#1E3A5F; --grid:#ECE8DF;
   --rail-active-fg:#FAF7F0;
   --radius:0.625rem;
+  /* Fixed TopBar height (shared with the dashboard's mobile sticky header offset). */
+  --topbar-h:60px;
 }
 [data-theme="dark"] {
   --background:#1A1613; --surface:#211D18; --elevated:#2A2521;
@@ -51,6 +53,16 @@
   --font-body:var(--font-geist-sans), system-ui, sans-serif;
   --font-mono:var(--font-geist-mono), "SF Mono", Menlo, monospace;
   --radius-sm:4px; --radius:6px; --radius-lg:10px; --radius-xl:12px;
+  /* Dashboard-only breakpoint: 3-column grid ⟷ tabbed mobile stack (see
+     design_handoff_match_dashboard_mobile). Independent of the site-nav lg: split.
+     Design doc suggests ~720px, but at this component's actual fixed 360px center
+     column + toggle-group header widths, the grid clips/overlaps below ~1000px of
+     content width — and the site rail (lg:, w-60=240px) also eats into that once
+     the viewport crosses 1024px, so the true safe threshold (verified empirically
+     with the rail present) is much higher than either number alone suggests. Set
+     above both so the grid only appears once it renders cleanly; the tabbed
+     layout covers everything below it, including tablet widths. */
+  --breakpoint-dash:80rem;
 }
 
 @layer base {

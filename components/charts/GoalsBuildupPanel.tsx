@@ -8,6 +8,8 @@ import { createPlayAnimation } from "footballd3/playAnimation";
 import { CHART_THEME } from "@/lib/chart-theme";
 import { ToggleGroup } from "@/components/charts/ToggleGroup";
 import type { GoalClip } from "@/components/charts/PlayAnimationPanel";
+import { useContainerWidth } from "@/hooks/useContainerWidth";
+import { computePxPerYard } from "@/lib/pitch-scale";
 
 type CumulativeXgPoint = {
   minute: number;
@@ -45,7 +47,7 @@ export function GoalsBuildupPanel({
   goals: GoalClip[];
   cumulativeXgPoints: CumulativeXgPoint[];
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { ref: containerRef, width } = useContainerWidth<HTMLDivElement>();
   const controllerRef = useRef<SeekController | null>(null);
   const { resolvedTheme } = useTheme();
   const [activeGoalIdx, setActiveGoalIdx] = useState(0);
@@ -53,11 +55,11 @@ export function GoalsBuildupPanel({
 
   const clip = goals[activeGoalIdx];
 
-  // Mount once per goal/theme change — step changes below drive seek() on the
+  // Mount once per goal/theme/width change — step changes below drive seek() on the
   // already-mounted instance instead of remounting.
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || width == null) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
     const container$ = d3.select(container);
@@ -65,11 +67,13 @@ export function GoalsBuildupPanel({
     const svg = container$.append("svg");
 
     // This view has more surrounding chrome than the other upperHeight-constrained
-    // views (goal-chip row + slider + readout all share the 226px budget with the
-    // pitch itself), so the pitch gets a smaller slice than FormationPanel's.
+    // views (goal-chip row + slider + readout all share the height budget with the
+    // pitch itself), so the pitch gets a smaller slice — pxPerYard capped at 1.25
+    // (the desktop-tuned value), horizontal/full mode so the axis is 120 yards.
+    const padding = 6;
     const pitch = createPitch(svg, {
-      pxPerYard: 1.25,
-      padding: 6,
+      pxPerYard: computePxPerYard(width, 120, padding, 1.25),
+      padding,
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 },
     });
 
@@ -89,7 +93,7 @@ export function GoalsBuildupPanel({
     };
     // step intentionally excluded — driven imperatively by the effect below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clip, resolvedTheme]);
+  }, [clip, resolvedTheme, width]);
 
   useEffect(() => {
     const frame = clip.frames[Math.min(step, clip.frames.length - 1)];
@@ -120,7 +124,7 @@ export function GoalsBuildupPanel({
           onChange={selectGoal}
         />
       </div>
-      <div ref={containerRef} className="flex justify-center" />
+      <div ref={containerRef} data-testid="goals-buildup-panel" className="flex justify-center" />
       <input
         type="range"
         min={0}

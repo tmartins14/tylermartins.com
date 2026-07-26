@@ -1,30 +1,34 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import * as d3 from "d3";
 import { useTheme } from "next-themes";
 import { createMomentumBarChart } from "footballd3/momentumBarChart";
 import { CHART_THEME } from "@/lib/chart-theme";
 import type { MomentumData } from "@/components/charts/MomentumChartPanel";
+import { useContainerWidth } from "@/hooks/useContainerWidth";
 
 type Bin = { start: number; end: number; value: number };
 
 export function MomentumBarPanel({ data }: { data: MomentumData }) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { ref: containerRef, width, height } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
   const [hover, setHover] = useState<Bin | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    // Skip while mounted-but-hidden (e.g. an inactive tab view, clientWidth/Height
+    // read 0 there) — the ResizeObserver fires again with real dimensions once the
+    // view becomes visible, re-running this effect.
+    if (!container || !width || !height) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
 
     createMomentumBarChart(container$, data, {
-      width: container.clientWidth || 316,
-      height: container.clientHeight || 380,
+      width,
+      height,
       orientation: "vertical",
       homeColor: theme.focal,
       awayColor: theme.secondary,
@@ -34,7 +38,7 @@ export function MomentumBarPanel({ data }: { data: MomentumData }) {
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [data, resolvedTheme]);
+  }, [data, resolvedTheme, width, height, containerRef]);
 
   const readout = hover
     ? `${hover.start}'–${hover.end}' · ${hover.value >= 0 ? data.home_team : data.away_team} threat ${hover.value >= 0 ? "+" : ""}${hover.value.toFixed(2)}`

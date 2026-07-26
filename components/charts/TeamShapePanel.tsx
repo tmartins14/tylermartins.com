@@ -7,6 +7,8 @@ import { createPitch } from "footballd3/pitch";
 import { createTeamShape } from "footballd3/teamShape";
 import { CHART_THEME } from "@/lib/chart-theme";
 import { ToggleGroup } from "@/components/charts/ToggleGroup";
+import { useContainerWidth } from "@/hooks/useContainerWidth";
+import { computePxPerYard } from "@/lib/pitch-scale";
 
 export type TeamShapeData = {
   on_ball: {
@@ -87,31 +89,33 @@ export function TeamShapePanel({
    * view only — matches the "1A Broadcast" design's simplified single-view Team Shape. */
   hideControls?: boolean;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { ref: containerRef, width } = useContainerWidth<HTMLDivElement>();
   const controllerRef = useRef<TeamShapeController | null>(null);
   const { resolvedTheme } = useTheme();
   const [view, setView] = useState<"on-ball" | "off-ball">("on-ball");
   const [periodIdx, setPeriodIdx] = useState(0);
 
-  // Mount once per data/color/theme change — view/period changes below drive the
-  // already-mounted instance in place instead of remounting the whole pitch.
+  // Mount once per data/color/theme/width change — view/period changes below drive
+  // the already-mounted instance in place instead of remounting the whole pitch.
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || width == null) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
     const svg = container$.append("svg");
 
-    // pxPerYard/padding match ShotMapPanel's exactly so this full pitch's width
-    // equals the shot map's width (304px) — see FormationPanel for the same math.
+    // pxPerYard is derived from the measured column width, capped at 3.2 (the
+    // desktop-tuned value that matches ShotMapPanel's width) — see FormationPanel
+    // for the same math.
+    const padding = 24;
     const pitch = createPitch(svg, {
       mode: "full",
       orientation: "vertical",
       flipAttack: true,
-      pxPerYard: 3.2,
-      padding: 24,
+      pxPerYard: computePxPerYard(width, 80, padding, 3.2),
+      padding,
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 },
     });
 
@@ -133,7 +137,7 @@ export function TeamShapePanel({
     // Mount effect intentionally excludes view/periodIdx — those drive the mounted
     // instance imperatively via the effects below, not a remount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, colorToken, resolvedTheme]);
+  }, [data, colorToken, resolvedTheme, width]);
 
   useEffect(() => {
     const teamShape = controllerRef.current;
@@ -184,7 +188,7 @@ export function TeamShapePanel({
           ) : null}
         </div>
       ) : null}
-      <div ref={containerRef} className="flex justify-center" />
+      <div ref={containerRef} data-testid="team-shape-panel" className="flex justify-center" />
     </div>
   );
 }
