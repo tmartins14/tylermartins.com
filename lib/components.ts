@@ -48,6 +48,8 @@ export type ComponentEntry = {
   stage: { w: number; h: number };
   /** data/football source file(s) feeding this component, for the Sample data rail. */
   sample: string[];
+  /** ISO date (YYYY-MM-DD) this component first shipped. Drives gallery ordering. */
+  publishedDate: string;
 };
 
 /** The 16-component footballd3 registry, ported verbatim from the design prototype. */
@@ -64,6 +66,7 @@ export const components: ComponentEntry[] = [
     defaultMode: "horizontal",
     stage: PITCH_STAGE,
     sample: [],
+    publishedDate: "2026-07-28",
   },
   {
     name: "shotMap",
@@ -73,6 +76,7 @@ export const components: ComponentEntry[] = [
     teamAware: true,
     stage: PITCH_STAGE,
     sample: ["shots_3943043.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "passNetwork",
@@ -82,6 +86,7 @@ export const components: ComponentEntry[] = [
     teamAware: true,
     stage: PITCH_STAGE,
     sample: ["pass_network_3943043_Spain.json", "pass_network_3943043_England.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "freezeFrame",
@@ -90,6 +95,7 @@ export const components: ComponentEntry[] = [
     code: "freezeFrame(g, frame, {\n  actor, keeper\n});",
     stage: PITCH_STAGE,
     sample: ["freeze_frames_3943043_goals.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "convexHull",
@@ -103,6 +109,7 @@ export const components: ComponentEntry[] = [
     defaultMode: "offense",
     stage: PITCH_STAGE,
     sample: ["convex_hull_3943043_goals.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "heatmap",
@@ -111,6 +118,7 @@ export const components: ComponentEntry[] = [
     code: "heatmap(g, events, {\n  player: playerId\n});",
     stage: PITCH_STAGE,
     sample: ["heatmap_3943043_lamine_yamal_nasraoui_ebana.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "matchStats",
@@ -119,6 +127,7 @@ export const components: ComponentEntry[] = [
     code: "matchStats(el, home, away);",
     stage: { w: 620, h: 400 },
     sample: ["match_stats_3943043.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "comparisonBars",
@@ -127,6 +136,7 @@ export const components: ComponentEntry[] = [
     code: "comparisonBars(el, rows, {\n  home, away\n});",
     stage: { w: 620, h: 400 },
     sample: ["sample rows (illustrative, not match data)"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "formation",
@@ -136,6 +146,7 @@ export const components: ComponentEntry[] = [
     teamAware: true,
     stage: PITCH_STAGE,
     sample: ["formation_3943043_spain.json", "formation_3943043_england.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "teamShape",
@@ -150,6 +161,7 @@ export const components: ComponentEntry[] = [
     defaultMode: "in",
     stage: PITCH_STAGE,
     sample: ["team_shape_3943043_spain.json", "team_shape_3943043_england.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "progressiveMap",
@@ -165,6 +177,7 @@ export const components: ComponentEntry[] = [
     defaultMode: "pass",
     stage: PITCH_STAGE,
     sample: ["progressive_map_3943043_spain.json", "progressive_map_3943043_england.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "eventScatter",
@@ -179,6 +192,7 @@ export const components: ComponentEntry[] = [
     defaultMode: "all",
     stage: PITCH_STAGE,
     sample: ["possession_3943043_60.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "timelineStrip",
@@ -188,6 +202,7 @@ export const components: ComponentEntry[] = [
     code: "timelineStrip(el, possession);",
     stage: { w: 620, h: 400 },
     sample: ["possession_3943043_60.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "xtSurface",
@@ -196,6 +211,7 @@ export const components: ComponentEntry[] = [
     code: "xtSurface(g, {\n  grid: xtGrid\n});",
     stage: PITCH_STAGE,
     sample: ["xt_grid.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "playAnimation",
@@ -205,6 +221,7 @@ export const components: ComponentEntry[] = [
     hasPlayback: true,
     stage: PITCH_STAGE,
     sample: ["goal_animation_3943043.json"],
+    publishedDate: "2026-07-28",
   },
   {
     name: "momentumChart",
@@ -223,5 +240,6 @@ export const components: ComponentEntry[] = [
     defaultOrientationMode: "horizontal",
     stage: { w: 620, h: 400 },
     sample: ["momentum_3943043.json"],
+    publishedDate: "2026-07-28",
   },
 ];

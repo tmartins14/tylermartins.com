@@ -8,9 +8,7 @@ export default function FootballIndex() {
       </div>
       <h1 className="display mb-[18px] text-[46px] leading-[1.03]">Football</h1>
       <p className="mb-10 max-w-[60ch] text-[17px] leading-[1.6] text-muted">
-        An open d3 component library and single-match analysis, all built on StatsBomb data.
-        Two content types below — a library of charts, and a full match dashboard composed
-        from them.
+        Match data turned into visual components and analysis. Built on StatsBomb open data.
       </p>
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-[18px]">
@@ -83,10 +81,12 @@ export default function FootballIndex() {
               Content type · library
             </div>
             <div className="mb-1.5 font-display text-[23px] font-semibold">
-              Component showcase
+              FootballD3 Gallery
             </div>
             <div className="text-sm leading-[1.55] text-muted">
-              16 charts, each rendered with trimmed sample data — preview, description, code.
+              Shot maps, pass networks, xT surfaces — every footballd3 component with sample
+              data, a preview, a description, and the code behind it. Built on StatsBomb open
+              data.
             </div>
           </div>
         </Link>
@@ -153,9 +153,12 @@ export default function FootballIndex() {
             <div className="mb-2.5 font-mono text-[11px] tracking-[0.1em] text-secondary uppercase">
               Content type · dashboard
             </div>
-            <div className="mb-1.5 font-display text-[23px] font-semibold">Match analysis</div>
+            <div className="mb-1.5 font-display text-[23px] font-semibold">
+              Match Analysis Dashboard
+            </div>
             <div className="text-sm leading-[1.55] text-muted">
-              A single match told through shot maps, pass networks, and momentum.
+              A single game in one view — every shot, pass, and swing of momentum. Built on
+              StatsBomb open data.
             </div>
           </div>
         </Link>
