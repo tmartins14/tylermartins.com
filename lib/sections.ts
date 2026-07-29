@@ -21,8 +21,8 @@ export const sections: Section[] = [
     count: 17,
     contentTypes: [
       { slug: "", label: "Overview" },
-      { slug: "components", label: "Components" },
-      { slug: "dashboard", label: "Match dashboard" },
+      { slug: "components", label: "FootballD3 Gallery" },
+      { slug: "dashboard", label: "Match Analysis Dashboard" },
     ],
   },
 ];

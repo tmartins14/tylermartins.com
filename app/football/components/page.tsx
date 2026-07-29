@@ -13,6 +13,10 @@ export default function ComponentShowcase() {
   const [orientationView, setOrientationView] = useState<Record<string, string>>({});
   const [openName, setOpenName] = useState<string | null>(null);
 
+  const sortedComponents = [...components].sort((a, b) =>
+    b.publishedDate.localeCompare(a.publishedDate)
+  );
+
   const openEntry: ComponentEntry | null = components.find((c) => c.name === openName) ?? null;
   const mode = openEntry ? (view[openEntry.name] ?? openEntry.defaultMode ?? "") : "";
   const orientationMode = openEntry
@@ -25,7 +29,7 @@ export default function ComponentShowcase() {
         <div className="mb-4 font-mono text-xs tracking-[0.14em] text-focal uppercase">
           footballd3 · component library
         </div>
-        <h1 className="display mb-4 text-[34px] leading-[1.05]">Explore the library</h1>
+        <h1 className="display mb-4 text-[34px] leading-[1.05]">FootballD3 Gallery</h1>
         <p className="text-[13.5px] leading-[1.6] text-muted">
           Sixteen d3 charts, each rendered live on the{" "}
           <strong className="font-semibold text-text">
@@ -43,7 +47,7 @@ export default function ComponentShowcase() {
             <CategorySection
               key={cat}
               category={cat}
-              entries={components.filter((c) => c.cat === cat)}
+              entries={sortedComponents.filter((c) => c.cat === cat)}
               side={side}
               onOpen={(entry) => setOpenName(entry.name)}
             />
