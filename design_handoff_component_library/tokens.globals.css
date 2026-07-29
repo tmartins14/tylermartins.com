@@ -1,0 +1,78 @@
+/* ============================================================
+   globals.css — Tailwind v4 (CSS-first). Paste as app/globals.css
+   (replaces shadcn's generated :root/.dark color blocks).
+   footballd3 tokens as CSS variables + @theme mapping.
+   ============================================================ */
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap");
+
+/* dark mode via data-theme (also keep .dark for next-themes) */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---- raw token values (light) ---- */
+:root {
+  --background:#FAF7F0; --surface:#FFFDF8; --elevated:#FFFFFF;
+  --border:#E5E5E5; --border-strong:#D6D3CC;
+  --text:#171717; --muted:#525252; --faint:#8A8578;
+  --focal:#9F1239; --focal-soft:rgba(159,18,57,0.13);
+  --secondary:#1E3A5F; --secondary-soft:rgba(30,58,95,0.12);
+  --pitch:#1E3A5F; --grid:#ECE8DF;
+  --radius:0.625rem;
+}
+[data-theme="dark"] {
+  --background:#1A1613; --surface:#211D18; --elevated:#2A2521;
+  --border:#34302A; --border-strong:#403A32;
+  --text:#F5F0E6; --muted:#A39E95; --faint:#78716C;
+  --focal:#F43F5E; --focal-soft:rgba(244,63,94,0.17);
+  --secondary:#5B8AC0; --secondary-soft:rgba(91,138,192,0.16);
+  --pitch:#5B8AC0; --grid:#2A2521;
+}
+
+/* ---- expose tokens to Tailwind utilities (bg-focal, font-display, rounded-xl…) ---- */
+@theme inline {
+  --color-background:var(--background);
+  --color-surface:var(--surface);
+  --color-elevated:var(--elevated);
+  --color-border:var(--border);
+  --color-border-strong:var(--border-strong);
+  --color-text:var(--text);
+  --color-muted:var(--muted);
+  --color-faint:var(--faint);
+  --color-focal:var(--focal);
+  --color-focal-soft:var(--focal-soft);
+  --color-secondary:var(--secondary);
+  --color-secondary-soft:var(--secondary-soft);
+  --color-pitch:var(--pitch);
+  --color-grid:var(--grid);
+  --font-display:"Fraunces", Georgia, serif;
+  --font-body:"Geist", system-ui, sans-serif;
+  --font-mono:"Geist Mono", "SF Mono", Menlo, monospace;
+  --radius-sm:4px; --radius:6px; --radius-lg:10px; --radius-xl:12px;
+}
+
+@layer base {
+  body {
+    background:var(--background); color:var(--text);
+    font-family:"Geist", system-ui, sans-serif;
+    transition:background .25s, color .25s;
+  }
+  .display { font-family:"Fraunces", Georgia, serif; font-weight:900;
+    font-variation-settings:"opsz" 144; }
+}
+
+/* ---- map shadcn's semantic vars onto footballd3 tokens ----
+   Add these inside :root and [data-theme="dark"] (values can be shared
+   since they already point at theme-aware tokens):  */
+:root, [data-theme="dark"] {
+  --primary:var(--focal);
+  --primary-foreground:var(--background);
+  --card:var(--surface);
+  --card-foreground:var(--text);
+  --popover:var(--elevated);
+  --popover-foreground:var(--text);
+  --muted-foreground:var(--muted);
+  --accent:var(--focal-soft);
+  --accent-foreground:var(--focal);
+  --input:var(--border);
+  --ring:var(--focal);
+}
