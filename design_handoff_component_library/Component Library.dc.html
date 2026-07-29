@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="design_doc_mode" content="canvas">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #EDEAE3; }
+  a { color: #9F1239; text-decoration: none; }
+  a:hover { color: #171717; }
+  .wonk { font-variation-settings: "opsz" 144; }
+  input[type=range] { height: 4px; cursor: pointer; }
+  @keyframes ovIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pnlIn { from { opacity: 0; transform: scale(0.965) translateY(10px); } to { opacity: 1; transform: none; } }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-thumb { background: rgba(120,113,108,0.4); border-radius: 5px; }
+</style>
+</helmet>
+
+<div style="min-height: 100vh;">
+  <div style="padding: 30px 44px 6px;">
+    <div style="font-family: 'Geist Mono', monospace; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: #9F1239;">footballd3 · component library</div>
+    <div class="wonk" style="font-family: 'Fraunces', serif; font-weight: 900; font-size: 34px; color: #171717; margin: 6px 0 8px; letter-spacing: -0.01em;">Explore the library</div>
+    <div style="font-family: 'Geist', sans-serif; font-size: 13.5px; color: #525252; max-width: 82ch; line-height: 1.6;">Sixteen d3 chart components, each drawn live on the <b>UEFA Euro 2024 Final</b> sample (Spain&nbsp;2–1&nbsp;England). Click any component to expand it — full-size, interactive, with its blurb, controls, API snippet and the sample rows behind it.</div>
+  </div>
+
+  <section style="padding: 22px 44px 72px;">
+    {{ dir_b }}
+  </section>
+
+  {{ modal }}
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1560,&quot;height&quot;:1100},&quot;galleryCols&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:2,&quot;max&quot;:4,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Gallery&quot;,&quot;unit&quot;:&quot;cols&quot;},&quot;showData&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Expanded view&quot;}}">
+class Component extends DCLogic {
+  state = {
+    open: null,
+    side: 'home',
+    view: { pitch: 'vertical', teamShape: 'in', progressiveMap: 'pass', eventScatter: 'all', momentumChart: 'curve', convexHull: 'offense' },
+    hover: {}, mom: {}, playStep: 20, playing: false,
+  };
+
+  h(t, a, ...k) { return React.createElement(t, a, ...k); }
+  setV(key, val) { this.setState((s) => ({ view: { ...s.view, [key]: val } })); }
+  setHover(k, v) { this.setState((s) => ({ hover: { ...s.hover, [k]: v } })); }
+  setMom(k, v) { this.setState((s) => ({ mom: { ...s.mom, [k]: v } })); }
+  openC(key, dir) { this.setState({ open: { key, dir }, playStep: 20, playing: false }); }
+  close() { this.setState({ open: null, playing: false }); }
+  componentWillUnmount() { clearInterval(this._tick); }
+  tickPlay() {
+    clearInterval(this._tick);
+    if (!this.state.playing) { this._tick = setInterval(() => {
+      this.setState((s) => { const n = s.playStep + 1; if (n >= 100) { clearInterval(this._tick); return { playStep: 100, playing: false }; } return { playStep: n }; });
+    }, 55); this.setState({ playing: true }); }
+    else { clearInterval(this._tick); this.setState({ playing: false }); }
+  }
+
+  PAL() {
+    return {
+      L: { bg: '#FAF7F0', surface: '#FFFDF8', elev: '#FFFFFF', border: '#E5E5E5', bstrong: '#D6D3CC', text: '#171717', muted: '#525252', faint: '#8A8578', focal: '#9F1239', focalsoft: 'rgba(159,18,57,0.13)', navy: '#1E3A5F', navysoft: 'rgba(30,58,95,0.12)', pitch: '#1E3A5F', grid: '#ECE8DF' },
+      D: { bg: '#1A1613', surface: '#211D18', elev: '#2A2521', border: '#34302A', bstrong: '#403A32', text: '#F5F0E6', muted: '#A39E95', faint: '#78716C', focal: '#F43F5E', focalsoft: 'rgba(244,63,94,0.17)', navy: '#5B8AC0', navysoft: 'rgba(91,138,192,0.16)', pitch: '#5B8AC0', grid: '#2A2521' },
+    };
+  }
+
+  D() {
+    if (this._d) return this._d;
+    const homeNodes = [[1,'Simón',50,90,42],[2,'Carvajal',80,72,55],[3,'Le Norm.',60,77,61],[4,'Laporte',40,77,66],[5,'Cucurella',20,72,58],[6,'Rodri',68,55,74],[7,'Fabián',50,50,69],[8,'Olmo',34,52,63],[9,'Yamal',78,28,47],[10,'Morata',50,24,39],[11,'N. Williams',22,28,52]];
+    const homeEdges = [[0,2,7],[0,3,7],[2,5,9],[3,4,8],[5,6,11],[6,7,9],[5,1,8],[1,8,7],[8,9,6],[4,10,8],[7,10,6],[6,9,7]];
+    const awayNodes = [[1,'Pickford',50,90,30],[2,'Walker',82,72,40],[3,'Stones',62,77,48],[4,'Guéhi',38,77,45],[5,'Shaw',18,72,36],[6,'Rice',60,60,55],[7,'Mainoo',40,60,50],[8,'Saka',76,42,42],[9,'Belling.',50,40,47],[10,'Foden',24,42,44],[11,'Kane',50,26,33]];
+    const awayEdges = [[0,2,6],[0,3,6],[2,5,7],[3,6,8],[4,7,7],[5,6,8],[6,8,7],[7,10,6],[8,10,6],[9,10,6],[5,7,5]];
+    const shotsHome = [{p:'N. Williams',m:47,xg:0.22,o:'goal',x:40,y:18},{p:'M. Oyarzabal',m:86,xg:0.35,o:'goal',x:54,y:12},{p:'Morata',m:30,xg:0.12,o:'saved',x:50,y:26},{p:'Yamal',m:55,xg:0.08,o:'off',x:68,y:30},{p:'Olmo',m:62,xg:0.10,o:'saved',x:44,y:34},{p:'N. Williams',m:20,xg:0.05,o:'off',x:34,y:40},{p:'Morata',m:78,xg:0.06,o:'blocked',x:60,y:44}];
+    const shotsAway = [{p:'C. Palmer',m:73,xg:0.14,o:'goal',x:56,y:22},{p:'Bellingham',m:90,xg:0.09,o:'saved',x:48,y:28},{p:'Kane',m:36,xg:0.20,o:'off',x:50,y:16},{p:'Saka',m:80,xg:0.07,o:'blocked',x:66,y:34},{p:'Foden',m:68,xg:0.11,o:'saved',x:38,y:30},{p:'Guéhi',m:82,xg:0.18,o:'off',x:52,y:10}];
+    const goals = [{m:47,team:'ESP',p:'Nico Williams',a:'Yamal',xg:0.22,path:[[78,46],[66,36],[54,28],[44,21],[40,18]]},{m:73,team:'ENG',p:'Cole Palmer',a:'Bellingham',xg:0.14,path:[[28,52],[38,42],[48,32],[54,26],[56,22]]},{m:86,team:'ESP',p:'Mikel Oyarzabal',a:'Cucurella',xg:0.35,path:[[22,44],[34,34],[46,24],[52,16],[54,12]]}];
+    const rows = [{l:'Shots',h:16,a:8,f:'int'},{l:'On target',h:5,a:3,f:'int'},{l:'xG',h:1.62,a:0.71,f:'f2'},{l:'Possession',h:65,a:35,f:'pct'},{l:'Passes',h:619,a:331,f:'int'},{l:'Pass acc.',h:89,a:78,f:'pct'},{l:'Corners',h:4,a:2,f:'int'},{l:'Fouls',h:12,a:15,f:'int'}];
+    // freeze-frame at Oyarzabal 86' goal instant (attacking up). t=teammate,o=opponent,a=actor,k=keeper
+    const freeze = [{r:'a',x:54,y:14,n:'Oyarzabal'},{r:'t',x:44,y:20},{r:'t',x:62,y:22},{r:'t',x:36,y:30},{r:'t',x:70,y:34},{r:'t',x:50,y:40},{r:'o',x:50,y:8,n:'Pickford'},{r:'o',x:44,y:18},{r:'o',x:58,y:18},{r:'o',x:38,y:26},{r:'o',x:64,y:28},{r:'o',x:48,y:34},{r:'o',x:56,y:36},{k:1,r:'k',x:50,y:5,n:'Pickford'}];
+    // progressive actions, full pitch horizontal (x=length 0-100 attack right, y=width 0-100). c=complete
+    const prog = [{x1:22,y1:40,x2:52,y2:34,c:1,t:'pass'},{x1:30,y1:64,x2:58,y2:70,c:1,t:'carry'},{x1:44,y1:30,x2:74,y2:24,c:1,t:'pass'},{x1:52,y1:50,x2:82,y2:44,c:1,t:'carry'},{x1:38,y1:76,x2:66,y2:82,c:0,t:'pass'},{x1:60,y1:36,x2:88,y2:48,c:1,t:'pass'},{x1:48,y1:58,x2:70,y2:20,c:0,t:'carry'},{x1:26,y1:52,x2:50,y2:56,c:1,t:'pass'}];
+    // event scatter, horizontal. type: pass/carry/shot/duel/recovery
+    const events = [{x:30,y:40,t:'pass'},{x:48,y:56,t:'carry'},{x:82,y:44,t:'shot'},{x:62,y:30,t:'pass'},{x:40,y:70,t:'duel'},{x:55,y:22,t:'recovery'},{x:70,y:60,t:'pass'},{x:88,y:38,t:'shot'},{x:36,y:52,t:'recovery'},{x:58,y:66,t:'carry'},{x:74,y:28,t:'pass'},{x:50,y:48,t:'duel'}];
+    // single possession timeline strip (elapsed seconds within a possession)
+    const poss = [{t:0.0,ev:'Recovery',pl:'Rodri'},{t:1.4,ev:'Pass',pl:'Rodri'},{t:2.1,ev:'Carry',pl:'Fabián'},{t:4.8,ev:'Pass',pl:'Fabián'},{t:5.2,ev:'Pass',pl:'Yamal'},{t:7.6,ev:'Carry',pl:'Yamal'},{t:9.0,ev:'Pass',pl:'Williams'},{t:10.3,ev:'Shot',pl:'Oyarzabal'}];
+    // heat grid (player on-ball KDE), 6 cols x 8 rows normalized, Rodri central
+    const heat = [];
+    for (let r = 0; r < 8; r++) { heat.push([]); for (let c = 0; c < 6; c++) {
+      const dx = (c - 2.6) / 2.4, dy = (r - 4.2) / 3.2; let v = Math.exp(-(dx*dx + dy*dy)); v += 0.35*Math.exp(-((c-3.5)*(c-3.5)/1.2 + (r-2)*(r-2)/2)); heat[r].push(+Math.min(1, v).toFixed(3)); } }
+    const xt = { rows: 8, cols: 12, values: [[0.0064,0.0078,0.0084,0.0098,0.0113,0.0125,0.0147,0.0175,0.0212,0.0276,0.0349,0.0379],[0.0075,0.0088,0.0094,0.0106,0.0121,0.0138,0.0161,0.0187,0.0240,0.0295,0.0407,0.0465],[0.0089,0.0098,0.0100,0.0111,0.0127,0.0143,0.0169,0.0194,0.0241,0.0286,0.0549,0.0644],[0.0094,0.0108,0.0102,0.0113,0.0126,0.0148,0.0169,0.0200,0.0239,0.0351,0.1081,0.2575],[0.0094,0.0108,0.0102,0.0113,0.0126,0.0148,0.0169,0.0200,0.0239,0.0351,0.1081,0.2575],[0.0089,0.0098,0.0100,0.0111,0.0127,0.0143,0.0169,0.0194,0.0241,0.0286,0.0549,0.0644],[0.0075,0.0088,0.0094,0.0106,0.0121,0.0138,0.0161,0.0187,0.0240,0.0295,0.0407,0.0465],[0.0064,0.0078,0.0084,0.0098,0.0113,0.0125,0.0147,0.0175,0.0212,0.0276,0.0349,0.0379]] };
+    this._d = { homeNodes, homeEdges, awayNodes, awayEdges, shotsHome, shotsAway, goals, rows, freeze, prog, events, poss, heat, xt };
+    return this._d;
+  }
+
+  series() {
+    if (this._s) return this._s;
+    const s = [];
+    for (let m = 0; m <= 96; m += 2) {
+      let v = 0.30*Math.sin(m/6.5) + 0.09*Math.sin(m/2.1);
+      v += 0.55*Math.exp(-Math.pow((m-46)/6,2)) + 0.60*Math.exp(-Math.pow((m-85)/6,2)) + 0.22*Math.exp(-Math.pow((m-15)/7,2));
+      v -= 0.55*Math.exp(-Math.pow((m-72)/6,2)) + 0.28*Math.exp(-Math.pow((m-60)/8,2));
+      v = Math.max(-0.95, Math.min(0.95, v));
+      s.push({ min: m, v: +v.toFixed(3) });
+    }
+    this._s = s; return s;
+  }
+
+  hull(pts) {
+    const p = pts.slice().sort((a,b) => a[0]-b[0] || a[1]-b[1]);
+    const cr = (o,a,b) => (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0]);
+    const lo = []; for (const q of p) { while (lo.length>=2 && cr(lo[lo.length-2],lo[lo.length-1],q)<=0) lo.pop(); lo.push(q); }
+    const up = []; for (let i=p.length-1;i>=0;i--){ const q=p[i]; while (up.length>=2 && cr(up[up.length-2],up[up.length-1],q)<=0) up.pop(); up.push(q); }
+    lo.pop(); up.pop(); return lo.concat(up);
+  }
+
+  // ---- pitch geometry ----
+  buildPitchV(pal, w, ph) {
+    const H = (t,a) => this.h(t,a); const c = pal.pitch, s = { stroke: c, strokeWidth: 1.1, fill: 'none', strokeOpacity: 0.5 };
+    const bw = w*0.55, bx = (w-bw)/2, bh = ph*0.16, sw = w*0.26, sx = (w-sw)/2, sh = ph*0.06;
+    return [H('rect',{key:'b',x:2,y:2,width:w-4,height:ph-4,rx:4,...s}),H('line',{key:'m',x1:2,y1:ph/2,x2:w-2,y2:ph/2,...s}),H('circle',{key:'cc',cx:w/2,cy:ph/2,r:ph*0.085,...s}),H('circle',{key:'cs',cx:w/2,cy:ph/2,r:1.5,fill:c,fillOpacity:0.5,stroke:'none'}),H('rect',{key:'tb',x:bx,y:2,width:bw,height:bh,...s}),H('rect',{key:'ts',x:sx,y:2,width:sw,height:sh,...s}),H('rect',{key:'bb',x:bx,y:ph-2-bh,width:bw,height:bh,...s}),H('rect',{key:'bs',x:sx,y:ph-2-sh,width:sw,height:sh,...s})];
+  }
+  buildHalf(pal, w, ph) {
+    const H = (t,a) => this.h(t,a); const c = pal.pitch, s = { stroke: c, strokeWidth: 1.1, fill: 'none', strokeOpacity: 0.5 };
+    const bw = w*0.6, bx = (w-bw)/2, bh = ph*0.32, sw = w*0.28, sx = (w-sw)/2, sh = ph*0.11;
+    return [H('rect',{key:'b',x:2,y:2,width:w-4,height:ph-4,rx:4,...s}),H('rect',{key:'g',x:w*0.43,y:2,width:w*0.14,height:3,stroke:c,strokeWidth:1.6,fill:'none',strokeOpacity:0.85}),H('rect',{key:'pb',x:bx,y:2,width:bw,height:bh,...s}),H('rect',{key:'6',x:sx,y:2,width:sw,height:sh,...s}),H('circle',{key:'sp',cx:w/2,cy:ph*0.22,r:1.5,fill:c,fillOpacity:0.5,stroke:'none'}),H('path',{key:'arc',d:`M ${bx} ${bh} A ${w*0.16} ${w*0.16} 0 0 0 ${bx+bw} ${bh}`,...s})];
+  }
+  buildPitchH(pal, w, h) {
+    const H = (t,a) => this.h(t,a); const c = pal.pitch, s = { stroke: c, strokeWidth: 1.1, fill: 'none', strokeOpacity: 0.5 };
+    const bw = w*0.15, bh = h*0.55, by = (h-bh)/2, sw = w*0.055, sh = h*0.28, sy = (h-sh)/2;
+    return [H('rect',{key:'b',x:2,y:2,width:w-4,height:h-4,rx:4,...s}),H('line',{key:'m',x1:w/2,y1:2,x2:w/2,y2:h-2,...s}),H('circle',{key:'cc',cx:w/2,cy:h/2,r:h*0.13,...s}),H('circle',{key:'cs',cx:w/2,cy:h/2,r:1.6,fill:c,fillOpacity:0.5,stroke:'none'}),H('rect',{key:'lb',x:2,y:by,width:bw,height:bh,...s}),H('rect',{key:'ls',x:2,y:sy,width:sw,height:sh,...s}),H('rect',{key:'rb',x:w-2-bw,y:by,width:bw,height:bh,...s}),H('rect',{key:'rs',x:w-2-sw,y:sy,width:sw,height:sh,...s}),H('rect',{key:'lg',x:0,y:h*0.44,width:2,height:h*0.12,fill:c,fillOpacity:0.7,stroke:'none'}),H('rect',{key:'rg',x:w-2,y:h*0.44,width:2,height:h*0.12,fill:c,fillOpacity:0.7,stroke:'none'})];
+  }
+
+  // ---- small UI ----
+  toggleEl(pal, opts, active, onSel) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    return H('div',{style:{display:'inline-flex'}}, opts.map((o,i) => {
+      const on = o.v === active;
+      return H('button',{key:o.v,onClick:()=>onSel(o.v),style:{border:`1px solid ${on?pal.focal:pal.border}`,marginLeft:i?-1:0,borderTopLeftRadius:i===0?4:0,borderBottomLeftRadius:i===0?4:0,borderTopRightRadius:i===opts.length-1?4:0,borderBottomRightRadius:i===opts.length-1?4:0,padding:'4px 9px',fontFamily:"'Geist Mono', monospace",fontSize:10.5,fontWeight:500,whiteSpace:'nowrap',cursor:'pointer',background:on?pal.focalsoft:'transparent',color:on?pal.focal:pal.muted,position:'relative',zIndex:on?1:0}}, o.label);
+    }));
+  }
+  sideSwitch(pal) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const opts = [{v:'home',label:'Spain',c:pal.focal,s:pal.focalsoft},{v:'away',label:'England',c:pal.navy,s:pal.navysoft}];
+    return H('div',{style:{display:'inline-flex'}}, opts.map((o,i) => {
+      const on = this.state.side === o.v;
+      return H('button',{key:o.v,onClick:()=>this.setState({side:o.v}),style:{border:`1px solid ${on?o.c:pal.border}`,marginLeft:i?-1:0,borderTopLeftRadius:i===0?5:0,borderBottomLeftRadius:i===0?5:0,borderTopRightRadius:i?5:0,borderBottomRightRadius:i?5:0,padding:'5px 12px',fontFamily:"'Geist Mono', monospace",fontSize:11,fontWeight:600,letterSpacing:'0.04em',textTransform:'uppercase',cursor:'pointer',background:on?o.s:'transparent',color:on?o.c:pal.muted,position:'relative',zIndex:on?1:0}}, o.label);
+    }));
+  }
+
+  reg() {
+    return [
+      { key:'pitch', cat:'pitch', blurb:'StatsBomb 120×80 pitch base layer. Returns { g, px } for downstream components. Modes: full / half; horizontal / vertical.', code:"const { g, px } = pitch(svg, {\n  mode: 'full', orient: 'horizontal'\n});", modes:[{v:'vertical',label:'Vertical'},{v:'horizontal',label:'Horizontal'}], sides:false },
+      { key:'shotMap', cat:'shots', blurb:'Shot scatter on a half-pitch. Circle area = xG; color = outcome. Tooltip: player / outcome / minute / xG.', code:"shotMap(g, shots, {\n  xg: 'statsbomb_xg'\n});", sides:true, dataK:'shots' },
+      { key:'passNetwork', cat:'network', blurb:'Substitution-windowed directed pass network. Node size = pass count; edge thickness = pair count.', code:"passNetwork(g, passes, {\n  window: subWindow\n});", sides:true, dataK:'net' },
+      { key:'freezeFrame', cat:'pitch', blurb:'360 freeze-frame dot overlay for a single goal instant. Encodes teammate / opponent / actor / keeper.', code:"freezeFrame(g, frame, {\n  actor, keeper\n});", sides:false, dataK:'freeze' },
+      { key:'convexHull', cat:'pitch', blurb:'Convex-hull territory polygons for offense / defense at a freeze-frame instant. Sits behind the dot layer.', code:"convexHull(g, frame, {\n  side: 'offense'\n});", modes:[{v:'offense',label:'Offense'},{v:'defense',label:'Defense'}], sides:false, dataK:'freeze' },
+      { key:'heatmap', cat:'heat', blurb:'Player on-ball KDE density surface — where a player participated in play, not off-ball movement.', code:"heatmap(g, events, {\n  player: playerId\n});", sides:false, dataK:'heat' },
+      { key:'matchStats', cat:'bars', blurb:'Match-level stat table (shots, possession, xG, cards…). Wraps comparisonBars.', code:"matchStats(el, home, away);", sides:false, dataK:'rows' },
+      { key:'comparisonBars', cat:'bars', blurb:'Generic home/away mirrored bar chart. Football-agnostic and reusable.', code:"comparisonBars(el, rows, {\n  home, away\n});", sides:false, dataK:'rows' },
+      { key:'formation', cat:'pitch', blurb:'Declared formation and tactical-shift sequence with template-slot player positions.', code:"formation(g, '4-3-3', {\n  shifts\n});", sides:true, dataK:'net' },
+      { key:'teamShape', cat:'network', blurb:'Empirical in-possession nodes and out-of-possession density cloud.', code:"teamShape(g, events, {\n  phase: 'in'\n});", modes:[{v:'in',label:'In poss.'},{v:'out',label:'Out poss.'}], sides:true, dataK:'net' },
+      { key:'progressiveMap', cat:'pitch', blurb:'Progressive pass/carry arrows on the full pitch. Encodes completion + progression.', code:"progressiveMap(g, actions);", modes:[{v:'pass',label:'Passes'},{v:'carry',label:'Carries'},{v:'all',label:'All'}], sides:true, dataK:'prog' },
+      { key:'eventScatter', cat:'pitch', blurb:'General event scatter. Markers at (x,y); arrows for Pass/Carry/Shot.', code:"eventScatter(g, events, {\n  color: byType\n});", modes:[{v:'all',label:'All'},{v:'pass',label:'Pass'},{v:'shot',label:'Shot'}], sides:false, dataK:'events' },
+      { key:'timelineStrip', cat:'line', blurb:'Single-possession elapsed-seconds strip. Real-time axis; stacks near-simultaneous events.', code:"timelineStrip(el, possession);", sides:false, dataK:'poss' },
+      { key:'xtSurface', cat:'heat', blurb:'Karun Singh open xT grid as a heatmap beneath pitch markings.', code:"xtSurface(g, {\n  grid: xtGrid\n});", sides:false, dataK:'xt' },
+      { key:'playAnimation', cat:'pitch', blurb:'Time-windowed ball-path animation with play/pause/scrub. Composes on pitch.', code:"playAnimation(g, track, {\n  window: [t0, t1]\n});", sides:false, dataK:'play' },
+      { key:'momentumChart', cat:'line', blurb:'Per-minute xT-based attacking momentum curve with goal/card markers.', code:"momentumChart(el, xt, {\n  orient: 'horizontal'\n});", modes:[{v:'curve',label:'Curve'},{v:'bars',label:'Bars'}], sides:false, dataK:'mom' },
+    ];
+  }
+
+  CATS() { return [['pitch','Pitch overlays'],['shots','Shots'],['network','Network & shape'],['heat','Heat surfaces'],['bars','Bars & tables'],['line','Time series']]; }
+
+  dataPeek(entry) {
+    const d = this.D(), home = this.state.side !== 'away';
+    const peek = (v) => JSON.stringify(v, null, 1).replace(/\n\s+/g, ' ').replace(/\[ /g,'[').replace(/ \]/g,']');
+    switch (entry.dataK) {
+      case 'shots': return (home ? d.shotsHome : d.shotsAway).slice(0,3).map(peek).join('\n');
+      case 'net': return (home ? d.homeNodes : d.awayNodes).slice(0,4).map(peek).join('\n');
+      case 'freeze': return d.freeze.slice(0,4).map(peek).join('\n');
+      case 'heat': return d.heat.slice(0,3).map(peek).join('\n');
+      case 'rows': return d.rows.slice(0,4).map(peek).join('\n');
+      case 'prog': return d.prog.slice(0,3).map(peek).join('\n');
+      case 'events': return d.events.slice(0,4).map(peek).join('\n');
+      case 'poss': return d.poss.slice(0,4).map(peek).join('\n');
+      case 'xt': return '{ rows: 8, cols: 12,\n  values: [[…], …] }';
+      case 'mom': return this.series().slice(0,4).map(peek).join('\n');
+      case 'play': return d.goals.map((g)=>peek({m:g.m,p:g.p,steps:g.path.length})).join('\n');
+      default: return '—';
+    }
+  }
+
+  // ---- gallery layouts ----
+  gallery(regs, pal, dir, layout) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const cats = this.CATS();
+    const cardW = layout === 'index' ? '100%' : 900;
+    const wrap = { width: cardW, background: pal.bg, color: pal.text, border: `1px solid ${pal.bstrong}`, borderRadius: 16, overflow: 'hidden', boxShadow: dir==='1b' ? '0 40px 90px -50px rgba(0,0,0,0.7)' : '0 40px 90px -50px rgba(23,23,23,0.55)', fontFamily: "'Geist', system-ui, sans-serif" };
+    const groups = cats.map(([c,label]) => {
+      const items = regs.filter((r)=>r.cat===c);
+      if (!items.length) return null;
+      const head = H('div',{key:'h',style:{display:'flex',alignItems:'baseline',gap:10,margin:'0 0 12px'}},
+        H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:11,letterSpacing:'0.12em',textTransform:'uppercase',color:pal.focal}}, label),
+        H('span',{style:{flex:1,height:1,background:pal.border}}),
+        H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:10,color:pal.faint}}, items.length));
+      const body = layout === 'index'
+        ? H('div',{key:'b',style:{display:'flex',flexDirection:'column',gap:0,marginBottom:22}}, items.map((e)=>this.indexRow(e,pal,dir)))
+        : H('div',{key:'b',style:{display:'grid',gridTemplateColumns:`repeat(${this.props.galleryCols ?? 3}, 1fr)`,gap:14,marginBottom:26}}, items.map((e)=>this.card(e,pal,dir)));
+      return H('div',{key:c}, head, body);
+    });
+    return H('div',{style:wrap}, H('div',{style:{padding: layout==='index' ? '20px 20px 8px' : '24px 26px 8px'}}, groups));
+  }
+
+  card(entry, pal, dir) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    return H('div',{onClick:()=>this.openC(entry.key,dir),style:{border:`1px solid ${pal.border}`,borderRadius:12,background:pal.surface,overflow:'hidden',cursor:'pointer',display:'flex',flexDirection:'column'}},
+      H('div',{style:{height:150,background:pal.elev,borderBottom:`1px solid ${pal.border}`,display:'flex',alignItems:'center',justifyContent:'center',position:'relative',overflow:'hidden'}},
+        H('span',{style:{position:'absolute',top:8,left:10,fontFamily:"'Geist Mono', monospace",fontSize:9.5,color:pal.faint}},'preview'),
+        H('div',{style:{transform:'scale(0.92)'}}, this.drawComponent(entry, pal, 176, 122, entry.key+'_th', true))),
+      H('div',{style:{padding:'13px 14px 15px'}},
+        H('div',{style:{display:'flex',alignItems:'baseline',justifyContent:'space-between',gap:8}},
+          H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:14,fontWeight:600,color:pal.text}}, entry.key),
+          H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:10,color:pal.faint}}, entry.cat)),
+        H('div',{style:{marginTop:7,fontFamily:"'Geist', sans-serif",fontSize:12,lineHeight:1.45,color:pal.muted,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}, entry.blurb)));
+  }
+
+  indexRow(entry, pal, dir) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    return H('div',{onClick:()=>this.openC(entry.key,dir),style:{display:'grid',gridTemplateColumns:'170px 88px 1fr 132px',alignItems:'center',gap:16,padding:'12px 8px',borderTop:`1px solid ${pal.border}`,cursor:'pointer'},onMouseEnter:(e)=>{e.currentTarget.style.background=pal.elev;},onMouseLeave:(e)=>{e.currentTarget.style.background='transparent';}},
+      H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:13.5,fontWeight:600,color:pal.text}}, entry.key),
+      H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:10,color:pal.focal,textTransform:'uppercase',letterSpacing:'0.06em'}}, entry.cat),
+      H('span',{style:{fontFamily:"'Geist', sans-serif",fontSize:11.5,lineHeight:1.4,color:pal.muted,display:'-webkit-box',WebkitLineClamp:2,WebkitBoxOrient:'vertical',overflow:'hidden'}}, entry.blurb),
+      H('div',{style:{width:132,height:74,borderRadius:7,background:pal.elev,border:`1px solid ${pal.border}`,display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden'}}, this.drawComponent(entry, pal, 124, 68, entry.key+'_ix', true)));
+  }
+
+  // ---- modal ----
+  modalEl(regs, L, D) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const open = this.state.open;
+    if (!open) return null;
+    const pal = open.dir === '1b' ? D : L;
+    const entry = regs.find((r)=>r.key===open.key);
+    const isPlay = entry.key === 'playAnimation';
+    const controls = [];
+    if (entry.sides) controls.push(H('div',{key:'sd',style:{display:'flex',flexDirection:'column',gap:6}}, H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:10,letterSpacing:'0.1em',textTransform:'uppercase',color:pal.faint}},'Team'), this.sideSwitch(pal)));
+    if (entry.modes) controls.push(H('div',{key:'md',style:{display:'flex',flexDirection:'column',gap:6}}, H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:10,letterSpacing:'0.1em',textTransform:'uppercase',color:pal.faint}},'Mode'), this.toggleEl(pal, entry.modes, this.state.view[entry.key], (v)=>this.setV(entry.key,v))));
+    if (isPlay) controls.push(H('div',{key:'pl',style:{display:'flex',flexDirection:'column',gap:8}},
+      H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:10,letterSpacing:'0.1em',textTransform:'uppercase',color:pal.faint}},'Playback'),
+      H('div',{style:{display:'flex',gap:8,alignItems:'center'}},
+        H('button',{onClick:()=>this.tickPlay(),style:{border:`1px solid ${pal.focal}`,background:pal.focalsoft,color:pal.focal,borderRadius:5,padding:'5px 14px',fontFamily:"'Geist Mono', monospace",fontSize:11,fontWeight:600,cursor:'pointer'}}, this.state.playing ? '❚❚ Pause' : '▶ Play'),
+        H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:11,color:pal.muted}}, Math.round(this.state.playStep)+'%')),
+      H('input',{type:'range',min:0,max:100,value:this.state.playStep,onChange:(e)=>this.setState({playStep:+e.target.value,playing:false}),style:{width:'100%',accentColor:pal.focal}})));
+
+    const rail = H('div',{style:{width:300,flex:'0 0 auto',borderLeft:`1px solid ${pal.border}`,padding:'22px 22px',display:'flex',flexDirection:'column',gap:20,overflowY:'auto'}},
+      H('div',null,
+        H('div',{style:{fontFamily:"'Geist Mono', monospace",fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:pal.faint,marginBottom:8}},'About'),
+        H('div',{style:{fontFamily:"'Geist', sans-serif",fontSize:13,lineHeight:1.6,color:pal.muted}}, entry.blurb)),
+      controls.length ? H('div',{style:{display:'flex',flexDirection:'column',gap:16}}, H('div',{style:{fontFamily:"'Geist Mono', monospace",fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:pal.faint}},'Controls'), ...controls) : null,
+      H('div',null,
+        H('div',{style:{fontFamily:"'Geist Mono', monospace",fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:pal.faint,marginBottom:8}},'API'),
+        H('pre',{style:{margin:0,background:pal.elev,border:`1px solid ${pal.border}`,borderRadius:8,padding:'11px 12px',fontFamily:"'Geist Mono', monospace",fontSize:11.5,lineHeight:1.5,color:pal.text,whiteSpace:'pre',overflowX:'auto'}}, entry.code)),
+      (this.props.showData ?? true) ? H('div',null,
+        H('div',{style:{fontFamily:"'Geist Mono', monospace",fontSize:11,letterSpacing:'0.1em',textTransform:'uppercase',color:pal.faint,marginBottom:8}},'Sample data'),
+        H('pre',{style:{margin:0,background:pal.elev,border:`1px solid ${pal.border}`,borderRadius:8,padding:'11px 12px',fontFamily:"'Geist Mono', monospace",fontSize:10.5,lineHeight:1.55,color:pal.muted,whiteSpace:'pre',overflowX:'auto',maxHeight:150,overflowY:'auto'}}, this.dataPeek(entry))) : null);
+
+    const stageDim = this.stageSize(entry);
+    const stage = H('div',{style:{flex:1,minWidth:0,padding:'26px 28px',display:'flex',alignItems:'center',justifyContent:'center',background:pal.bg}},
+      H('div',{style:{width:'100%',maxWidth:stageDim.w}}, this.drawComponent(entry, pal, stageDim.w, stageDim.h, entry.key+'_big', false)));
+
+    const panel = H('div',{onClick:(e)=>e.stopPropagation(),style:{width:'min(1040px, 92vw)',maxHeight:'88vh',background:pal.surface,color:pal.text,border:`1px solid ${pal.bstrong}`,borderRadius:16,overflow:'hidden',boxShadow:'0 50px 120px -40px rgba(0,0,0,0.6)',display:'flex',flexDirection:'column',animation:'pnlIn 0.28s cubic-bezier(0.2,0.8,0.2,1)',fontFamily:"'Geist', system-ui, sans-serif"}},
+      H('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 20px',borderBottom:`1px solid ${pal.border}`,background:pal.surface}},
+        H('div',{style:{display:'flex',alignItems:'center',gap:12}},
+          H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:11,color:pal.focal,border:`1px solid ${pal.focal}`,borderRadius:5,padding:'2px 8px',textTransform:'uppercase',letterSpacing:'0.06em'}}, entry.cat),
+          H('span',{className:'wonk',style:{fontFamily:"'Fraunces', serif",fontWeight:600,fontSize:22,color:pal.text,whiteSpace:'nowrap'}}, entry.key)),
+        H('div',{style:{display:'flex',alignItems:'center',gap:14}},
+          H('span',{style:{fontFamily:"'Geist Mono', monospace",fontSize:11,color:pal.faint,whiteSpace:'nowrap'}}, 'Euro 2024 Final · 3943043'),
+          H('button',{onClick:()=>this.close(),style:{border:`1px solid ${pal.border}`,background:'transparent',color:pal.muted,borderRadius:8,width:32,height:32,fontSize:16,cursor:'pointer',lineHeight:1,flex:'0 0 auto'}}, '✕'))),
+      H('div',{style:{display:'flex',flex:1,minHeight:0}}, stage, rail));
+
+    return H('div',{onClick:()=>this.close(),style:{position:'fixed',inset:0,zIndex:50,background:'rgba(23,20,15,0.55)',backdropFilter:'blur(3px)',display:'flex',alignItems:'center',justifyContent:'center',padding:24,animation:'ovIn 0.2s ease'}}, panel);
+  }
+
+  stageSize(entry) {
+    const tall = ['pitch','freezeFrame','convexHull','formation','teamShape','passNetwork'];
+    const half = ['shotMap'];
+    if (entry.key === 'pitch' && this.state.view.pitch === 'vertical') return { w: 420, h: 560 };
+    if (tall.includes(entry.key)) return { w: 440, h: 560 };
+    if (half.includes(entry.key)) return { w: 460, h: 400 };
+    return { w: 620, h: 400 };
+  }
+
+  drawComponent(entry, pal, w, h, ik, thumb) {
+    const d = this.D(), home = this.state.side !== 'away';
+    const acc = home ? pal.focal : pal.navy, soft = home ? pal.focalsoft : pal.navysoft;
+    const nodes = home ? d.homeNodes : d.awayNodes, edges = home ? d.homeEdges : d.awayEdges, shots = home ? d.shotsHome : d.shotsAway;
+    const view = this.state.view[entry.key];
+    switch (entry.key) {
+      case 'pitch': return this.pitchEl(pal, w, h, thumb ? 'vertical' : view);
+      case 'shotMap': return this.shotsEl(pal, acc, soft, shots, w, h, ik, 1, thumb);
+      case 'passNetwork': return this.networkEl(pal, acc, nodes, edges, w, h);
+      case 'freezeFrame': return this.freezeEl(pal, w, h, ik, thumb);
+      case 'convexHull': return this.hullElc(pal, w, h, thumb ? 'offense' : view, thumb);
+      case 'heatmap': return this.heatEl(pal, w, h);
+      case 'matchStats': return this.statsEl(pal, d.rows, w, thumb);
+      case 'comparisonBars': return this.barsEl(pal, d.rows, w, thumb);
+      case 'formation': return this.formationEl(pal, acc, nodes, w, h, !thumb);
+      case 'teamShape': return this.shapeEl(pal, acc, soft, nodes, w, h, thumb ? 'in' : view);
+      case 'progressiveMap': return this.progEl(pal, acc, w, h, thumb ? 'all' : view, ik, thumb);
+      case 'eventScatter': return this.eventEl(pal, w, h, thumb ? 'all' : view, ik, thumb);
+      case 'timelineStrip': return this.stripEl(pal, w, h, thumb);
+      case 'xtSurface': return this.xtEl(pal, w, h, thumb);
+      case 'playAnimation': return this.playEl(pal, w, h, thumb);
+      case 'momentumChart': return this.momEl(pal, w, h, ik, thumb ? 'curve' : view, thumb);
+      default: return null;
+    }
+  }
+
+  heatEl(pal, w, h) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const d = this.D().heat, rows = d.length, cols = d[0].length;
+    const cw = w/cols, ch = h/rows;
+    const cells = [];
+    for (let r=0;r<rows;r++) for (let c=0;c<cols;c++) {
+      cells.push(H('rect',{key:r+'-'+c,x:c*cw,y:r*ch,width:cw+0.5,height:ch+0.5,fill:pal.focal,opacity:0.06+d[r][c]*0.72}));
+    }
+    return H('svg',{viewBox:`0 0 ${w} ${h}`,width:'100%',height:h,style:{display:'block',borderRadius:4,overflow:'hidden'}}, cells, this.buildPitchV(pal,w,h));
+  }
+  progEl(pal, acc, w, h, mode, ik, thumb) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const ph = Math.round(w*0.66), px=(x)=>x/100*w, py=(y)=>y/100*ph;
+    const acts = this.D().prog.filter((a)=> mode==='all' ? true : a.t===mode);
+    const defs = H('defs',null, H('marker',{id:'ah_'+ik,markerWidth:6,markerHeight:6,refX:4,refY:2,orient:'auto'}, H('path',{d:'M0,0 L4,2 L0,4 Z',fill:acc})));
+    const arrows = acts.map((a,i)=>H('g',{key:i},
+      H('line',{x1:px(a.x1),y1:py(a.y1),x2:px(a.x2),y2:py(a.y2),stroke:acc,strokeWidth:a.t==='carry'?2:1.8,strokeDasharray:a.t==='carry'?'4 3':'0',opacity:a.c?0.85:0.35,markerEnd:`url(#ah_${ik})`}),
+      H('circle',{cx:px(a.x1),cy:py(a.y1),r:2.5,fill:acc,opacity:a.c?0.9:0.4})));
+    const svg = H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:'auto',style:{display:'block'}}, defs, this.buildPitchH(pal,w,ph), arrows);
+    if (thumb) return svg;
+    const comp = acts.filter((a)=>a.c).length;
+    return H('div',null, svg, H('div',{style:{marginTop:10,display:'flex',gap:16,justifyContent:'center',fontFamily:"'Geist Mono', monospace",fontSize:11,color:pal.muted}},
+      H('span',null, `${acts.length} progressive actions`), H('span',{style:{color:acc}}, `${comp} completed`), H('span',{style:{color:pal.faint}}, 'solid = pass · dashed = carry · attack →')));
+  }
+  eventEl(pal, w, h, mode, ik, thumb) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const ph = Math.round(w*0.66), px=(x)=>x/100*w, py=(y)=>y/100*ph;
+    const COL = { pass: pal.focal, carry: pal.navy, shot: '#C77D0A', duel: pal.muted, recovery: '#3F7A5B' };
+    const evs = this.D().events.filter((e)=> mode==='all' ? true : e.t===mode);
+    const marks = evs.map((e,i)=>{
+      const col = COL[e.t] || pal.muted;
+      if (e.t==='shot') return H('rect',{key:i,x:px(e.x)-4,y:py(e.y)-4,width:8,height:8,fill:col,opacity:0.9,transform:`rotate(45 ${px(e.x)} ${py(e.y)})`});
+      return H('circle',{key:i,cx:px(e.x),cy:py(e.y),r:e.t==='duel'?4:5,fill:e.t==='carry'?'none':col,stroke:col,strokeWidth:1.5,opacity:0.9});
+    });
+    const svg = H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:'auto',style:{display:'block'}}, this.buildPitchH(pal,w,ph), marks);
+    if (thumb) return svg;
+    const legend = Object.entries(COL).map(([k,c])=>H('span',{key:k,style:{display:'flex',alignItems:'center',gap:6}}, H('span',{style:{width:9,height:9,borderRadius:2,background:c,display:'inline-block'}}), k));
+    return H('div',null, svg, H('div',{style:{marginTop:10,display:'flex',gap:14,flexWrap:'wrap',justifyContent:'center',fontFamily:"'Geist Mono', monospace",fontSize:11,color:pal.muted}}, legend));
+  }
+  stripEl(pal, w, h, thumb) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const poss = this.D().poss, ph = thumb ? h : 130;
+    const maxT = poss[poss.length-1].t, padL = thumb?6:40, padR = thumb?6:20, y = ph*0.44;
+    const x = (t)=> padL + t/maxT*(w-padL-padR);
+    const COL = { Recovery:'#3F7A5B', Pass:pal.focal, Carry:pal.navy, Shot:'#C77D0A' };
+    const axis = H('line',{x1:padL,y1:y,x2:w-padR,y2:y,stroke:pal.bstrong,strokeWidth:1});
+    const ticks = thumb ? null : [0,2,4,6,8,10].map((t,i)=>H('g',{key:i}, H('line',{x1:x(t),y1:y-3,x2:x(t),y2:y+3,stroke:pal.bstrong,strokeWidth:1}), H('text',{x:x(t),y:y+18,fill:pal.faint,fontSize:9,fontFamily:"'Geist Mono', monospace",textAnchor:'middle'}, t+'s')));
+    const evs = poss.map((p,i)=>{ const col = COL[p.ev]||pal.muted; const up = i%2===0; const sy = up ? y-18 : y+18;
+      return H('g',{key:i},
+        H('line',{x1:x(p.t),y1:y,x2:x(p.t),y2:sy,stroke:col,strokeWidth:1.2,opacity:0.7}),
+        H('circle',{cx:x(p.t),cy:sy,r:thumb?2.5:5,fill:col}),
+        thumb?null:H('text',{x:x(p.t),y:up?sy-6:sy+13,fill:col,fontSize:9,fontFamily:"'Geist Mono', monospace",textAnchor:'middle',fontWeight:600}, p.ev));
+    });
+    const svg = H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:ph,style:{display:'block'}}, axis, ticks, evs);
+    if (thumb) return svg;
+    return H('div',null, svg, H('div',{style:{marginTop:8,textAlign:'center',fontFamily:"'Geist Mono', monospace",fontSize:11,color:pal.muted}}, `Spain possession · ${poss.length} actions in ${maxT.toFixed(1)}s → shot`));
+  }
+  xtEl(pal, w, h, thumb) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const xt = this.D().xt, ph = Math.round(w*0.66);
+    const cw = w/xt.cols, ch = ph/xt.rows;
+    let max = 0; xt.values.forEach((row)=>row.forEach((v)=>{ if (v>max) max=v; }));
+    const cells = [];
+    for (let r=0;r<xt.rows;r++) for (let c=0;c<xt.cols;c++) {
+      const v = xt.values[r][c], t = Math.pow(v/max, 0.5);
+      cells.push(H('rect',{key:r+'-'+c,x:c*cw,y:r*ch,width:cw+0.5,height:ch+0.5,fill:pal.focal,opacity:0.05+t*0.8}));
+    }
+    const svg = H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:'auto',style:{display:'block',borderRadius:4,overflow:'hidden'}}, cells, this.buildPitchH(pal,ph? w:w,ph));
+    if (thumb) return svg;
+    return H('div',null, svg, H('div',{style:{marginTop:10,textAlign:'center',fontFamily:"'Geist Mono', monospace",fontSize:11,color:pal.muted}}, `Karun Singh open xT · 12×8 grid · peak ${max.toFixed(3)} at goal mouth (attack →)`));
+  }
+  playEl(pal, w, h, thumb) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    // combined ball track across the three goal build-ups, laid on a full horizontal pitch
+    const track = [[10,50],[24,42],[30,64],[44,34],[52,50],[60,30],[70,58],[80,44],[88,40],[93,48]];
+    const ph = Math.round(w*0.66), px=(x)=>x/100*w, py=(y)=>y/100*ph;
+    const prog = thumb ? 0.6 : this.state.playStep/100;
+    const total = track.length - 1, fpos = prog*total, idx = Math.floor(fpos), frac = fpos-idx;
+    const shown = track.slice(0, idx+1);
+    let bx, by;
+    if (idx >= total) { bx = track[total][0]; by = track[total][1]; }
+    else { bx = track[idx][0]+(track[idx+1][0]-track[idx][0])*frac; by = track[idx][1]+(track[idx+1][1]-track[idx][1])*frac; }
+    const poly = shown.concat([[bx,by]]).map((p)=>`${px(p[0])},${py(p[1])}`).join(' ');
+    const svg = H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:'auto',style:{display:'block'}}, this.buildPitchH(pal,w,ph),
+      H('polyline',{points:poly,fill:'none',stroke:pal.focal,strokeWidth:2,strokeDasharray:'4 3',opacity:0.65,strokeLinecap:'round'}),
+      track.map((p,i)=> i<=idx ? H('circle',{key:i,cx:px(p[0]),cy:py(p[1]),r:2.5,fill:pal.focal,opacity:0.5}) : null),
+      H('circle',{cx:px(bx),cy:py(by),r:thumb?4:6,fill:pal.elev,stroke:pal.focal,strokeWidth:2}));
+    if (thumb) return svg;
+    return H('div',null, svg, H('div',{style:{marginTop:10,textAlign:'center',fontFamily:"'Geist Mono', monospace",fontSize:11,color:pal.muted}}, `Ball track · frame ${Math.round(prog*100)}% · ${shown.length}/${track.length} touches`));
+  }
+  momEl(pal, w, h, ik, mode, thumb) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const series = this.series(), goals = this.D().goals;
+    const ph = thumb ? h : 260, base = ph*0.52, sc = ph*0.4, maxV = 0.95;
+    const padL = thumb?4:8, x = (m)=> padL + m/96*(w-padL*2);
+    let body;
+    if (mode === 'bars') {
+      const bw = Math.max(2,(w-padL*2)/series.length*0.62);
+      body = series.map((p,i)=>{ const bh=Math.abs(p.v)/maxV*sc, up=p.v>=0, col=up?pal.focal:pal.navy;
+        return H('rect',{key:i,x:x(p.min)-bw/2,y:up?base-bh:base,width:bw,height:bh,fill:col,opacity:0.85,rx:1,style:thumb?null:{cursor:'crosshair'},onMouseEnter:thumb?null:()=>this.setMom(ik,p)}); });
+    } else {
+      const pts = series.map((p)=>`${x(p.min)},${base-p.v/maxV*sc}`).join(' ');
+      const area = `${x(0)},${base} ${pts} ${x(96)},${base}`;
+      body = [H('polygon',{key:'ar',points:area,fill:pal.focalsoft,opacity:0.6}), H('polyline',{key:'ln',points:pts,fill:'none',stroke:pal.focal,strokeWidth:2,strokeLinejoin:'round'})];
+    }
+    const gm = goals.map((g,i)=>{ const esp=g.team==='ESP', col=esp?pal.focal:pal.navy;
+      return H('g',{key:'g'+i}, H('line',{x1:x(g.m),y1:8,x2:x(g.m),y2:ph-8,stroke:col,strokeWidth:1,strokeDasharray:'3 3',opacity:0.6}), H('circle',{cx:x(g.m),cy:12,r:3.5,fill:col}), thumb?null:H('text',{x:x(g.m),y:ph-1,fill:pal.faint,fontSize:9,fontFamily:"'Geist Mono', monospace",textAnchor:'middle'}, g.m+"'")); });
+    const svg = H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:ph,style:{display:'block'},onMouseLeave:thumb?null:()=>this.setMom(ik,null)}, H('line',{x1:padL,y1:base,x2:w-padL,y2:base,stroke:pal.bstrong,strokeWidth:1}), body, gm);
+    if (thumb) return svg;
+    const mv = this.state.mom[ik];
+    const ro = mv ? `${mv.min}' · ${mv.v>=0?'Spain':'England'} threat ${mv.v>=0?'+':''}${mv.v.toFixed(2)}` : 'Hover the timeline · above = Spain, below = England';
+    const chip=(c,l)=>H('span',{style:{display:'flex',alignItems:'center',gap:6}}, H('span',{style:{width:9,height:9,borderRadius:2,background:c,display:'inline-block'}}), l);
+    return H('div',null, svg, H('div',{style:{marginTop:9,display:'flex',gap:16,flexWrap:'wrap',alignItems:'center',justifyContent:'center',fontFamily:"'Geist Mono', monospace",fontSize:11,color:pal.muted}}, chip(pal.focal,'Spain'), chip(pal.navy,'England'), H('span',{style:{color:pal.faint}}, ro)));
+  }
+  renderVals() {
+    const P = this.PAL();
+    const regs = this.reg();
+    return {
+      dir_b: this.gallery(regs, P.D, '1b', 'index'),
+      modal: this.modalEl(regs, P.L, P.D),
+    };
+  }
+  formationEl(pal, accent, nodes, w, ph, names) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const px = (x)=>x/100*w, py=(y)=>y/100*ph, r = Math.max(8, w*0.032);
+    const dots = nodes.map((n,i)=>H('g',{key:i},
+      H('circle',{cx:px(n[2]),cy:py(n[3]),r,fill:accent,opacity:0.92}),
+      H('text',{x:px(n[2]),y:py(n[3])+r*0.35,fill:'#fff',fontSize:r*0.95,fontFamily:"'Geist Mono', monospace",fontWeight:600,textAnchor:'middle'}, n[0]),
+      names?H('text',{x:px(n[2]),y:py(n[3])+r+11,fill:pal.faint,fontSize:8.5,fontFamily:"'Geist Mono', monospace",textAnchor:'middle'}, n[1]):null));
+    return H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:ph,style:{display:'block'}}, this.buildPitchV(pal,w,ph), dots);
+  }
+  networkEl(pal, accent, nodes, edges, w, ph) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const px = (x)=>x/100*w, py=(y)=>y/100*ph, maxP = Math.max(...nodes.map((n)=>n[4]));
+    const lines = edges.map((e,i)=>H('line',{key:'e'+i,x1:px(nodes[e[0]][2]),y1:py(nodes[e[0]][3]),x2:px(nodes[e[1]][2]),y2:py(nodes[e[1]][3]),stroke:accent,strokeWidth:1+e[2]*0.5,opacity:0.38,strokeLinecap:'round'}));
+    const dots = nodes.map((n,i)=>H('g',{key:'n'+i},H('circle',{cx:px(n[2]),cy:py(n[3]),r:4+n[4]/maxP*10,fill:accent}),H('text',{x:px(n[2]),y:py(n[3])+3.5,fill:'#fff',fontSize:9,fontFamily:"'Geist Mono', monospace",fontWeight:600,textAnchor:'middle'}, n[0])));
+    return H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:ph,style:{display:'block'}}, this.buildPitchV(pal,w,ph), lines, dots);
+  }
+  shapeEl(pal, accent, soft, nodes, w, ph, phase) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const px = (x)=>x/100*w, py=(y)=>y/100*ph, out = nodes.slice(1);
+    if (phase === 'out') {
+      // off-ball density cloud: anonymous blurred dots pulled deeper
+      const blobs = out.map((n,i)=>H('circle',{key:i,cx:px(n[2]),cy:py(Math.min(96,n[3]+8)),r:w*0.09,fill:accent,opacity:0.13}));
+      const cores = out.map((n,i)=>H('circle',{key:'c'+i,cx:px(n[2]),cy:py(Math.min(96,n[3]+8)),r:3,fill:accent,opacity:0.5}));
+      return H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:ph,style:{display:'block'}}, this.buildPitchV(pal,w,ph), blobs, cores);
+    }
+    const pts = out.map((n)=>[n[2],n[3]]);
+    const hl = this.hull(pts).map((p)=>`${px(p[0])},${py(p[1])}`).join(' ');
+    const cx = out.reduce((a,n)=>a+n[2],0)/out.length, cy = out.reduce((a,n)=>a+n[3],0)/out.length;
+    const dots = out.map((n,i)=>H('circle',{key:i,cx:px(n[2]),cy:py(n[3]),r:5,fill:accent,opacity:0.9}));
+    return H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:ph,style:{display:'block'}}, this.buildPitchV(pal,w,ph),
+      H('polygon',{points:hl,fill:soft,stroke:accent,strokeWidth:1.2,opacity:0.85}), dots,
+      H('line',{x1:px(cx)-6,y1:py(cy),x2:px(cx)+6,y2:py(cy),stroke:accent,strokeWidth:1.4}),
+      H('line',{x1:px(cx),y1:py(cy)-6,x2:px(cx),y2:py(cy)+6,stroke:accent,strokeWidth:1.4}));
+  }
+  shotsEl(pal, accent, soft, shots, w, ph, okey, scale, thumb) {
+    const sc = scale || 1, H = (t,a,...k) => this.h(t,a,...k);
+    const LAB = { goal:'Goal', saved:'On target', off:'Off target', blocked:'Blocked' };
+    const px = (x)=>x/100*w, py=(y)=>y/100*ph;
+    const circles = shots.map((s,i)=>{
+      const r = (5+s.xg*40)*sc, goal = s.o==='goal', on = s.o==='saved';
+      return H('circle',{key:i,cx:px(s.x),cy:py(s.y),r,fill:goal?accent:(on?soft:'none'),stroke:goal||on?accent:pal.muted,strokeWidth:goal?1.7:1.2,strokeDasharray:(goal||on)?'0':'3 2',style:{cursor:'pointer'},onMouseEnter:thumb?null:()=>this.setHover(okey,s),onMouseLeave:thumb?null:()=>this.setHover(okey,null)});
+    });
+    const svg = H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:ph,style:{display:'block'}}, this.buildHalf(pal,w,ph), circles);
+    if (thumb) return svg;
+    const hv = this.state.hover[okey], gs = shots.filter((s)=>s.o==='goal').length, xgs = shots.reduce((a,s)=>a+s.xg,0);
+    const ro = hv ? `${hv.p} · ${hv.m}' · xG ${hv.xg.toFixed(2)} · ${LAB[hv.o]}` : `${shots.length} shots · ${gs} goals · xG ${xgs.toFixed(2)}`;
+    return H('div',null, svg, H('div',{style:{marginTop:9,fontFamily:"'Geist Mono', monospace",fontSize:12,color:hv?accent:pal.faint,textAlign:'center'}}, ro));
+  }
+  statsEl(pal, rows, W, thumb) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const fmt = (v,f)=> f==='int'?Math.round(v):f==='f2'?v.toFixed(2):v+'%';
+    const use = thumb ? rows.slice(0,4) : rows;
+    const rowEls = use.map((r,i)=>{ const t=r.h+r.a, hf=r.h/t, af=r.a/t;
+      return H('div',{key:i,style:{display:'grid',gridTemplateColumns: thumb?'22px 1fr 40px 1fr 22px':'50px 1fr 96px 1fr 50px',alignItems:'center',gap: thumb?4:10}},
+        H('span',{style:{textAlign:'right',color:pal.focal,fontFamily:"'Geist Mono', monospace",fontSize:thumb?8:13}}, fmt(r.h,r.f)),
+        H('div',{style:{display:'flex',justifyContent:'flex-end'}}, H('div',{style:{height:thumb?5:9,width:(hf*100)+'%',background:pal.focal,borderRadius:4}})),
+        H('span',{style:{textAlign:'center',color:pal.faint,fontFamily:"'Geist Mono', monospace",fontSize:thumb?6.5:10,letterSpacing:'0.04em',textTransform:'uppercase'}}, r.l),
+        H('div',{style:{display:'flex',justifyContent:'flex-start'}}, H('div',{style:{height:thumb?5:9,width:(af*100)+'%',background:pal.navy,borderRadius:4}})),
+        H('span',{style:{color:pal.navy,fontFamily:"'Geist Mono', monospace",fontSize:thumb?8:13}}, fmt(r.a,r.f)));
+    });
+    return H('div',{style:{display:'flex',flexDirection:'column',gap:thumb?6:14,width:'100%'}}, rowEls);
+  }
+  barsEl(pal, rows, W, thumb) {
+    // generic mirrored bars — a subset, agnostic styling (single neutral label column)
+    return this.statsEl(pal, rows.slice(0, thumb?4:5), W, thumb);
+  }
+  pitchEl(pal, w, h, orient) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    if (orient === 'horizontal') {
+      const ph = Math.round(w*0.66);
+      return H('svg',{viewBox:`0 0 ${w} ${ph}`,width:'100%',height:'auto',style:{display:'block'}}, this.buildPitchH(pal,w,ph));
+    }
+    return H('svg',{viewBox:`0 0 ${w} ${h}`,width:'100%',height:'auto',style:{display:'block'}}, this.buildPitchV(pal,w,h));
+  }
+  freezeEl(pal, w, h, ik, thumb) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const d = this.D(), px=(x)=>x/100*w, py=(y)=>y/100*h, r = thumb ? 3 : 7;
+    const dots = d.freeze.map((f,i)=>{
+      if (f.r==='a') return H('g',{key:i}, H('circle',{cx:px(f.x),cy:py(f.y),r:r+3,fill:'none',stroke:pal.focal,strokeWidth:1.4,opacity:0.6}), H('circle',{cx:px(f.x),cy:py(f.y),r,fill:pal.focal,stroke:pal.surface,strokeWidth:1.4}));
+      if (f.r==='k') return H('circle',{key:i,cx:px(f.x),cy:py(f.y),r,fill:'none',stroke:pal.navy,strokeWidth:2,strokeDasharray:'2 2'});
+      const opp = f.r==='o';
+      return H('circle',{key:i,cx:px(f.x),cy:py(f.y),r,fill:opp?'none':pal.focal,stroke:opp?pal.navy:pal.focal,strokeWidth:1.4,opacity:opp?0.9:0.85});
+    });
+    const svg = H('svg',{viewBox:`0 0 ${w} ${h}`,width:'100%',height:h,style:{display:'block'}}, this.buildHalf(pal,w,h), dots);
+    if (thumb) return svg;
+    const chip = (fill,stroke,label,dash)=>H('span',{style:{display:'flex',alignItems:'center',gap:6}}, H('span',{style:{width:11,height:11,borderRadius:'50%',background:fill,border:`1.4px solid ${stroke}`,borderStyle:dash?'dashed':'solid',display:'inline-block'}}), label);
+    return H('div',null, svg, H('div',{style:{marginTop:10,display:'flex',gap:16,flexWrap:'wrap',justifyContent:'center',fontFamily:"'Geist Mono', monospace",fontSize:11,color:pal.muted}},
+      chip(pal.focal,pal.focal,'Teammate'), chip('none',pal.navy,'Opponent'), chip(pal.focal,pal.focal,'Actor · Oyarzabal 86\''), chip('none',pal.navy,'Keeper',true)));
+  }
+  hullElc(pal, w, h, side, thumb) {
+    const H = (t,a,...k) => this.h(t,a,...k);
+    const d = this.D(), px=(x)=>x/100*w, py=(y)=>y/100*h;
+    const off = side === 'offense';
+    const src = d.freeze.filter((f)=> off ? (f.r==='a'||f.r==='t') : (f.r==='o'));
+    const accent = off ? pal.focal : pal.navy, soft = off ? pal.focalsoft : pal.navysoft;
+    const pts = src.map((f)=>[f.x,f.y]);
+    const hl = this.hull(pts).map((p)=>`${px(p[0])},${py(p[1])}`).join(' ');
+    const dots = src.map((f,i)=>H('circle',{key:i,cx:px(f.x),cy:py(f.y),r:5,fill:accent,opacity:0.85}));
+    const svg = H('svg',{viewBox:`0 0 ${w} ${h}`,width:'100%',height:h,style:{display:'block'}}, this.buildHalf(pal,w,h),
+      H('polygon',{points:hl,fill:soft,stroke:accent,strokeWidth:1.4,opacity:0.85}), dots);
+    if (thumb) return svg;
+    return H('div',null, svg, H('div',{style:{marginTop:9,textAlign:'center',fontFamily:"'Geist Mono', monospace",fontSize:11,color:accent}}, `${off?'Offensive':'Defensive'} territory · ${src.length} players · ${this.hull(pts).length}-vertex hull`));
+  }
+
+}
+</script>
+</body>
+</html>
