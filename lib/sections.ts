@@ -11,8 +11,9 @@ export type Section = {
 };
 
 /**
- * Drives the rail's section list and sub-nav. Adding a second section is one
- * entry here plus a new `app/<slug>/` route folder — no shell changes.
+ * Drives the rail's section list and the topbar breadcrumb labels. Adding a
+ * second section is one entry here plus a new `app/<slug>/` route folder —
+ * no shell changes.
  */
 export const sections: Section[] = [
   {
@@ -20,7 +21,6 @@ export const sections: Section[] = [
     label: "Football",
     count: 17,
     contentTypes: [
-      { slug: "", label: "Overview" },
       { slug: "components", label: "FootballD3 Gallery" },
       { slug: "dashboard", label: "Match Analysis Dashboard" },
     ],

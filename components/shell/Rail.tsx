@@ -28,42 +28,20 @@ export function RailNavContent() {
 
       {sections.map((section) => {
         const sectionHref = `/${section.slug}`;
-        const inSection = pathname === sectionHref || pathname.startsWith(`${sectionHref}/`);
+        const active = pathname === sectionHref || pathname.startsWith(`${sectionHref}/`);
 
         return (
-          <div key={section.slug}>
-            <Link
-              href={sectionHref}
-              className={cn(
-                "flex items-center justify-between rounded-md px-2.5 py-[9px] font-mono text-[13px]",
-                inSection ? "bg-focal text-rail-active-fg" : "text-text"
-              )}
-            >
-              <span>{section.label}</span>
-              <span className="text-[10px] opacity-70">{section.count}</span>
-            </Link>
-
-            {inSection ? (
-              <div className="my-1 ml-3 flex flex-col gap-0.5 border-l border-border pl-3">
-                {section.contentTypes.map((ct) => {
-                  const href = ct.slug ? `${sectionHref}/${ct.slug}` : sectionHref;
-                  const active = pathname === href;
-                  return (
-                    <Link
-                      key={href}
-                      href={href}
-                      className={cn(
-                        "rounded-[5px] px-2.5 py-[7px] font-mono text-xs",
-                        active ? "bg-focal-soft text-focal" : "text-muted"
-                      )}
-                    >
-                      {ct.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            ) : null}
-          </div>
+          <Link
+            key={section.slug}
+            href={sectionHref}
+            className={cn(
+              "flex items-center justify-between rounded-md px-2.5 py-[9px] font-mono text-[13px]",
+              active ? "bg-focal text-rail-active-fg" : "text-text"
+            )}
+          >
+            <span>{section.label}</span>
+            <span className="text-[10px] opacity-70">{section.count}</span>
+          </Link>
         );
       })}
 
