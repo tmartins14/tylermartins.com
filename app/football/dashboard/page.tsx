@@ -82,7 +82,7 @@ export default function MatchDashboard() {
       shots={awayShots}
       upperHeight={UPPER_HEIGHT}
       shotScale={SHOT_SCALE}
-      defaultView="passnetwork"
+      defaultView="formation"
     />
   );
 
