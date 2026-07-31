@@ -8,7 +8,7 @@ export function Footer() {
       </div>
       <div className="flex items-center gap-5 font-mono text-xs text-muted">
         <a href="https://github.com/tmartins14">GitHub</a>
-        <a href="#">About</a>
+        <a href="/about">About</a>
         <StatsBombAttribution variant="inline" size={14} />
       </div>
     </footer>
