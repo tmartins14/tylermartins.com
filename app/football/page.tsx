@@ -1,25 +1,21 @@
 import Link from "next/link";
+import { footballCards, footballIndexContent } from "@/content/football";
 
 export default function FootballIndex() {
   return (
     <div className="max-w-[1180px] px-9 pt-14 pb-10">
       <div className="mb-4 font-mono text-xs tracking-[0.14em] text-focal uppercase">
-        Section
+        {footballIndexContent.eyebrow}
       </div>
-      <h1 className="display mb-[18px] text-[46px] leading-[1.03]">Football</h1>
+      <h1 className="display mb-[18px] text-[46px] leading-[1.03]">
+        {footballIndexContent.heading}
+      </h1>
       <div className="mb-10 max-w-[60ch] text-[17px] leading-[1.6] text-muted">
-        <p className="mb-4">
-          A football analytics playground focused on interactivity, tooling, and animation.
-          The goal here is presentation, not novel analysis — taking known analytical
-          approaches and presenting them in my own style, with reference points like The
-          Pudding, the Chelsea Vizathon, and the kind of work in Arsenal&apos;s Research
-          Engineer role.
-        </p>
-        <p>
-          Everything here is built with footballd3, a custom D3 component library, on top of
-          StatsBomb&apos;s free open data. Below: a gallery of every footballd3 component on
-          its own, and a full match analysis dashboard that puts them together.
-        </p>
+        {footballIndexContent.paragraphs.map((paragraph, i) => (
+          <p key={i} className={i < footballIndexContent.paragraphs.length - 1 ? "mb-4" : undefined}>
+            {paragraph}
+          </p>
+        ))}
       </div>
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-[18px]">
@@ -89,15 +85,13 @@ export default function FootballIndex() {
           </div>
           <div className="p-[22px]">
             <div className="mb-2.5 font-mono text-[11px] tracking-[0.1em] text-focal uppercase">
-              Content type · library
+              {footballIndexContent.cardEyebrows.components}
             </div>
             <div className="mb-1.5 font-display text-[23px] font-semibold">
-              FootballD3 Gallery
+              {footballCards.components.title}
             </div>
             <div className="text-sm leading-[1.55] text-muted">
-              Shot maps, pass networks, xT surfaces — every footballd3 component with sample
-              data, a preview, a description, and the code behind it. Built on StatsBomb open
-              data.
+              {footballCards.components.blurb}
             </div>
           </div>
         </Link>
@@ -162,14 +156,13 @@ export default function FootballIndex() {
           </div>
           <div className="p-[22px]">
             <div className="mb-2.5 font-mono text-[11px] tracking-[0.1em] text-secondary uppercase">
-              Content type · dashboard
+              {footballIndexContent.cardEyebrows.dashboard}
             </div>
             <div className="mb-1.5 font-display text-[23px] font-semibold">
-              Match Analysis Dashboard
+              {footballCards.dashboard.title}
             </div>
             <div className="text-sm leading-[1.55] text-muted">
-              A single game in one view — every shot, pass, and swing of momentum. Built on
-              StatsBomb open data.
+              {footballCards.dashboard.blurb}
             </div>
           </div>
         </Link>

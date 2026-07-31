@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { sections } from "@/lib/sections";
 import { MobileNav } from "@/components/shell/MobileNav";
+import { chrome } from "@/content/site";
 
 type Crumb = { label: string; href: string };
 
@@ -55,7 +56,7 @@ export function TopBar() {
       </div>
       <div className="flex items-center gap-2 font-mono text-xs text-muted">
         <span className="inline-block h-3.5 w-3.5 rounded-[3px] bg-focal" />
-        StatsBomb open data
+        {chrome.topBarBadge}
       </div>
     </div>
   );

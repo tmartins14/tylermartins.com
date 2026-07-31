@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { sections } from "@/lib/sections";
 import { ThemeToggle } from "@/components/shell/ThemeToggle";
 import { cn } from "@/lib/utils";
+import { chrome } from "@/content/site";
 
 /** Nav content shared between the desktop rail and the mobile drawer (MobileNav). */
 export function RailNavContent() {
@@ -14,16 +15,18 @@ export function RailNavContent() {
     <>
       <Link href="/" className="mb-[30px] flex items-center gap-2.5">
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-focal font-display text-[17px] font-black text-rail-active-fg">
-          T
+          {chrome.brand.glyph}
         </div>
         <div className="leading-[1.1]">
-          <div className="font-mono text-xs tracking-[0.1em] text-text">tylermartins</div>
-          <div className="font-mono text-[10px] tracking-[0.08em] text-faint">.com</div>
+          <div className="font-mono text-xs tracking-[0.1em] text-text">{chrome.brand.name}</div>
+          <div className="font-mono text-[10px] tracking-[0.08em] text-faint">
+            {chrome.brand.tld}
+          </div>
         </div>
       </Link>
 
       <div className="px-2.5 py-1.5 font-mono text-[10px] tracking-[0.14em] text-faint uppercase">
-        Sections
+        {chrome.nav.sectionsHeading}
       </div>
 
       {sections.map((section) => {
@@ -46,7 +49,7 @@ export function RailNavContent() {
       })}
 
       <div className="mt-3.5 px-2.5 py-1.5 font-mono text-[10px] tracking-[0.14em] text-faint uppercase">
-        Site
+        {chrome.nav.siteHeading}
       </div>
       <Link
         href="/about"
@@ -55,11 +58,11 @@ export function RailNavContent() {
           pathname === "/about" ? "bg-focal text-rail-active-fg" : "text-text"
         )}
       >
-        About
+        {chrome.nav.aboutLabel}
       </Link>
 
       <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
-        <span className="font-mono text-[11px] text-faint">theme</span>
+        <span className="font-mono text-[11px] text-faint">{chrome.nav.themeLabel}</span>
         <ThemeToggle />
       </div>
     </>
