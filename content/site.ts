@@ -19,7 +19,7 @@ export const aboutContent = {
   heading: "Tyler Martins",
   paragraphs: [
     "I'm a data engineer by trade who builds things on the side. This site is where whatever I'm currently into (starting with football) turns into tooling, visualizations, and interactive pieces. Different subjects, same thread: data.",
-    "I'm drawn to presentation-focused data work: taking known analytical approaches or topics and creating a clear, interactive way to show them. Think of this like an analytics playground on the topics that I'm into.",
+    "I'm drawn to presentation-focused data work: taking known analytical approaches or topics and creating a clear, interactive way to show them. Think of this like an analytics playground on the topics that I'm in to.",
   ],
   githubLabel: "GitHub → github.com/tmartins14",
 };
