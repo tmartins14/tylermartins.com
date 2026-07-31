@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import matchStatsData from "@/data/football/match_stats_3943043.json";
 import shotsData from "@/data/football/shots_3943043.json";
 import momentumData from "@/data/football/momentum_3943043.json";
@@ -20,6 +21,12 @@ import { type MatchStatsData } from "@/components/charts/MatchStatsRows";
 import { type GoalClip } from "@/components/charts/PlayAnimationPanel";
 import { type CumulativeXgData } from "@/components/charts/CumulativeXgPanel";
 import { StatsBombAttribution } from "@/components/StatsBombAttribution";
+import { metadata as contentMetadata } from "./content.mdx";
+
+export const metadata: Metadata = {
+  title: contentMetadata.title,
+  description: contentMetadata.description,
+};
 
 // Tweakable props exposed by the design spec — defaults match "1A Broadcast".
 const ALIGN_DIVIDERS = true;

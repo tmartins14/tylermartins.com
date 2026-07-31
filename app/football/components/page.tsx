@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 import { CATEGORY_ORDER, components, type ComponentEntry } from "@/lib/components";
 import { CategorySection } from "@/components/showcase/CategorySection";
 import { ComponentModal } from "@/components/showcase/ComponentModal";
 import { matchStatsData, TEAM_NAME, type Side } from "@/lib/componentLibraryData";
 import { StatsBombAttribution } from "@/components/StatsBombAttribution";
+import Content, { metadata } from "./content.mdx";
 
 export default function ComponentShowcase() {
   const [side, setSide] = useState<Side>("home");
@@ -27,18 +28,20 @@ export default function ComponentShowcase() {
     <div className="px-9 pt-14 pb-10">
       <div className="mb-7 max-w-[82ch]">
         <div className="mb-4 font-mono text-xs tracking-[0.14em] text-focal uppercase">
-          footballd3 · component library
+          {metadata.eyebrow}
         </div>
-        <h1 className="display mb-4 text-[34px] leading-[1.05]">FootballD3 Gallery</h1>
-        <p className="text-[13.5px] leading-[1.6] text-muted">
-          Sixteen d3 charts, each rendered live on the{" "}
-          <strong className="font-semibold text-text">
-            UEFA Euro 2024 Final ({TEAM_NAME.home} {matchStatsData.home.score}–
-            {matchStatsData.away.score} {TEAM_NAME.away})
-          </strong>
-          , StatsBomb match 3943043. Pick a component to inspect it full-size, with live controls,
-          its API, and a peek at the data feeding it.
-        </p>
+        <h1 className="display mb-4 text-[34px] leading-[1.05]">{metadata.title}</h1>
+        <Content
+          homeTeam={TEAM_NAME.home}
+          homeScore={matchStatsData.home.score}
+          awayScore={matchStatsData.away.score}
+          awayTeam={TEAM_NAME.away}
+          components={{
+            p: (props: ComponentProps<"p">) => (
+              <p className="text-[13.5px] leading-[1.6] text-muted" {...props} />
+            ),
+          }}
+        />
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border-strong bg-background px-5 pt-5 pb-2 shadow-[0_40px_90px_-50px_rgba(0,0,0,0.7)]">
