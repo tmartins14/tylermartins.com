@@ -48,8 +48,15 @@ export function RailNavContent() {
       <div className="mt-3.5 px-2.5 py-1.5 font-mono text-[10px] tracking-[0.14em] text-faint uppercase">
         Site
       </div>
-      <span className="rounded-md px-2.5 py-[9px] font-mono text-[13px] text-muted">About</span>
-      <span className="rounded-md px-2.5 py-[9px] font-mono text-[13px] text-muted">Writing</span>
+      <Link
+        href="/about"
+        className={cn(
+          "rounded-md px-2.5 py-[9px] font-mono text-[13px]",
+          pathname === "/about" ? "bg-focal text-rail-active-fg" : "text-text"
+        )}
+      >
+        About
+      </Link>
 
       <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
         <span className="font-mono text-[11px] text-faint">theme</span>

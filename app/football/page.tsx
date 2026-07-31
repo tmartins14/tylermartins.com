@@ -7,9 +7,20 @@ export default function FootballIndex() {
         Section
       </div>
       <h1 className="display mb-[18px] text-[46px] leading-[1.03]">Football</h1>
-      <p className="mb-10 max-w-[60ch] text-[17px] leading-[1.6] text-muted">
-        Match data turned into visual components and analysis. Built on StatsBomb open data.
-      </p>
+      <div className="mb-10 max-w-[60ch] text-[17px] leading-[1.6] text-muted">
+        <p className="mb-4">
+          A football analytics playground focused on interactivity, tooling, and animation.
+          The goal here is presentation, not novel analysis — taking known analytical
+          approaches and presenting them in my own style, with reference points like The
+          Pudding, the Chelsea Vizathon, and the kind of work in Arsenal&apos;s Research
+          Engineer role.
+        </p>
+        <p>
+          Everything here is built with footballd3, a custom D3 component library, on top of
+          StatsBomb&apos;s free open data. Below: a gallery of every footballd3 component on
+          its own, and a full match analysis dashboard that puts them together.
+        </p>
+      </div>
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-[18px]">
         <Link
