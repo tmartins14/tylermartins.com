@@ -115,7 +115,7 @@ export function TerritoryPanel({
         end_x: e.end_location?.[0] ?? null,
         end_y: e.end_location?.[1] ?? null,
         outcome: e.outcome,
-        seconds: e.second,
+        minute: e.minute,
       }));
     createEventScatter(pitch, { events: visibleMarkers }, { markerRadius: 5 });
 
@@ -131,8 +131,12 @@ export function TerritoryPanel({
   }
 
   return (
-    <div data-testid="territory-panel">
-      <div className="mb-2 flex flex-wrap gap-1.5">
+    // h-full + justify-evenly so this panel's content (chips + pitch)
+    // distributes evenly across whatever height the card stretches to
+    // (matching its right-column sibling) instead of packing to the top
+    // and leaving one large gap below the pitch.
+    <div data-testid="territory-panel" className="flex h-full flex-col justify-evenly">
+      <div className="flex flex-wrap gap-1.5">
         {LAYER_CHIPS.map(({ key, label }) => {
           const active = activeLayers.has(key);
           return (

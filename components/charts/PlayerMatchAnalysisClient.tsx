@@ -374,14 +374,19 @@ function PopupBody({
 
   return (
     <div className="flex flex-col gap-[14px] p-[18px] min-[900px]:p-[22px]">
-      <div className="grid items-start gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
-        <div className="rounded-xl border border-border bg-surface p-3">
+      <div className="grid gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
+        <div className="flex flex-col rounded-xl border border-border bg-surface p-3">
           <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Highlight reel</div>
-          <HighlightReelPanel
-            events={fullEvents}
-            onScrubTo={setScrubbedMinute}
-            onHoverEvent={setHoveredEventId}
-          />
+          {/* Stretched to match Match contribution's height (per the grid row
+              above) — center the reel's own content in that extra space
+              rather than leaving it pinned to the top with dead space below. */}
+          <div className="flex flex-1 flex-col justify-center">
+            <HighlightReelPanel
+              events={fullEvents}
+              onScrubTo={setScrubbedMinute}
+              onHoverEvent={setHoveredEventId}
+            />
+          </div>
         </div>
         <div ref={statCardsRef} className="rounded-xl border border-border bg-surface p-3">
           <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Match contribution</div>
@@ -415,16 +420,21 @@ function PopupBody({
         />
       </div>
 
-      <div className="grid items-start gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
-        <div className="rounded-xl border border-border bg-surface p-3">
+      <div className="grid gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
+        <div className="flex flex-col rounded-xl border border-border bg-surface p-3">
           <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Territory &amp; events</div>
-          <TerritoryPanel
-            events={scrubEvents}
-            heatmapBuckets={heatmapBuckets}
-            scrubbedMinute={scrubbedMinute}
-            activeLayers={activeLayers}
-            onToggleLayer={toggleLayer}
-          />
+          {/* Stretched to align with the bottom of the right column's last
+              card (Action feed) — TerritoryPanel distributes its own content
+              evenly across that height instead of packing to the top. */}
+          <div className="flex flex-1 flex-col">
+            <TerritoryPanel
+              events={scrubEvents}
+              heatmapBuckets={heatmapBuckets}
+              scrubbedMinute={scrubbedMinute}
+              activeLayers={activeLayers}
+              onToggleLayer={toggleLayer}
+            />
+          </div>
         </div>
 
         <div className="flex flex-col gap-[14px]">
