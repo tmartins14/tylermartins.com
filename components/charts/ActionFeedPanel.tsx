@@ -39,7 +39,7 @@ export function ActionFeedPanel({ events, activeLayers, hoveredEventId, onHoverE
       container$,
       { events: visible },
       {
-        height: 280,
+        height: 240,
         sortBy,
         sortDir,
         highlightEventId: hoveredEventId,

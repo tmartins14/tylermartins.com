@@ -163,11 +163,14 @@ export function PlayerMatchAnalysisClient({
   return (
     <div
       className={cn(
-        "grid gap-[18px]",
-        "min-[900px]:grid-cols-[316px_minmax(0,1fr)] min-[900px]:items-start"
+        "grid gap-[14px]",
+        // Matches the popup's own max-[1023px]:absolute breakpoint exactly —
+        // must never overlap it, or both the two-column split and the mobile
+        // full-overlay rule are active at once in the gap between them.
+        "min-[1024px]:grid-cols-[316px_minmax(0,1fr)] min-[1024px]:items-start"
       )}
     >
-      <div className="min-[900px]:sticky min-[900px]:top-[calc(var(--topbar-h)+16px)] rounded-xl border border-border bg-surface p-5">
+      <div className="min-[1024px]:sticky min-[1024px]:top-[calc(var(--topbar-h)+16px)] rounded-xl border border-border bg-surface p-4">
         <div className="mb-3 flex items-center justify-between gap-2">
           <div className="font-mono text-[11px] tracking-[0.1em] text-faint uppercase">Lineups</div>
           <ToggleGroup
@@ -318,16 +321,16 @@ function PopupBody({
   const { ref: statCardsRef, width: statCardsWidth } = useContainerWidth<HTMLDivElement>();
 
   return (
-    <div className="flex flex-col gap-[18px] p-[24px] min-[900px]:p-[30px]">
-      <div className="grid gap-[18px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
-        <div className="rounded-xl border border-border bg-surface p-4">
+    <div className="flex flex-col gap-[14px] p-[18px] min-[900px]:p-[22px]">
+      <div className="grid gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
+        <div className="rounded-xl border border-border bg-surface p-3">
           <HighlightReelPanel
             events={fullEvents}
             onReset={() => setScrubbedMinute(0)}
             onMoment={(m) => setScrubbedMinute(m.minute)}
           />
         </div>
-        <div ref={statCardsRef} className="rounded-xl border border-border bg-surface p-4">
+        <div ref={statCardsRef} className="rounded-xl border border-border bg-surface p-3">
           <PlayerStatCardsPanel
             events={scrubEvents}
             possessionShares={possessionShares}
@@ -357,8 +360,8 @@ function PopupBody({
         />
       </div>
 
-      <div className="grid gap-[18px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
-        <div className="rounded-xl border border-border bg-surface p-4">
+      <div className="grid gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
+        <div className="rounded-xl border border-border bg-surface p-3">
           <TerritoryPanel
             events={scrubEvents}
             heatmapBuckets={heatmapBuckets}
@@ -368,13 +371,13 @@ function PopupBody({
           />
         </div>
 
-        <div className="flex flex-col gap-[18px]">
-          <div className="rounded-xl border border-border bg-surface p-4">
+        <div className="flex flex-col gap-[14px]">
+          <div className="rounded-xl border border-border bg-surface p-3">
             <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Cumulative xT</div>
             {/* CumulativeXtPanel's own root is h-full flex-1 — it needs a flex
                 ancestor to resolve against, not just a fixed-height block, or
                 useContainerWidth reads height 0 and the panel never renders. */}
-            <div className="flex h-[180px] flex-col">
+            <div className="flex h-[150px] flex-col">
               <CumulativeXtPanel
                 events={scrubEvents}
                 finalMinute={94}
@@ -384,12 +387,12 @@ function PopupBody({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-[18px] min-[560px]:grid-cols-2">
-            <div className="rounded-xl border border-border bg-surface p-4">
+          <div className="grid grid-cols-1 gap-[14px] min-[560px]:grid-cols-2">
+            <div className="rounded-xl border border-border bg-surface p-3">
               <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Shots &middot; xG</div>
               <GoalMouthShotPanel events={scrubEvents} hoveredEventId={hoveredEventId} onHoverEvent={setHoveredEventId} />
             </div>
-            <div className="rounded-xl border border-border bg-surface p-4">
+            <div className="rounded-xl border border-border bg-surface p-3">
               <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Pass sonar</div>
               <PassSonarPanel
                 events={scrubEvents}
@@ -399,7 +402,7 @@ function PopupBody({
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-surface p-4">
+          <div className="rounded-xl border border-border bg-surface p-3">
             <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Action feed</div>
             <ActionFeedPanel
               events={scrubEvents}
