@@ -10,7 +10,11 @@ import type { PlayerEvent } from "@/lib/playerEvents";
 
 type ScrubberController = { seek: (minute: number) => void };
 
-const AUTOPLAY_STEP_MS = 1800;
+// Half the Highlight Reel's 1800ms cadence — this autoplay steps through
+// every one of the player's own event minutes (not just 3-5 curated
+// moments), so a match's worth of steps at the reel's slower pace felt
+// sluggish; 2x speed here specifically.
+const AUTOPLAY_STEP_MS = 900;
 
 type MasterScrubberPanelProps = {
   /** Full (not scrub-filtered) player events, for density-hint ticks and autoplay's step sequence. */

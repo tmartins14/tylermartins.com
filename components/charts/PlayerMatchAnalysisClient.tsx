@@ -374,7 +374,7 @@ function PopupBody({
 
   return (
     <div className="flex flex-col gap-[14px] p-[18px] min-[900px]:p-[22px]">
-      <div className="grid gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
+      <div className="grid items-start gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
         <div className="rounded-xl border border-border bg-surface p-3">
           <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Highlight reel</div>
           <HighlightReelPanel
@@ -415,7 +415,7 @@ function PopupBody({
         />
       </div>
 
-      <div className="grid gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
+      <div className="grid items-start gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
         <div className="rounded-xl border border-border bg-surface p-3">
           <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Territory &amp; events</div>
           <TerritoryPanel
