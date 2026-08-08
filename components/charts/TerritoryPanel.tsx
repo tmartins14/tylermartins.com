@@ -132,8 +132,7 @@ export function TerritoryPanel({
 
   return (
     <div data-testid="territory-panel">
-      <div ref={containerRef} className="flex justify-center" />
-      <div className="mt-2 flex flex-wrap gap-1.5">
+      <div className="mb-2 flex flex-wrap gap-1.5">
         {LAYER_CHIPS.map(({ key, label }) => {
           const active = activeLayers.has(key);
           return (
@@ -151,6 +150,7 @@ export function TerritoryPanel({
           );
         })}
       </div>
+      <div ref={containerRef} className="flex justify-center" />
     </div>
   );
 }

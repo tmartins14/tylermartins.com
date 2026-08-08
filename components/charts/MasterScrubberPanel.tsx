@@ -66,6 +66,15 @@ export function MasterScrubberPanel({ events, maxMinute, scrubbedMinute, onScrub
     setPlaying(false);
   }
 
+  // Ref-wrapped so the D3-mount effect below can stop autoplay from its
+  // onScrub handler without needing stopAutoplay in its own dependency
+  // array — it must NOT re-run on every render just because this function
+  // identity changed.
+  const stopAutoplayRef = useRef(stopAutoplay);
+  useEffect(() => {
+    stopAutoplayRef.current = stopAutoplay;
+  });
+
   function toggleAutoplay() {
     if (playing) {
       stopAutoplay();
@@ -104,7 +113,7 @@ export function MasterScrubberPanel({ events, maxMinute, scrubbedMinute, onScrub
       playedColor: theme.focal,
       handleColor: theme.focal,
       onScrub: (minute: number) => {
-        stopAutoplay();
+        stopAutoplayRef.current();
         onScrubRef.current(minute);
       },
     });
@@ -114,14 +123,18 @@ export function MasterScrubberPanel({ events, maxMinute, scrubbedMinute, onScrub
     ctlRef.current = ctl as unknown as ScrubberController;
 
     return () => {
-      stopAutoplay();
       container$.selectAll("*").remove();
       ctlRef.current = null;
     };
     // scrubbedMinute is intentionally the initial position only, not a
-    // re-mount trigger — see the seek() effect below. stopAutoplay is
-    // intentionally omitted too — it only touches refs/setState, so a stale
-    // closure here is harmless.
+    // re-mount trigger — see the seek() effect below. This cleanup is pure
+    // DOM teardown on purpose: it must NOT also stop autoplay, since `width`
+    // (from useContainerWidth's ResizeObserver, which has no equality check)
+    // can change for reasons that have nothing to do with the user wanting
+    // to stop playback — any sibling panel resizing as scrubbedMinute
+    // changes can ripple into a sub-pixel width change here, and stopping
+    // autoplay on every one of those made Play silently die after one step.
+    // See the events-keyed effect below for the real "stop autoplay" cases.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events, maxMinute, resolvedTheme, width, containerRef]);
 
@@ -129,17 +142,20 @@ export function MasterScrubberPanel({ events, maxMinute, scrubbedMinute, onScrub
     ctlRef.current?.seek(scrubbedMinute);
   }, [scrubbedMinute]);
 
+  // Stop autoplay only on a genuine new-player selection (events truly
+  // change) or a true unmount (popup closed) — not on the incidental width/
+  // theme remounts the effect above handles.
+  useEffect(() => {
+    return () => stopAutoplayRef.current();
+  }, [events]);
+
   return (
     <div className="flex items-center gap-3">
       <button
         type="button"
         data-testid="master-scrubber-play"
         onClick={toggleAutoplay}
-        className={
-          playing
-            ? "min-w-[70px] rounded-[6px] border border-focal bg-focal px-2.5 py-1.5 font-mono text-[13px] text-background"
-            : "min-w-[70px] rounded-[6px] border border-border bg-elevated px-2.5 py-1.5 font-mono text-[13px] text-text"
-        }
+        className="min-w-[70px] rounded-[6px] border border-focal bg-focal px-2.5 py-1.5 font-mono text-[13px] text-background"
       >
         {playing ? "❚❚ Stop" : "▶ Play"}
       </button>
