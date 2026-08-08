@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useTheme } from "next-themes";
 import { createScrubber } from "footballd3/scrubber";
@@ -10,8 +10,10 @@ import type { PlayerEvent } from "@/lib/playerEvents";
 
 type ScrubberController = { seek: (minute: number) => void };
 
+const AUTOPLAY_STEP_MS = 1800;
+
 type MasterScrubberPanelProps = {
-  /** Full (not scrub-filtered) player events, for density-hint ticks. */
+  /** Full (not scrub-filtered) player events, for density-hint ticks and autoplay's step sequence. */
   events: PlayerEvent[];
   maxMinute: number;
   scrubbedMinute: number;
@@ -24,9 +26,19 @@ type MasterScrubberPanelProps = {
  * and re-creating its SVG on every pixel of a drag would abort the drag.
  * Mount/remount only on structural changes (container width, theme, a new
  * player's events/maxMinute); externally-driven scrub moves (the highlight
- * reel playing, or React re-rendering after the user's own drag already
- * fired onScrub) go through the imperative seek() instead, which moves the
- * playhead without re-firing onScrub — see scrubber.js's own docs.
+ * reel playing, this panel's own autoplay, or React re-rendering after the
+ * user's own drag already fired onScrub) go through the imperative seek()
+ * instead, which moves the playhead without re-firing onScrub — see
+ * scrubber.js's own docs.
+ *
+ * Autoplay (separate from the Highlight Reel's own Play, which jumps between
+ * 3-5 curated moments) steps through every one of the player's own event
+ * minutes in order — deduped, since many events share a minute — at the same
+ * ~1800ms cadence the reel uses, calling the same onScrub prop the drag
+ * handle already uses so every panel updates in lockstep. A genuine
+ * drag/click/keyboard move through scrubber.js's own onScrub stops any
+ * running autoplay first, the same stop-before-reposition pattern
+ * highlightReel.js's step()/dot-click use.
  */
 export function MasterScrubberPanel({ events, maxMinute, scrubbedMinute, onScrub }: MasterScrubberPanelProps) {
   const { ref: containerRef, width } = useContainerWidth<HTMLDivElement>();
@@ -36,6 +48,43 @@ export function MasterScrubberPanel({ events, maxMinute, scrubbedMinute, onScrub
   useEffect(() => {
     onScrubRef.current = onScrub;
   });
+
+  const [playing, setPlaying] = useState(false);
+  const autoplayIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoplayIndexRef = useRef(0);
+
+  const uniqueMinutes = useMemo(
+    () => Array.from(new Set(events.map((e) => e.minute))).sort((a, b) => a - b),
+    [events]
+  );
+
+  function stopAutoplay() {
+    if (autoplayIntervalRef.current !== null) {
+      clearInterval(autoplayIntervalRef.current);
+      autoplayIntervalRef.current = null;
+    }
+    setPlaying(false);
+  }
+
+  function toggleAutoplay() {
+    if (playing) {
+      stopAutoplay();
+      return;
+    }
+    if (!uniqueMinutes.length) return;
+    setPlaying(true);
+    autoplayIndexRef.current = 0;
+    onScrubRef.current(uniqueMinutes[0]);
+    autoplayIntervalRef.current = setInterval(() => {
+      const next = autoplayIndexRef.current + 1;
+      if (next >= uniqueMinutes.length) {
+        stopAutoplay();
+        return;
+      }
+      autoplayIndexRef.current = next;
+      onScrubRef.current(uniqueMinutes[next]);
+    }, AUTOPLAY_STEP_MS);
+  }
 
   useEffect(() => {
     const container = containerRef.current;
@@ -54,7 +103,10 @@ export function MasterScrubberPanel({ events, maxMinute, scrubbedMinute, onScrub
       trackColor: theme.border,
       playedColor: theme.focal,
       handleColor: theme.focal,
-      onScrub: (minute: number) => onScrubRef.current(minute),
+      onScrub: (minute: number) => {
+        stopAutoplay();
+        onScrubRef.current(minute);
+      },
     });
     // scrubber.js has no .d.ts — TS infers its return shape from JSDoc, where
     // seek/update are typed as the generic `Function`, not a callable
@@ -62,11 +114,14 @@ export function MasterScrubberPanel({ events, maxMinute, scrubbedMinute, onScrub
     ctlRef.current = ctl as unknown as ScrubberController;
 
     return () => {
+      stopAutoplay();
       container$.selectAll("*").remove();
       ctlRef.current = null;
     };
     // scrubbedMinute is intentionally the initial position only, not a
-    // re-mount trigger — see the seek() effect below.
+    // re-mount trigger — see the seek() effect below. stopAutoplay is
+    // intentionally omitted too — it only touches refs/setState, so a stale
+    // closure here is harmless.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events, maxMinute, resolvedTheme, width, containerRef]);
 
@@ -74,5 +129,21 @@ export function MasterScrubberPanel({ events, maxMinute, scrubbedMinute, onScrub
     ctlRef.current?.seek(scrubbedMinute);
   }, [scrubbedMinute]);
 
-  return <div ref={containerRef} data-testid="master-scrubber-panel" />;
+  return (
+    <div className="flex items-center gap-3">
+      <button
+        type="button"
+        data-testid="master-scrubber-play"
+        onClick={toggleAutoplay}
+        className={
+          playing
+            ? "min-w-[70px] rounded-[6px] border border-focal bg-focal px-2.5 py-1.5 font-mono text-[13px] text-background"
+            : "min-w-[70px] rounded-[6px] border border-border bg-elevated px-2.5 py-1.5 font-mono text-[13px] text-text"
+        }
+      >
+        {playing ? "❚❚ Stop" : "▶ Play"}
+      </button>
+      <div ref={containerRef} data-testid="master-scrubber-panel" className="min-w-0 flex-1" />
+    </div>
+  );
 }

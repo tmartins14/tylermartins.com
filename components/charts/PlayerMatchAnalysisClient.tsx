@@ -326,8 +326,8 @@ function PopupBody({
         <div className="rounded-xl border border-border bg-surface p-3">
           <HighlightReelPanel
             events={fullEvents}
-            onReset={() => setScrubbedMinute(0)}
-            onMoment={(m) => setScrubbedMinute(m.minute)}
+            onScrubTo={setScrubbedMinute}
+            onHoverEvent={setHoveredEventId}
           />
         </div>
         <div ref={statCardsRef} className="rounded-xl border border-border bg-surface p-3">

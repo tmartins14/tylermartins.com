@@ -94,8 +94,9 @@ test.describe("player match analysis", () => {
     await expect(page.getByRole("heading", { name: "Lamine Yamal" })).toBeVisible();
 
     await page.locator('[data-testid="highlight-reel-panel"] .reel-play').click();
-    // Play resets to minute 0 first, then steps forward — the handle readout
-    // should very quickly show a minute well short of full-time (94').
+    // Play jumps straight to the first standout moment's minute, then steps
+    // forward — the handle readout should very quickly show a minute well
+    // short of full-time (94').
     const handleLabel = page.locator('[data-testid="master-scrubber-panel"] g.scrub-handle text');
     await expect(handleLabel).not.toHaveText("94'");
   });

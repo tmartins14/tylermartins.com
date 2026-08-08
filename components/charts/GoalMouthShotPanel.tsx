@@ -32,7 +32,6 @@ export function GoalMouthShotPanel({ events, hoveredEventId, onHoverEvent }: Goa
       { events },
       {
         width,
-        height: 200,
         frameColor: theme.secondary,
         onTargetColor: theme.muted,
         goalColor: theme.focal,
