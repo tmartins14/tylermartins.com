@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ToggleGroup } from "@/components/charts/ToggleGroup";
+import { useTheme } from "next-themes";
+import { CHART_THEME } from "@/lib/chart-theme";
 import { FormationPanel, type FormationData, type BenchPlayer } from "@/components/charts/FormationPanel";
 import { MasterScrubberPanel } from "@/components/charts/MasterScrubberPanel";
 import { HighlightReelPanel } from "@/components/charts/HighlightReelPanel";
@@ -38,6 +39,14 @@ function initials(name: string) {
   return parts.map((p) => p[0]).slice(0, 2).join("").toUpperCase();
 }
 
+/** #RRGGBB -> "rgba(r,g,b,alpha)" — used for the team toggle's soft active background. */
+function hexToRgba(hex: string, alpha: number) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 type PlayerMatchAnalysisClientProps = {
   formationByTeam: Record<Team, FormationData>;
   benchByTeam: Record<Team, BenchPlayer[]>;
@@ -45,6 +54,10 @@ type PlayerMatchAnalysisClientProps = {
   teamColorToken: Record<Team, "focal" | "secondary">;
   competition: string;
   matchId: number;
+  venue: string;
+  matchDate: string;
+  homeScore: number;
+  awayScore: number;
 };
 
 export function PlayerMatchAnalysisClient({
@@ -54,7 +67,13 @@ export function PlayerMatchAnalysisClient({
   teamColorToken,
   competition,
   matchId,
+  venue,
+  matchDate,
+  homeScore,
+  awayScore,
 }: PlayerMatchAnalysisClientProps) {
+  const { resolvedTheme } = useTheme();
+  const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
   const [viewTeam, setViewTeam] = useState<Team>("Spain");
   const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
   const [scrubbedMinute, setScrubbedMinute] = useState(FINAL_MINUTE);
@@ -170,21 +189,54 @@ export function PlayerMatchAnalysisClient({
         "min-[1024px]:grid-cols-[316px_minmax(0,1fr)] min-[1024px]:items-start"
       )}
     >
-      <div className="min-[1024px]:sticky min-[1024px]:top-[calc(var(--topbar-h)+16px)] rounded-xl border border-border bg-surface p-4">
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <div className="font-mono text-[11px] tracking-[0.1em] text-faint uppercase">Lineups</div>
-          <ToggleGroup
-            options={[
-              { value: "Spain", label: "Spain" },
-              { value: "England", label: "England" },
-            ]}
-            value={viewTeam}
-            onChange={setViewTeam}
-          />
+      <div className="min-[1024px]:sticky min-[1024px]:top-[calc(var(--topbar-h)+16px)] rounded-xl border border-border bg-surface p-5">
+        <div className="font-mono text-[11px] tracking-[0.14em] text-focal uppercase">Player Match Analysis</div>
+        <div className="display mt-[5px] mb-0.5 text-[25px] font-black">
+          Spain <span style={{ color: theme.spain }}>{homeScore}</span>–
+          <span style={{ color: theme.england }}>{awayScore}</span> England
         </div>
+        <div className="mb-3.5 font-mono text-[11px] text-faint">
+          {competition} &middot; {venue} &middot; {matchDate}
+        </div>
+
+        <div className="mb-2.5 flex items-center justify-between gap-2.5">
+          <div className="inline-flex">
+            {(["Spain", "England"] as Team[]).map((team, i) => {
+              const active = viewTeam === team;
+              const color = team === "Spain" ? theme.spain : theme.england;
+              return (
+                <button
+                  key={team}
+                  type="button"
+                  onClick={() => setViewTeam(team)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 font-mono text-[11px] font-medium"
+                  style={{
+                    border: `1px solid ${active ? color : theme.border}`,
+                    marginLeft: i ? -1 : 0,
+                    borderTopLeftRadius: i ? 0 : 5,
+                    borderBottomLeftRadius: i ? 0 : 5,
+                    borderTopRightRadius: i ? 5 : 0,
+                    borderBottomRightRadius: i ? 5 : 0,
+                    position: "relative",
+                    zIndex: active ? 1 : 0,
+                    background: active ? hexToRgba(color, 0.12) : "transparent",
+                    color: active ? color : theme.muted,
+                  }}
+                >
+                  <span className="inline-block h-[9px] w-[9px] rounded-[2px]" style={{ background: color }} />
+                  {team}
+                </button>
+              );
+            })}
+          </div>
+          <div className="font-mono text-[10px] tracking-[0.1em] text-faint uppercase">
+            {`${formationByTeam[viewTeam].periods[0]?.formation} · Click a player`}
+          </div>
+        </div>
+
         <FormationPanel
           data={formationByTeam[viewTeam]}
-          colorToken={teamColorToken[viewTeam]}
+          colorToken={viewTeam === "Spain" ? "spain" : "england"}
           bench={benchByTeam[viewTeam]}
           selectedId={selectedPlayerId}
           onSelect={(playerId) => selectPlayer(playerId)}

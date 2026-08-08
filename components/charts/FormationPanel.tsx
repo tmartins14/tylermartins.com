@@ -47,7 +47,7 @@ export type BenchPlayer = {
 
 type FormationPanelProps = {
   data: FormationData;
-  colorToken: "focal" | "secondary";
+  colorToken: "focal" | "secondary" | "spain" | "england";
   /** Substitutes for this same team (substitutes_{match_id}.json's per-team array). Omit for a bench-less, read-only diagram. */
   bench?: BenchPlayer[];
   /** player_id of the currently selected player, or null. Rings the matching starter/bench row. */
@@ -88,7 +88,9 @@ export function FormationPanel({ data, colorToken, bench, selectedId = null, onS
         labelColor: theme.text,
         backgroundColor: theme.elevated,
         nodeRadius: Math.max(8, renderedWidth * 0.032),
-        selectedColor: colorToken === "focal" ? theme.secondary : theme.focal,
+        // Always focal, regardless of team, so the active player reads
+        // consistently across both teams' node colors.
+        selectedColor: theme.focal,
         selectedId,
         onPlayerClick: onSelect ? (player: FormationPlayer | BenchPlayer) => onSelect(player.player_id, data.metadata.team) : null,
       }

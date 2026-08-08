@@ -22,21 +22,13 @@ const MATCH_ID = 3943043;
 const COMPETITION = "UEFA Euro 2024 Final";
 const VENUE = "Olympiastadion, Berlin";
 const MATCH_DATE = "14 Jul 2024";
+const HOME_SCORE = 2;
+const AWAY_SCORE = 1;
 
 export default function PlayerMatchAnalysisPage() {
   return (
     <div className="px-4 py-4 dash:px-9 dash:py-10">
       <div className="mx-auto max-w-[1390px]">
-        <div className="mb-6">
-          <div className="font-mono text-[11px] tracking-[0.1em] text-faint uppercase">Player Match Analysis</div>
-          <h1 className="display mt-1 text-[28px] font-black">
-            <span className="text-focal">Spain</span> 2–1 <span className="text-secondary">England</span>
-          </h1>
-          <div className="mt-1 font-mono text-[12px] text-muted">
-            {COMPETITION} &middot; {VENUE} &middot; {MATCH_DATE}
-          </div>
-        </div>
-
         <PlayerMatchAnalysisClient
           formationByTeam={{
             Spain: formationSpainData as FormationData,
@@ -50,6 +42,10 @@ export default function PlayerMatchAnalysisPage() {
           teamColorToken={{ Spain: "focal", England: "secondary" }}
           competition={COMPETITION}
           matchId={MATCH_ID}
+          venue={VENUE}
+          matchDate={MATCH_DATE}
+          homeScore={HOME_SCORE}
+          awayScore={AWAY_SCORE}
         />
 
         <div className="mt-5">
