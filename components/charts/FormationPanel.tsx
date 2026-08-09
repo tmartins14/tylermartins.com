@@ -83,10 +83,10 @@ export function FormationPanel({ data, colorToken, bench, selectedId = null, onS
       {
         pxPerYard,
         padding,
-        theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 },
+        theme: { background: theme.background, lines: theme.pitch, lineWeight: 1.1 },
         nodeColor: theme[colorToken],
         labelColor: theme.text,
-        backgroundColor: theme.elevated,
+        backgroundColor: theme.background,
         nodeRadius: Math.max(8, renderedWidth * 0.032),
         // Always focal, regardless of team, so the active player reads
         // consistently across both teams' node colors.

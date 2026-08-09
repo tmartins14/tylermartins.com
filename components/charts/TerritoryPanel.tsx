@@ -116,8 +116,12 @@ export function TerritoryPanel({
         end_y: e.end_location?.[1] ?? null,
         outcome: e.outcome,
         minute: e.minute,
+        // Passed through so eventScatter.js's shape classification agrees
+        // exactly with classifyLayer's own categories for these same events.
+        is_progressive: e.is_progressive,
+        key_pass: e.key_pass,
       }));
-    createEventScatter(pitch, { events: visibleMarkers }, { markerRadius: 5 });
+    createEventScatter(pitch, { events: visibleMarkers }, { markerRadius: 5, markerColor: theme.text });
 
     return () => {
       container$.selectAll("*").remove();

@@ -18,15 +18,23 @@ type ActionFeedPanelProps = {
   onHoverEvent: (eventId: string | null) => void;
 };
 
+type ActionFeedController = { update: (next: { highlightEventId?: string | null }) => void };
+
 export function ActionFeedPanel({ events, activeLayers, hoveredEventId, onHoverEvent }: ActionFeedPanelProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>("minute");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
   const onHoverEventRef = useRef(onHoverEvent);
+  const ctlRef = useRef<ActionFeedController | null>(null);
   useEffect(() => {
     onHoverEventRef.current = onHoverEvent;
   });
 
+  // Mounts only on structural changes — NOT on hoveredEventId, which changes
+  // continuously while the user scrolls and hovers rows in turn. Remounting
+  // on every hover would tear down and recreate the scrollable .action-feed
+  // div each time, resetting its scrollTop to 0 mid-scroll. Hover updates
+  // instead go through the ref-stored update() handle below.
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -35,7 +43,7 @@ export function ActionFeedPanel({ events, activeLayers, hoveredEventId, onHoverE
     container$.selectAll("*").remove();
 
     const visible = events.filter((e) => activeLayers.has(classifyLayer(e)));
-    createActionFeed(
+    const ctl = createActionFeed(
       container$,
       { events: visible },
       {
@@ -46,11 +54,18 @@ export function ActionFeedPanel({ events, activeLayers, hoveredEventId, onHoverE
         onHoverRow: (eventId: string | null) => onHoverEventRef.current(eventId),
       }
     );
+    ctlRef.current = ctl as unknown as ActionFeedController;
 
     return () => {
       container$.selectAll("*").remove();
+      ctlRef.current = null;
     };
-  }, [events, activeLayers, sortBy, sortDir, hoveredEventId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [events, activeLayers, sortBy, sortDir]);
+
+  useEffect(() => {
+    ctlRef.current?.update({ highlightEventId: hoveredEventId });
+  }, [hoveredEventId]);
 
   return (
     <div data-testid="action-feed-panel">

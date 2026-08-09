@@ -4,8 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { CHART_THEME } from "@/lib/chart-theme";
 import { FormationPanel, type FormationData, type BenchPlayer } from "@/components/charts/FormationPanel";
-import { MasterScrubberPanel } from "@/components/charts/MasterScrubberPanel";
-import { HighlightReelPanel } from "@/components/charts/HighlightReelPanel";
+import { TimelinePanel, type TimelineMode } from "@/components/charts/TimelinePanel";
 import { PlayerStatCardsPanel, type PossessionShares } from "@/components/charts/PlayerStatCardsPanel";
 import { TerritoryPanel, type HeatmapBuckets } from "@/components/charts/TerritoryPanel";
 import { CumulativeXtPanel } from "@/components/charts/CumulativeXtPanel";
@@ -307,7 +306,7 @@ function PopupHeader({
   const badgeClass = colorToken === "focal" ? "bg-focal" : "bg-secondary";
 
   return (
-    <div className="flex items-center gap-5 border-b border-border px-[30px] py-6">
+    <div className="flex items-center gap-5 border-b border-border bg-surface px-[30px] py-6">
       <div className="relative shrink-0">
         <div className={cn("flex h-[66px] w-[66px] items-center justify-center rounded-full bg-elevated ring-2", ringClass)}>
           <span className="display text-lg font-semibold">{initials(entry.display_name)}</span>
@@ -371,52 +370,61 @@ function PopupBody({
   competition: string;
 }) {
   const { ref: statCardsRef, width: statCardsWidth } = useContainerWidth<HTMLDivElement>();
+  const [timelineMode, setTimelineMode] = useState<TimelineMode>("highlights");
 
   return (
     <div className="flex flex-col gap-[14px] p-[18px] min-[900px]:p-[22px]">
-      <div className="grid gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
-        <div className="flex flex-col rounded-xl border border-border bg-surface p-3">
-          <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Highlight reel</div>
-          {/* Stretched to match Match contribution's height (per the grid row
-              above) — center the reel's own content in that extra space
-              rather than leaving it pinned to the top with dead space below. */}
-          <div className="flex flex-1 flex-col justify-center">
-            <HighlightReelPanel
-              events={fullEvents}
-              onScrubTo={setScrubbedMinute}
-              onHoverEvent={setHoveredEventId}
-            />
+      <div className="rounded-xl border border-border bg-surface p-3">
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <div className="font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Timeline</div>
+          <div className="inline-flex shrink-0">
+            {(["highlights", "all"] as TimelineMode[]).map((m, i) => {
+              const active = timelineMode === m;
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setTimelineMode(m)}
+                  className={cn(
+                    "border px-2.5 py-1 font-mono text-[10px] font-medium whitespace-nowrap",
+                    i === 0 ? "rounded-l-[5px]" : "-ml-px rounded-r-[5px]",
+                    active ? "border-focal bg-focal-soft text-focal" : "border-border text-muted"
+                  )}
+                >
+                  {m === "highlights" ? "Highlights" : "All events"}
+                </button>
+              );
+            })}
           </div>
         </div>
-        <div ref={statCardsRef} className="rounded-xl border border-border bg-surface p-3">
-          <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Match contribution</div>
-          <PlayerStatCardsPanel
-            events={scrubEvents}
-            possessionShares={possessionShares}
-            playerTeam={playerTeam}
-            scrubbedMinute={scrubbedMinute}
-            columns={statCardsWidth != null && statCardsWidth < 560 ? 2 : 3}
-            onHoverLayer={(layer) => {
-              if (!layer) return;
-              // Card hover EMPHASIZES a layer (dims others) rather than
-              // isolating it like a chip click — approximated here by
-              // temporarily narrowing activeLayers is too destructive
-              // (would hide other markers instead of dimming them), so this
-              // is intentionally a no-op hook for a future dim-not-hide
-              // treatment; wiring it through hoveredEventId would conflate
-              // "layer" and "event" scope, which the design keeps distinct.
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="rounded-xl border border-border bg-surface p-3">
-        <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Master timeline</div>
-        <MasterScrubberPanel
+        <TimelinePanel
           events={fullEvents}
           maxMinute={94}
           scrubbedMinute={scrubbedMinute}
+          mode={timelineMode}
           onScrub={setScrubbedMinute}
+          onHoverEvent={setHoveredEventId}
+        />
+      </div>
+
+      <div ref={statCardsRef} className="rounded-xl border border-border bg-surface p-3">
+        <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Match contribution</div>
+        <PlayerStatCardsPanel
+          events={scrubEvents}
+          possessionShares={possessionShares}
+          playerTeam={playerTeam}
+          scrubbedMinute={scrubbedMinute}
+          columns={statCardsWidth != null && statCardsWidth < 560 ? 2 : 3}
+          onHoverLayer={(layer) => {
+            if (!layer) return;
+            // Card hover EMPHASIZES a layer (dims others) rather than
+            // isolating it like a chip click — approximated here by
+            // temporarily narrowing activeLayers is too destructive
+            // (would hide other markers instead of dimming them), so this
+            // is intentionally a no-op hook for a future dim-not-hide
+            // treatment; wiring it through hoveredEventId would conflate
+            // "layer" and "event" scope, which the design keeps distinct.
+          }}
         />
       </div>
 
