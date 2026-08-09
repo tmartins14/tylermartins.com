@@ -72,7 +72,22 @@ export function PlayerMatchAnalysisClient({
   awayScore,
 }: PlayerMatchAnalysisClientProps) {
   const { resolvedTheme } = useTheme();
-  const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
+  // Gated behind `mounted` so the first client render matches the server's
+  // "light" default exactly, avoiding a hydration mismatch — next-themes'
+  // resolvedTheme is undefined during SSR and the first client render
+  // (before the stored/system preference resolves), so reading it directly
+  // here would render "light" server-side but "dark" client-side for a
+  // dark-preference visitor the instant hydration completes. Every other
+  // panel on this page reads resolvedTheme inside a useEffect instead
+  // (client-only, never runs during SSR) — this file is the only place
+  // that used it directly in JSX.
+  const [mounted, setMounted] = useState(false);
+  // Standard next-themes hydration guard (same pattern as ThemeToggle.tsx):
+  // resolvedTheme is unknown on the server, so theme-dependent values must
+  // stay at their light-theme default until after the client mounts.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
+  const theme = CHART_THEME[mounted && resolvedTheme === "dark" ? "dark" : "light"];
   const [viewTeam, setViewTeam] = useState<Team>("Spain");
   const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
   const [scrubbedMinute, setScrubbedMinute] = useState(FINAL_MINUTE);
@@ -156,14 +171,19 @@ export function PlayerMatchAnalysisClient({
     };
   }, [selectedPlayerId]);
 
-  // Mobile full-overlay: scroll the popup into view (and to its own top) on
-  // selection, matching the design's "scrolled to top" requirement — desktop's
-  // two-column layout needs no scroll, this is a no-op there since the popup
-  // is already on-screen beside the lineup panel.
+  // Mobile full-overlay: scroll the popup into view (and to its own top) the
+  // first time it opens, matching the design's "scrolled to top" requirement
+  // — but only on that null-to-selected transition, not on every subsequent
+  // switch between two already-selected players. Without the prevSelected
+  // guard, re-selecting a different player while the popup was already open
+  // (and the page scrolled elsewhere, e.g. down to the bench list) would
+  // jump the viewport back to the top on every single click.
+  const prevSelectedRef = useRef<number | null>(null);
   useEffect(() => {
-    if (selectedPlayerId != null) {
+    if (selectedPlayerId != null && prevSelectedRef.current == null) {
       popupRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
     }
+    prevSelectedRef.current = selectedPlayerId;
   }, [selectedPlayerId]);
 
   // Matched against selectedPlayerId rather than reset on selection change —
@@ -385,6 +405,7 @@ function PopupBody({
                   key={m}
                   type="button"
                   onClick={() => setTimelineMode(m)}
+                  style={{ position: "relative", zIndex: active ? 1 : 0 }}
                   className={cn(
                     "border px-2.5 py-1 font-mono text-[10px] font-medium whitespace-nowrap",
                     i === 0 ? "rounded-l-[5px]" : "-ml-px rounded-r-[5px]",

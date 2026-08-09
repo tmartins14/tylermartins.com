@@ -88,9 +88,9 @@ export function FormationPanel({ data, colorToken, bench, selectedId = null, onS
         labelColor: theme.text,
         backgroundColor: theme.background,
         nodeRadius: Math.max(8, renderedWidth * 0.032),
-        // Always focal, regardless of team, so the active player reads
-        // consistently across both teams' node colors.
-        selectedColor: theme.focal,
+        // Team-colored (not always focal) — a focal-red ring read as wrong
+        // against England's blue nodes once actually seen live.
+        selectedColor: theme[colorToken],
         selectedId,
         onPlayerClick: onSelect ? (player: FormationPlayer | BenchPlayer) => onSelect(player.player_id, data.metadata.team) : null,
       }

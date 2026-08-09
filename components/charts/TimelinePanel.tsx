@@ -99,6 +99,14 @@ export function TimelinePanel({ events, maxMinute, scrubbedMinute, mode, onScrub
     reelCtlRef.current = ctl as unknown as ReelController;
 
     return () => {
+      // pause() first: createHighlightReel's play() starts a setInterval
+      // entirely inside its own closure, independent of React — removing
+      // the DOM and dropping the ref does NOT stop it. Without this, Play
+      // left running when this effect tears down (a player switch, mode
+      // toggle, or theme toggle) kept firing onScrubTo with the OLD
+      // player's moments, silently overwriting the new player's scrub
+      // position on a timer.
+      reelCtlRef.current?.pause();
       container$.selectAll("*").remove();
       reelCtlRef.current = null;
     };

@@ -83,14 +83,14 @@ export function TerritoryPanel({
       flipAttack: true,
       pxPerYard,
       padding,
-      theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 },
+      theme: { background: theme.background, lines: theme.pitch, lineWeight: 1.1 },
       showGoals: true,
     });
 
     const bucket = nearestBucket(heatmapBuckets.buckets, scrubbedMinute);
     if (bucket) {
       createHeatmap(pitch, { grid: bucket.grid }, {
-        colorLow: theme.elevated,
+        colorLow: theme.background,
         colorHigh: theme.focal,
         maxOpacity: heatOpacity,
       });
