@@ -39,7 +39,6 @@ export default function PlayerMatchAnalysisPage() {
             England: substitutesData.teams.England as BenchPlayer[],
           }}
           possessionShares={possessionSharesData as PossessionShares}
-          teamColorToken={{ Spain: "focal", England: "secondary" }}
           competition={COMPETITION}
           matchId={MATCH_ID}
           venue={VENUE}

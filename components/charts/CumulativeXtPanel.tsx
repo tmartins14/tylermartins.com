@@ -13,11 +13,13 @@ type CumulativeXtPanelProps = {
   events: PlayerEvent[];
   /** Shared master scrubber's maxMinute, so this chart's time axis aligns with every sibling panel. */
   finalMinute: number;
+  /** Selected player's team — drives the line/goal-ring color (Spain red / England blue). */
+  playerTeam: "Spain" | "England";
   hoveredEventId: string | null;
   onHoverEvent: (eventId: string | null) => void;
 };
 
-export function CumulativeXtPanel({ events, finalMinute, hoveredEventId, onHoverEvent }: CumulativeXtPanelProps) {
+export function CumulativeXtPanel({ events, finalMinute, playerTeam, hoveredEventId, onHoverEvent }: CumulativeXtPanelProps) {
   const { ref: containerRef, width, height } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
 
@@ -26,6 +28,7 @@ export function CumulativeXtPanel({ events, finalMinute, hoveredEventId, onHover
     if (!container || !width || !height) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
+    const teamColor = theme[playerTeam === "Spain" ? "spain" : "england"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
 
@@ -36,10 +39,13 @@ export function CumulativeXtPanel({ events, finalMinute, hoveredEventId, onHover
         width,
         height,
         finalMinute,
-        lineColor: theme.focal,
+        lineColor: teamColor,
         shotColor: theme.muted,
-        goalRingColor: theme.focal,
-        highlightColor: theme.secondary,
+        goalRingColor: teamColor,
+        // focal (not secondary) — secondary is identical to england's true
+        // color in light mode, which would make the hover highlight
+        // invisible against an England player's now-team-colored line.
+        highlightColor: theme.focal,
         highlightEventId: hoveredEventId,
         showTooltip: false,
         onHover: (point: { event_id: string | null } | null) => onHoverEvent(point?.event_id ?? null),
@@ -49,7 +55,7 @@ export function CumulativeXtPanel({ events, finalMinute, hoveredEventId, onHover
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [events, finalMinute, hoveredEventId, onHoverEvent, resolvedTheme, width, height, containerRef]);
+  }, [events, finalMinute, playerTeam, hoveredEventId, onHoverEvent, resolvedTheme, width, height, containerRef]);
 
   return <div ref={containerRef} data-testid="cumulative-xt-panel" className="min-h-0 flex-1" />;
 }

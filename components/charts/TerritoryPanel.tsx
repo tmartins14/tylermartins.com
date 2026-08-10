@@ -50,6 +50,8 @@ type TerritoryPanelProps = {
   events: PlayerEvent[];
   heatmapBuckets: HeatmapBuckets;
   scrubbedMinute: number;
+  /** Selected player's team — drives the heatmap/hull/marker color (Spain red / England blue). */
+  playerTeam: "Spain" | "England";
   activeLayers: Set<string>;
   onToggleLayer: (layer: string) => void;
   heatOpacity?: number;
@@ -59,6 +61,7 @@ export function TerritoryPanel({
   events,
   heatmapBuckets,
   scrubbedMinute,
+  playerTeam,
   activeLayers,
   onToggleLayer,
   heatOpacity = 0.5,
@@ -71,6 +74,7 @@ export function TerritoryPanel({
     if (!container || !width) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
+    const teamColor = theme[playerTeam === "Spain" ? "spain" : "england"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
     const svg = container$.append("svg");
@@ -91,7 +95,7 @@ export function TerritoryPanel({
     if (bucket) {
       createHeatmap(pitch, { grid: bucket.grid }, {
         colorLow: theme.background,
-        colorHigh: theme.focal,
+        colorHigh: teamColor,
         maxOpacity: heatOpacity,
       });
     }
@@ -99,7 +103,7 @@ export function TerritoryPanel({
     if (events.length >= 3) {
       createConvexHull(pitch, { points: events.map((e) => e.location) }, {
         toggle: "both",
-        pointsColor: theme.secondary,
+        pointsColor: teamColor,
         fillOpacity: 0.14,
         strokeOpacity: 0.45,
       });
@@ -121,12 +125,12 @@ export function TerritoryPanel({
         is_progressive: e.is_progressive,
         key_pass: e.key_pass,
       }));
-    createEventScatter(pitch, { events: visibleMarkers }, { markerRadius: 5, markerColor: theme.text });
+    createEventScatter(pitch, { events: visibleMarkers }, { markerRadius: 5, markerColor: teamColor });
 
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [events, heatmapBuckets, scrubbedMinute, activeLayers, heatOpacity, resolvedTheme, width, containerRef]);
+  }, [events, heatmapBuckets, scrubbedMinute, playerTeam, activeLayers, heatOpacity, resolvedTheme, width, containerRef]);
 
   const counts = new Map<string, number>();
   for (const e of events) {

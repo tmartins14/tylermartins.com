@@ -166,6 +166,57 @@ export default function FootballIndex() {
             </div>
           </div>
         </Link>
+
+        <Link
+          href="/football/player-match-analysis"
+          className="overflow-hidden rounded-lg border border-border bg-surface"
+        >
+          <div className="flex h-[150px] items-center justify-center border-b border-border bg-elevated">
+            <svg width="220" height="118" viewBox="0 0 220 118">
+              <rect
+                x="8"
+                y="8"
+                width="204"
+                height="102"
+                rx="4"
+                fill="none"
+                stroke="var(--pitch)"
+                strokeWidth="1.2"
+              />
+              <circle
+                cx="60"
+                cy="45"
+                r="16"
+                fill="none"
+                stroke="var(--focal)"
+                strokeWidth="2"
+              />
+              <circle cx="60" cy="45" r="9" fill="var(--focal-soft)" />
+              <line
+                x1="20"
+                y1="90"
+                x2="200"
+                y2="90"
+                stroke="var(--pitch)"
+                opacity="0.5"
+                strokeWidth="1"
+              />
+              <rect x="20" y="85" width="110" height="10" rx="5" fill="var(--focal)" opacity="0.6" />
+              <circle cx="130" cy="90" r="6" fill="var(--focal)" />
+            </svg>
+          </div>
+          <div className="p-[22px]">
+            <div className="mb-2.5 font-mono text-[11px] tracking-[0.1em] text-focal uppercase">
+              {footballIndexContent.cardEyebrows.playerMatchAnalysis}
+            </div>
+            <div className="mb-1.5 font-display text-[23px] font-semibold">
+              {footballCards.playerMatchAnalysis.title}
+            </div>
+            <div className="text-sm leading-[1.55] text-muted">
+              {footballCards.playerMatchAnalysis.blurb}
+            </div>
+          </div>
+        </Link>
       </div>
     </div>
   );

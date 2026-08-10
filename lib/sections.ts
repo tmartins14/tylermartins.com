@@ -23,6 +23,7 @@ export const sections: Section[] = [
     contentTypes: [
       { slug: "components", label: "FootballD3 Gallery" },
       { slug: "dashboard", label: "Match Analysis Dashboard" },
+      { slug: "player-match-analysis", label: "Player Match Analysis" },
     ],
   },
 ];

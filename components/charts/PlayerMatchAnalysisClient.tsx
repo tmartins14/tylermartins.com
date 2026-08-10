@@ -50,7 +50,6 @@ type PlayerMatchAnalysisClientProps = {
   formationByTeam: Record<Team, FormationData>;
   benchByTeam: Record<Team, BenchPlayer[]>;
   possessionShares: PossessionShares;
-  teamColorToken: Record<Team, "focal" | "secondary">;
   competition: string;
   matchId: number;
   venue: string;
@@ -63,7 +62,6 @@ export function PlayerMatchAnalysisClient({
   formationByTeam,
   benchByTeam,
   possessionShares,
-  teamColorToken,
   competition,
   matchId,
   venue,
@@ -281,7 +279,7 @@ export function PlayerMatchAnalysisClient({
               <>
                 <PopupHeader
                   entry={rosterEntry}
-                  colorToken={teamColorToken[rosterEntry.team]}
+                  teamColor={theme[rosterEntry.team === "Spain" ? "spain" : "england"]}
                   onClose={closePopup}
                 />
                 {!playerEvents || !heatmapBuckets ? (
@@ -314,34 +312,31 @@ export function PlayerMatchAnalysisClient({
 
 function PopupHeader({
   entry,
-  colorToken,
+  teamColor,
   onClose,
 }: {
   entry: RosterEntry;
-  colorToken: "focal" | "secondary";
+  teamColor: string;
   onClose: () => void;
 }) {
-  const colorClass = colorToken === "focal" ? "text-focal" : "text-secondary";
-  const ringClass = colorToken === "focal" ? "ring-focal" : "ring-secondary";
-  const badgeClass = colorToken === "focal" ? "bg-focal" : "bg-secondary";
-
   return (
     <div className="flex items-center gap-5 border-b border-border bg-surface px-[30px] py-6">
       <div className="relative shrink-0">
-        <div className={cn("flex h-[66px] w-[66px] items-center justify-center rounded-full bg-elevated ring-2", ringClass)}>
+        <div
+          className="flex h-[66px] w-[66px] items-center justify-center rounded-full bg-elevated"
+          style={{ boxShadow: `0 0 0 2px ${teamColor}` }}
+        >
           <span className="display text-lg font-semibold">{initials(entry.display_name)}</span>
         </div>
         <span
-          className={cn(
-            "absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full font-mono text-[10px] font-bold text-white",
-            badgeClass
-          )}
+          className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full font-mono text-[10px] font-bold text-white"
+          style={{ background: teamColor }}
         >
           {entry.jersey_number}
         </span>
       </div>
       <div className="min-w-0 flex-1">
-        <div className={cn("font-mono text-[11px] tracking-[0.08em] uppercase", colorClass)}>
+        <div className="font-mono text-[11px] tracking-[0.08em] uppercase" style={{ color: teamColor }}>
           {entry.team}
           {entry.isSub ? ` · sub ${entry.on_minute}'` : ""}
         </div>
@@ -460,6 +455,7 @@ function PopupBody({
               events={scrubEvents}
               heatmapBuckets={heatmapBuckets}
               scrubbedMinute={scrubbedMinute}
+              playerTeam={playerTeam}
               activeLayers={activeLayers}
               onToggleLayer={toggleLayer}
             />
@@ -476,6 +472,7 @@ function PopupBody({
               <CumulativeXtPanel
                 events={scrubEvents}
                 finalMinute={94}
+                playerTeam={playerTeam}
                 hoveredEventId={hoveredEventId}
                 onHoverEvent={setHoveredEventId}
               />
@@ -485,12 +482,13 @@ function PopupBody({
           <div className="grid grid-cols-1 gap-[14px] min-[560px]:grid-cols-2">
             <div className="rounded-xl border border-border bg-surface p-3">
               <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Shots &middot; xG</div>
-              <GoalMouthShotPanel events={scrubEvents} hoveredEventId={hoveredEventId} onHoverEvent={setHoveredEventId} />
+              <GoalMouthShotPanel events={scrubEvents} playerTeam={playerTeam} hoveredEventId={hoveredEventId} onHoverEvent={setHoveredEventId} />
             </div>
             <div className="rounded-xl border border-border bg-surface p-3">
               <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Pass sonar</div>
               <PassSonarPanel
                 events={scrubEvents}
+                playerTeam={playerTeam}
                 hoveredEventId={hoveredEventId}
                 onHoverEvent={(ids) => setHoveredEventId(ids?.[0] ?? null)}
               />
@@ -501,6 +499,7 @@ function PopupBody({
             <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Action feed</div>
             <ActionFeedPanel
               events={scrubEvents}
+              playerTeam={playerTeam}
               activeLayers={activeLayers}
               hoveredEventId={hoveredEventId}
               onHoverEvent={setHoveredEventId}

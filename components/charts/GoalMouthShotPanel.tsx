@@ -11,11 +11,13 @@ import type { PlayerEvent } from "@/lib/playerEvents";
 type GoalMouthShotPanelProps = {
   /** Scrub-filtered player events (minute <= scrubbedMinute). */
   events: PlayerEvent[];
+  /** Selected player's team — drives the frame/goal-marker color (Spain red / England blue). */
+  playerTeam: "Spain" | "England";
   hoveredEventId: string | null;
   onHoverEvent: (eventId: string | null) => void;
 };
 
-export function GoalMouthShotPanel({ events, hoveredEventId, onHoverEvent }: GoalMouthShotPanelProps) {
+export function GoalMouthShotPanel({ events, playerTeam, hoveredEventId, onHoverEvent }: GoalMouthShotPanelProps) {
   const { ref: containerRef, width } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
 
@@ -24,6 +26,7 @@ export function GoalMouthShotPanel({ events, hoveredEventId, onHoverEvent }: Goa
     if (!container || !width) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
+    const teamColor = theme[playerTeam === "Spain" ? "spain" : "england"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
 
@@ -32,10 +35,11 @@ export function GoalMouthShotPanel({ events, hoveredEventId, onHoverEvent }: Goa
       { events },
       {
         width,
-        frameColor: theme.secondary,
+        frameColor: teamColor,
         onTargetColor: theme.muted,
-        goalColor: theme.focal,
-        highlightColor: theme.secondary,
+        goalColor: teamColor,
+        // focal (not secondary) — see CumulativeXtPanel's comment.
+        highlightColor: theme.focal,
         highlightEventId: hoveredEventId,
         onHover: onHoverEvent,
       }
@@ -44,7 +48,7 @@ export function GoalMouthShotPanel({ events, hoveredEventId, onHoverEvent }: Goa
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [events, hoveredEventId, onHoverEvent, resolvedTheme, width, containerRef]);
+  }, [events, playerTeam, hoveredEventId, onHoverEvent, resolvedTheme, width, containerRef]);
 
   return <div ref={containerRef} data-testid="goal-mouth-shot-panel" />;
 }

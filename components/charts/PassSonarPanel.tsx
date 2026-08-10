@@ -11,13 +11,15 @@ import type { PlayerEvent } from "@/lib/playerEvents";
 type PassSonarPanelProps = {
   /** Scrub-filtered player events (minute <= scrubbedMinute). */
   events: PlayerEvent[];
+  /** Selected player's team — drives the wedge color (Spain red / England blue). */
+  playerTeam: "Spain" | "England";
   hoveredEventId: string | null;
   onHoverEvent: (eventIds: string[] | null) => void;
 };
 
 const MAX_SIZE = 280;
 
-export function PassSonarPanel({ events, hoveredEventId, onHoverEvent }: PassSonarPanelProps) {
+export function PassSonarPanel({ events, playerTeam, hoveredEventId, onHoverEvent }: PassSonarPanelProps) {
   const { ref: containerRef, width } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
 
@@ -26,6 +28,7 @@ export function PassSonarPanel({ events, hoveredEventId, onHoverEvent }: PassSon
     if (!container || !width) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
+    const teamColor = theme[playerTeam === "Spain" ? "spain" : "england"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
 
@@ -36,9 +39,10 @@ export function PassSonarPanel({ events, hoveredEventId, onHoverEvent }: PassSon
       {
         width: size,
         height: size,
-        attemptedColor: theme.focal,
-        completedColor: theme.focal,
-        highlightColor: theme.secondary,
+        attemptedColor: teamColor,
+        completedColor: teamColor,
+        // focal (not secondary) — see CumulativeXtPanel's comment.
+        highlightColor: theme.focal,
         highlightEventId: hoveredEventId,
         onHover: (hover: { eventIds: string[] } | null) => onHoverEvent(hover?.eventIds ?? null),
       }
@@ -47,7 +51,7 @@ export function PassSonarPanel({ events, hoveredEventId, onHoverEvent }: PassSon
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [events, hoveredEventId, onHoverEvent, resolvedTheme, width, containerRef]);
+  }, [events, playerTeam, hoveredEventId, onHoverEvent, resolvedTheme, width, containerRef]);
 
   return <div ref={containerRef} data-testid="pass-sonar-panel" className="flex justify-center" />;
 }
