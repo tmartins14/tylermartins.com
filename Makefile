@@ -1,4 +1,4 @@
-.PHONY: run dev build start lint install clean fresh
+.PHONY: run dev build start lint install clean fresh verify-deploy
 
 run: dev
 
@@ -7,6 +7,11 @@ dev:
 
 build:
 	npm run build
+
+# Build as Vercel does: tracked files only, clean install, no workspace symlink.
+# Local `make build` can pass on things this catches — run before pushing.
+verify-deploy:
+	./scripts/verify-deploy.sh
 
 start:
 	npm run start
