@@ -21,7 +21,11 @@ const ALL_EVENTS_STEP_MS = 900;
 
 export type TimelineMode = "highlights" | "all";
 
-type ReelController = { play: () => void; pause: () => void; step: (delta: number) => void };
+function baseStepMs(mode: TimelineMode) {
+  return mode === "all" ? ALL_EVENTS_STEP_MS : HIGHLIGHTS_STEP_MS;
+}
+
+type ReelController = { play: () => void; pause: () => void; step: (delta: number) => void; update: (next: { stepDurationMs?: number }) => void };
 type TrackController = { seek: (minute: number) => void };
 
 type TimelinePanelProps = {
@@ -31,6 +35,8 @@ type TimelinePanelProps = {
   scrubbedMinute: number;
   /** "highlights" (curated top-5) or "all" (every event) — owned by the parent, surfaced as a toggle in the card's title row. */
   mode: TimelineMode;
+  /** Playback pace multiplier (1/2/4×) — owned by the parent, surfaced as a control in the card's title row. */
+  speedMultiplier: number;
   onScrub: (minute: number) => void;
   onHoverEvent: (eventId: string | null) => void;
 };
@@ -53,8 +59,17 @@ type TimelinePanelProps = {
  * A manual drag on the track calls the reel's own pause() first, mirroring
  * the "a genuine user scrub stops any running playback" invariant the old
  * MasterScrubberPanel enforced for its own (now-removed) autoplay.
+ *
+ * `speedMultiplier` deliberately does NOT remount the reel the way `mode`
+ * does — unlike a mode switch, bumping the speed mid-playback shouldn't
+ * reset the current moment back to index 0. The mount effect below reads
+ * its *initial* value only (excluded from that effect's own dependency
+ * array, same as `scrubbedMinute` is excluded from the track effect further
+ * down); a separate effect pushes cadence changes into the already-mounted
+ * reel through its own update({ stepDurationMs }) — built for exactly this
+ * in Phase J, just never wired to a control until now.
  */
-export function TimelinePanel({ events, maxMinute, scrubbedMinute, mode, onScrub, onHoverEvent }: TimelinePanelProps) {
+export function TimelinePanel({ events, maxMinute, scrubbedMinute, mode, speedMultiplier, onScrub, onHoverEvent }: TimelinePanelProps) {
   const { resolvedTheme } = useTheme();
 
   const reelContainerRef = useRef<HTMLDivElement | null>(null);
@@ -84,7 +99,9 @@ export function TimelinePanel({ events, maxMinute, scrubbedMinute, mode, onScrub
       { events },
       {
         mode,
-        stepDurationMs: mode === "all" ? ALL_EVENTS_STEP_MS : HIGHLIGHTS_STEP_MS,
+        // speedMultiplier's initial value only — see the module/function
+        // doc comment above for why it's excluded from this effect's deps.
+        stepDurationMs: baseStepMs(mode) / speedMultiplier,
         onScrubTo: (minute: number) => onScrubRef.current(minute),
         onHoverEvent: (eventId: string | null) => onHoverEventRef.current(eventId),
         borderColor: theme.border,
@@ -110,7 +127,15 @@ export function TimelinePanel({ events, maxMinute, scrubbedMinute, mode, onScrub
       container$.selectAll("*").remove();
       reelCtlRef.current = null;
     };
+    // speedMultiplier is intentionally the initial cadence only, not a
+    // re-mount trigger — see the update() effect below, which pushes
+    // cadence changes into the already-mounted reel instead.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events, mode, resolvedTheme]);
+
+  useEffect(() => {
+    reelCtlRef.current?.update({ stepDurationMs: baseStepMs(mode) / speedMultiplier });
+  }, [speedMultiplier, mode]);
 
   useEffect(() => {
     const container = trackContainerRef.current;

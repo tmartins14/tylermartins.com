@@ -386,31 +386,55 @@ function PopupBody({
 }) {
   const { ref: statCardsRef, width: statCardsWidth } = useContainerWidth<HTMLDivElement>();
   const [timelineMode, setTimelineMode] = useState<TimelineMode>("highlights");
+  const [timelineSpeed, setTimelineSpeed] = useState<1 | 2 | 4>(1);
 
   return (
     <div className="flex flex-col gap-[14px] p-[18px] min-[900px]:p-[22px]">
       <div className="rounded-xl border border-border bg-surface p-3">
-        <div className="mb-1 flex items-center justify-between gap-2">
+        <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
           <div className="font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Timeline</div>
-          <div className="inline-flex shrink-0">
-            {(["highlights", "all"] as TimelineMode[]).map((m, i) => {
-              const active = timelineMode === m;
-              return (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setTimelineMode(m)}
-                  style={{ position: "relative", zIndex: active ? 1 : 0 }}
-                  className={cn(
-                    "border px-2.5 py-1 font-mono text-[10px] font-medium whitespace-nowrap",
-                    i === 0 ? "rounded-l-[5px]" : "-ml-px rounded-r-[5px]",
-                    active ? "border-focal bg-focal-soft text-focal" : "border-border text-muted"
-                  )}
-                >
-                  {m === "highlights" ? "Highlights" : "All events"}
-                </button>
-              );
-            })}
+          <div className="flex items-center gap-2">
+            <div className="inline-flex shrink-0">
+              {([1, 2, 4] as const).map((s, i) => {
+                const active = timelineSpeed === s;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setTimelineSpeed(s)}
+                    style={{ position: "relative", zIndex: active ? 1 : 0 }}
+                    className={cn(
+                      "border px-2 py-1 font-mono text-[10px] font-medium whitespace-nowrap",
+                      i === 0 ? "rounded-l-[5px]" : "-ml-px",
+                      i === 2 && "rounded-r-[5px]",
+                      active ? "border-focal bg-focal-soft text-focal" : "border-border text-muted"
+                    )}
+                  >
+                    {s}&times;
+                  </button>
+                );
+              })}
+            </div>
+            <div className="inline-flex shrink-0">
+              {(["highlights", "all"] as TimelineMode[]).map((m, i) => {
+                const active = timelineMode === m;
+                return (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setTimelineMode(m)}
+                    style={{ position: "relative", zIndex: active ? 1 : 0 }}
+                    className={cn(
+                      "border px-2.5 py-1 font-mono text-[10px] font-medium whitespace-nowrap",
+                      i === 0 ? "rounded-l-[5px]" : "-ml-px rounded-r-[5px]",
+                      active ? "border-focal bg-focal-soft text-focal" : "border-border text-muted"
+                    )}
+                  >
+                    {m === "highlights" ? "Highlights" : "All events"}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
         <TimelinePanel
@@ -418,6 +442,7 @@ function PopupBody({
           maxMinute={94}
           scrubbedMinute={scrubbedMinute}
           mode={timelineMode}
+          speedMultiplier={timelineSpeed}
           onScrub={setScrubbedMinute}
           onHoverEvent={setHoveredEventId}
         />
