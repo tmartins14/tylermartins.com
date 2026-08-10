@@ -19,7 +19,7 @@ export default function Home() {
         {homeContent.footballTeaser.intro}
       </p>
 
-      <div className="grid max-w-[900px] grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-[18px]">
+      <div className="grid max-w-[1200px] grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-[18px]">
         <Link
           href="/football/components"
           className="rounded-lg border border-border bg-surface p-6"
@@ -69,6 +69,30 @@ export default function Home() {
           </svg>
           <div className="mt-3.5 font-mono text-xs text-secondary">
             {homeContent.cards.dashboard.cta}
+          </div>
+        </Link>
+
+        <Link
+          href="/football/player-match-analysis"
+          className="rounded-lg border border-border bg-surface p-6"
+        >
+          <div className="mb-3 font-mono text-[11px] tracking-[0.1em] text-focal uppercase">
+            {homeContent.cards.playerMatchAnalysis.eyebrow}
+          </div>
+          <div className="mb-2 font-display text-2xl font-semibold">
+            {footballCards.playerMatchAnalysis.title}
+          </div>
+          <div className="mb-[18px] text-sm leading-[1.55] text-muted">
+            {footballCards.playerMatchAnalysis.blurb}
+          </div>
+          <svg width="100%" height="66" viewBox="0 0 340 66" preserveAspectRatio="none">
+            <circle cx="30" cy="33" r="10" fill="none" stroke="var(--focal)" strokeWidth="2" />
+            <line x1="0" y1="55" x2="340" y2="55" stroke="var(--border-strong)" strokeWidth="1" />
+            <rect x="0" y="51" width="180" height="8" rx="4" fill="var(--focal)" opacity="0.6" />
+            <circle cx="180" cy="55" r="5" fill="var(--focal)" />
+          </svg>
+          <div className="mt-3.5 font-mono text-xs text-focal">
+            {homeContent.cards.playerMatchAnalysis.cta}
           </div>
         </Link>
       </div>

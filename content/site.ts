@@ -11,6 +11,7 @@ export const homeContent = {
   cards: {
     components: { eyebrow: "Component library", cta: "Browse the gallery →" },
     dashboard: { eyebrow: "Match dashboard", cta: "Open the dashboard →" },
+    playerMatchAnalysis: { eyebrow: "Player analysis", cta: "Explore player match analysis →" },
   },
 };
 

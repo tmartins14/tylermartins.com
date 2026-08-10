@@ -16,6 +16,12 @@ export const CHART_THEME = {
     secondary: "#1E3A5F",
     pitch: "#1E3A5F",
     grid: "#ECE8DF",
+    // True Spain/England kit colors — deliberately distinct from focal/
+    // secondary (which the rest of the app reuses generically as "team A/B"),
+    // for the player-match-analysis lineup card. Not in globals.css since
+    // nothing else needs them yet.
+    spain: "#C60B1E",
+    england: "#1E3A5F",
   },
   dark: {
     background: "#1A1613",
@@ -29,6 +35,8 @@ export const CHART_THEME = {
     secondary: "#5B8AC0",
     pitch: "#5B8AC0",
     grid: "#2A2521",
+    spain: "#E23744",
+    england: "#7FA8D6",
   },
 } as const;
 

@@ -9,6 +9,10 @@ export const footballCards = {
     title: "Match Analysis Dashboard",
     blurb: "A single game in one view — every shot, pass, and swing of momentum.",
   },
+  playerMatchAnalysis: {
+    title: "Player Match Analysis",
+    blurb: "Pick any starter or substitute and scrub through their match — territory, xT, shots, and every action, minute by minute.",
+  },
 };
 
 export const footballIndexContent = {
@@ -21,5 +25,6 @@ export const footballIndexContent = {
   cardEyebrows: {
     components: "Content type · library",
     dashboard: "Content type · dashboard",
+    playerMatchAnalysis: "Content type · player analysis",
   },
 };

@@ -5,6 +5,12 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    // footballd3 is an npm workspace, so node_modules/footballd3 is a symlink to
+    // football-analytics/src/footballd3. Without this, TS resolves through the
+    // symlink to a path outside node_modules and infers types from untyped JS —
+    // so the local build passes on errors Vercel (real install) rejects.
+    // Keep this on: it makes `npm run build` fail the way the deploy fails.
+    "preserveSymlinks": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
