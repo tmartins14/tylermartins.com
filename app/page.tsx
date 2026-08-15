@@ -4,8 +4,8 @@ import { footballCards } from "@/content/football";
 
 export default function Home() {
   return (
-    <div className="max-w-[1180px] px-9 pt-[72px] pb-10">
-      <h1 className="display mb-6 max-w-[18ch] text-[58px] leading-[1.02] tracking-[-0.015em]">
+    <div className="max-w-page px-9 pt-18 pb-10">
+      <h1 className="display mb-6 max-w-[18ch] text-display-1 leading-[1.02] tracking-[-0.015em]">
         {homeContent.hero.headline}
       </h1>
       <p className="mb-9 max-w-[56ch] text-lg leading-[1.62] text-muted">
@@ -19,18 +19,22 @@ export default function Home() {
         {homeContent.footballTeaser.intro}
       </p>
 
-      <div className="grid max-w-[1200px] grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-[18px]">
+      {/* max-w-page here is inert (the parent div is already max-w-page) — was a
+          stray max-w-[1200px] that could never actually bind; using the same
+          named token removes the dead second magic number instead of just
+          renaming it. */}
+      <div className="grid max-w-page grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4.5">
         <Link
           href="/football/components"
           className="rounded-lg border border-border bg-surface p-6"
         >
-          <div className="mb-3 font-mono text-[11px] tracking-[0.1em] text-focal uppercase">
+          <div className="mb-3 font-mono text-mono-sm tracking-[0.1em] text-focal uppercase">
             {homeContent.cards.components.eyebrow}
           </div>
           <div className="mb-2 font-display text-2xl font-semibold">
             {footballCards.components.title}
           </div>
-          <div className="mb-[18px] text-sm leading-[1.55] text-muted">
+          <div className="mb-4.5 text-sm leading-[1.55] text-muted">
             {footballCards.components.blurb}
           </div>
           <div className="font-mono text-xs text-focal">{homeContent.cards.components.cta}</div>
@@ -40,13 +44,13 @@ export default function Home() {
           href="/football/dashboard"
           className="rounded-lg border border-border bg-surface p-6"
         >
-          <div className="mb-3 font-mono text-[11px] tracking-[0.1em] text-secondary uppercase">
+          <div className="mb-3 font-mono text-mono-sm tracking-[0.1em] text-secondary uppercase">
             {homeContent.cards.dashboard.eyebrow}
           </div>
           <div className="mb-2 font-display text-2xl font-semibold">
             {footballCards.dashboard.title}
           </div>
-          <div className="mb-[18px] text-sm leading-[1.55] text-muted">
+          <div className="mb-4.5 text-sm leading-[1.55] text-muted">
             {footballCards.dashboard.blurb}
           </div>
           <svg width="100%" height="66" viewBox="0 0 340 66" preserveAspectRatio="none">
@@ -76,13 +80,13 @@ export default function Home() {
           href="/football/player-match-analysis"
           className="rounded-lg border border-border bg-surface p-6"
         >
-          <div className="mb-3 font-mono text-[11px] tracking-[0.1em] text-focal uppercase">
+          <div className="mb-3 font-mono text-mono-sm tracking-[0.1em] text-focal uppercase">
             {homeContent.cards.playerMatchAnalysis.eyebrow}
           </div>
           <div className="mb-2 font-display text-2xl font-semibold">
             {footballCards.playerMatchAnalysis.title}
           </div>
-          <div className="mb-[18px] text-sm leading-[1.55] text-muted">
+          <div className="mb-4.5 text-sm leading-[1.55] text-muted">
             {footballCards.playerMatchAnalysis.blurb}
           </div>
           <svg width="100%" height="66" viewBox="0 0 340 66" preserveAspectRatio="none">

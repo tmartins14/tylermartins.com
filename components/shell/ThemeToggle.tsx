@@ -18,7 +18,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(dark ? "light" : "dark")}
-      className="flex items-center gap-1.5 rounded-full border border-border bg-elevated px-3 py-1.5 font-mono text-[11px] tracking-wide text-text"
+      className="flex items-center gap-1.5 rounded-full border border-border bg-elevated px-3 py-1.5 font-mono text-mono-sm tracking-wide text-text"
       aria-label="Toggle theme"
     >
       <span>{mounted ? (dark ? "☾" : "☀") : " "}</span>

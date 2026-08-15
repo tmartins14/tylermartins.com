@@ -134,7 +134,7 @@ export function GoalsBuildupPanel({
         className="mt-2.5 w-full accent-focal"
       />
       {goal ? (
-        <div className="mt-2 font-mono text-[11px] text-muted">
+        <div className="mt-2 font-mono text-mono-sm text-muted">
           <span className="text-focal">
             {goal.scorer} {goal.minute}&apos;
           </span>

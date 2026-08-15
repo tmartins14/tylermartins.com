@@ -40,13 +40,13 @@ export function TeamColumnCard({
       <div className="mb-3 flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
         <div>
           <div
-            className={`font-mono text-[11px] tracking-[0.1em] uppercase ${
+            className={`font-mono text-mono-sm tracking-[0.1em] uppercase ${
               colorToken === "focal" ? "text-focal" : "text-secondary"
             }`}
           >
             {teamName}
           </div>
-          <div className="display mt-0.5 text-[19px] font-semibold">In possession</div>
+          <div className="display mt-0.5 text-display-4 font-semibold">In possession</div>
         </div>
         <ToggleGroup
           options={[
@@ -75,7 +75,7 @@ export function TeamColumnCard({
       </div>
 
       <div className="mt-4 border-t border-border pt-3.5">
-        <div className="mb-2 font-mono text-[11px] tracking-[0.1em] text-faint uppercase">
+        <div className="mb-2 font-mono text-mono-sm tracking-[0.1em] text-faint uppercase">
           Shot map · xG
         </div>
         <ShotMapPanel shots={shots} colorToken={colorToken} shotScale={shotScale} />

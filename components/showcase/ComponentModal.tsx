@@ -49,21 +49,21 @@ export function ComponentModal({
       }}
     >
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-[rgba(23,20,15,0.55)] backdrop-blur-[3px] transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-[rgba(23,20,15,0.55)] backdrop-blur-[3px] transition-opacity duration-[var(--motion-base)] ease-standard data-[ending-style]:opacity-0 data-[starting-style]:opacity-0" />
         {lastEntry ? (
-          <Dialog.Popup className="fixed inset-6 z-50 m-auto flex h-fit max-h-[88vh] w-[min(1040px,92vw)] flex-col overflow-hidden rounded-2xl border border-border-strong bg-surface text-text shadow-[0_50px_120px_-40px_rgba(0,0,0,0.6)] outline-none transition-all duration-[280ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] data-[ending-style]:translate-y-2.5 data-[ending-style]:scale-[0.965] data-[ending-style]:opacity-0 data-[starting-style]:translate-y-2.5 data-[starting-style]:scale-[0.965] data-[starting-style]:opacity-0"
+          <Dialog.Popup className="fixed inset-6 z-50 m-auto flex h-fit max-h-[88vh] w-[min(1040px,92vw)] flex-col overflow-hidden rounded-2xl border border-border-strong bg-surface text-text shadow-[0_50px_120px_-40px_rgba(0,0,0,0.6)] outline-none transition-all duration-[var(--motion-base)] ease-standard data-[ending-style]:translate-y-2.5 data-[ending-style]:scale-[0.965] data-[ending-style]:opacity-0 data-[starting-style]:translate-y-2.5 data-[starting-style]:scale-[0.965] data-[starting-style]:opacity-0"
           >
             <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5">
               <div className="flex items-center gap-3">
-                <span className="rounded-[5px] border border-focal px-2 py-0.5 font-mono text-[11px] text-focal uppercase">
+                <span className="rounded-[5px] border border-focal px-2 py-0.5 font-mono text-mono-sm text-focal uppercase">
                   {lastEntry.cat}
                 </span>
-                <Dialog.Title className="font-display text-[22px] font-semibold text-text">
+                <Dialog.Title className="font-display text-display-3 font-semibold text-text">
                   {lastEntry.name}
                 </Dialog.Title>
               </div>
               <div className="flex items-center gap-3">
-                <span className="hidden font-mono text-[11px] text-faint sm:inline">
+                <span className="hidden font-mono text-mono-sm text-faint sm:inline">
                   Euro 2024 Final · 3943043
                 </span>
                 <Dialog.Close
@@ -79,17 +79,17 @@ export function ComponentModal({
               <div className="flex flex-1 items-center justify-center overflow-auto bg-background px-5 py-6 sm:px-7">
                 <ComponentStage entry={lastEntry} side={side} mode={mode} orientationMode={orientationMode} />
               </div>
-              <div className="flex w-full flex-col gap-5 overflow-y-auto border-t border-border p-[22px] sm:w-[300px] sm:shrink-0 sm:border-t-0 sm:border-l">
+              <div className="flex w-full flex-col gap-5 overflow-y-auto border-t border-border p-5.5 sm:w-[300px] sm:shrink-0 sm:border-t-0 sm:border-l">
                 <div>
-                  <div className="mb-1.5 font-mono text-[11px] tracking-[0.1em] text-faint uppercase">
+                  <div className="mb-1.5 font-mono text-mono-sm tracking-[0.1em] text-faint uppercase">
                     About
                   </div>
-                  <p className="text-[13px] leading-[1.6] text-muted">{lastEntry.blurb}</p>
+                  <p className="text-sm leading-[1.6] text-muted">{lastEntry.blurb}</p>
                 </div>
 
                 {lastEntry.teamAware || lastEntry.modes || lastEntry.orientationModes ? (
                   <div>
-                    <div className="mb-1.5 font-mono text-[11px] tracking-[0.1em] text-faint uppercase">
+                    <div className="mb-1.5 font-mono text-mono-sm tracking-[0.1em] text-faint uppercase">
                       Controls
                     </div>
                     <div className="flex flex-col gap-2">
@@ -122,20 +122,20 @@ export function ComponentModal({
                 ) : null}
 
                 <div>
-                  <div className="mb-1.5 font-mono text-[11px] tracking-[0.1em] text-faint uppercase">
+                  <div className="mb-1.5 font-mono text-mono-sm tracking-[0.1em] text-faint uppercase">
                     API
                   </div>
-                  <pre className="overflow-x-auto rounded-lg border border-border bg-elevated px-3 py-2.5 font-mono text-[11.5px] leading-[1.5] text-text">
+                  <pre className="overflow-x-auto rounded-lg border border-border bg-elevated px-3 py-2.5 font-mono text-mono-base leading-[1.5] text-text">
                     {lastEntry.code}
                   </pre>
                 </div>
 
                 {lastEntry.sample.length > 0 ? (
                   <div>
-                    <div className="mb-1.5 font-mono text-[11px] tracking-[0.1em] text-faint uppercase">
+                    <div className="mb-1.5 font-mono text-mono-sm tracking-[0.1em] text-faint uppercase">
                       Sample data
                     </div>
-                    <pre className="max-h-[150px] overflow-auto rounded-lg border border-border bg-elevated px-3 py-2.5 font-mono text-[10.5px] leading-[1.5] text-muted">
+                    <pre className="max-h-[150px] overflow-auto rounded-lg border border-border bg-elevated px-3 py-2.5 font-mono text-mono-xs leading-[1.5] text-muted">
                       {JSON.stringify(getSampleRows(lastEntry.name, side), null, 2)}
                     </pre>
                   </div>

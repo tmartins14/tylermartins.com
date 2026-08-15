@@ -1,0 +1,144 @@
+# Design System — tylermartins.com
+
+The living reference for this site's design tokens and rules. This is the detailed,
+in-repo companion to `~/dev/context/style.md` (terse human-readable intent, private
+context repo). **The two are kept in sync** — whichever changes, the other gets updated
+in the same commit. `app/globals.css` is the source of truth for actual values; if this
+doc and `globals.css` disagree, `globals.css` wins and this doc is stale — fix the doc.
+
+Built incrementally across the 4-ticket design remediation (`design-handoff-bundle.md`,
+repo root). Sections below start as stubs where that ticket hasn't landed yet.
+
+## Archetypes
+
+Two page archetypes drive density and motion — not separate knobs, one axis:
+
+- **Tool** pages (the two dashboards, the FootballD3 gallery): dense, functional motion
+  only, chrome recedes.
+- **Piece** pages (editorial concept surfaces): essay-scaffolded, editorial motion
+  allowed. *Not built yet — don't create; just don't block it when it arrives.*
+
+## Color law
+
+**Warmth in the shell, precision in the ink.** Warm brand chrome in the frame;
+disciplined, perceptually-honest color in the data. Brand color (`focal`/`secondary`,
+full saturation) never encodes a team or a data value — it's frame/chrome only, and
+chrome prefers the `-soft` variants. See "Color & kits" below for how team identity and
+data-mark color actually work.
+
+## Type
+
+Every text node maps to one of these ramp tokens — no arbitrary `text-[Npx]` (a
+lint rule enforces this, see "Drift enforcement" below). Defined in `app/globals.css`'s
+`@theme` block as `--text-*` vars, so they're plain Tailwind utilities (`text-display-2`,
+`text-mono-sm`, ...).
+
+| Token | Size | Family | Use |
+|---|---|---|---|
+| `text-display-1` | `clamp(40px, 5vw, 56px)` | Fraunces (`.display` class) | homepage / section-landing hero H1 |
+| `text-display-2` | 34px | Fraunces | Tool-page H1 (dashboards, gallery); popup player name |
+| `text-display-3` | 24px | Fraunces | subsection headers; modal title; match-score line |
+| `text-display-4` | 20px | Fraunces | ChartFrame title; card titles |
+| `text-lg` | 16px | Geist Sans (default) | lede / intro paragraph |
+| `text-base` | 14px | Geist Sans | default body |
+| `text-sm` | 13px | Geist Sans | dense secondary; nav links; gallery row name/blurb |
+| `text-mono-base` | 12px | Geist Mono (`font-mono`) | chip labels, prominent metadata, code blocks |
+| `text-mono-sm` | 11px | Geist Mono | eyebrows, chart readouts, metadata — the dominant mono size |
+| `text-mono-xs` | 10px | Geist Mono | reserve only — **never** the only carrier of information needed to *operate* a chart (an interactive control's label must be ≥ `mono-sm`); fine for read-only decorative/secondary text |
+
+Family tokens (`font-display`/`font-body`/`font-mono`) exist too, but display text
+almost always wants the `.display` class instead (adds weight 900 + optical size, not
+just the family).
+
+## Spacing & layout constants
+
+Arbitrary spacing (`p-[18px]`, `gap-[9px]`, ...) is banned by lint — Tailwind v4's
+`--spacing` scale (`0.25rem` = 4px) resolves *any* multiplier written in the class name,
+including quarter-steps (`p-2.25` = 9px, `py-5.5` = 22px), so every legacy value maps
+exactly, not just approximately.
+
+Named layout constants (breakpoints, widths, the pitch scale cap) live in `app/globals.css`'s
+`@theme` block so they're defined once and referenced by name — never a bare literal:
+
+| Token | Value | Governs |
+|---|---|---|
+| `--container-page` (`max-w-page`) | 1180px | Page shell: home, football landing, about, dashboard wrapper |
+| `--container-pma` (`max-w-pma`) | 1390px | PlayerMatchAnalysis page shell (wider — roster + popup 2-col) |
+| `--breakpoint-tablet` (`tablet:`) | 768px | Dashboard tablet tier floor — see "Responsive tiers" |
+| `--breakpoint-dash` (`dash:`) | 1280px (80rem) | Dashboard desktop 3-col grid floor |
+| `--breakpoint-pma` (`pma:`/`max-pma:`) | 1024px (64rem) | PlayerMatchAnalysis's own sidebar+content split |
+| `--breakpoint-pma-md` (`pma-md:`) | 900px | PlayerMatchAnalysis popup body content grid → 2-col |
+| `--breakpoint-pma-sm` (`pma-sm:`) | 560px | PlayerMatchAnalysis shots/pass-sonar sub-grid → 2-col |
+| `--size-card-thumb` | 150px | Football landing page card thumbnail height |
+| `--size-dashboard-center` | 360px | Dashboard center column width (used as `minmax(300px, this)`, not a hard value) |
+| `MAX_PX_PER_YARD` (`lib/pitch-scale.ts`, not CSS) | 3.2 | Shared desktop-tuned pxPerYard cap for half-pitch views (Formation/ShotMap/PassNetwork/TeamShape/PlayAnimation). Full-pitch/goal-mouth views keep their own caps (4.4 / 1.25) since their aspect ratios differ. |
+
+Custom `@theme` breakpoints in Tailwind v4 auto-generate both the `name:` (min-width) and
+`max-name:` (below that width) variants from one definition — that's how `pma:`/`max-pma:`
+replace the old paired `min-[1024px]:`/`max-[1023px]:` hack.
+
+## Motion
+
+| Token | Value | Use |
+|---|---|---|
+| `--motion-fast` | 120ms | Micro-interactions: hover/color transitions (`duration-[var(--motion-fast)]`) |
+| `--motion-base` | 200ms | Structural reveals: modal/drawer open-close (`duration-[var(--motion-base)]`) |
+| `--motion-slow` | 400ms | Reserved — larger/editorial transitions (Piece pages, not built yet) |
+| `--ease-standard` | `cubic-bezier(0.2,0,0,1)` | Default — plain `ease-standard` utility |
+| `--ease-out` | `cubic-bezier(0,0,0,1)` | Plain `ease-out` utility (overrides Tailwind's built-in keyword) |
+| `--ease-in` | `cubic-bezier(0.4,0,1,1)` | Plain `ease-in` utility (overrides Tailwind's built-in keyword) |
+
+Durations aren't a Tailwind-recognized *named* theme namespace (only eases are), so they're
+referenced as `duration-[var(--motion-fast)]` — bracket syntax, but pointing at a token,
+never a raw `ms` literal. Eases work as plain utility classes (`ease-standard`).
+
+**Archetype motion budget:** Tool pages (dashboards, gallery) get functional motion
+only — state transitions, scrubbing, hover. Piece pages (not built yet) get editorial
+motion.
+
+**Reduced motion:** a global `@media (prefers-reduced-motion: reduce)` rule in
+`app/globals.css` collapses all transition/animation durations to `1ms` and disables
+scroll-behavior smoothing. The one exception CSS can't reach — `PlayAnimationPanel`'s
+frame-by-frame D3 tween lives inside `footballd3` (library-internal, tracked as `FD3-3`)
+— gets a site-side accommodation instead: `prefers-reduced-motion` bumps its
+`playbackSpeed` to effectively-instant rather than the normal 2×, so playback still
+respects the preference without needing the library change.
+
+**Drift enforcement:** `eslint-rules/no-arbitrary-design-values.mjs` fails `npm run lint`
+on any new `text-[...]`, arbitrary spacing (`p-[...]`/`gap-[...]`/etc.), raw
+`duration-[...]`, or raw `ease-[...]` inside a `className`. Exempted: `components/ui/**`
+(vendored shadcn, not hand-tuned) and `StatsBombAttribution.tsx` (out of scope per the
+handoff bundle — already systematized correctly).
+
+## Responsive tiers
+
+The match dashboard (Tool archetype) has three tiers, not the old binary mobile/desktop
+split:
+
+- **Mobile** (`<768px`, below `--breakpoint-tablet`): `MobileDashboardTabs` — one of
+  Spain / Match / England visible at a time via a tab bar. Unchanged from before Ticket 1d.
+- **Tablet** (`768–1279px`, `tablet:` and below `dash:`): stacked-dense — all three cards
+  (`tablet-dashboard-stack` testid) visible full-width in one column, no tab switcher.
+  Each card's pitch panels already measure their own container (`useContainerWidth` +
+  `computePxPerYard`), so this tier needed no new sizing logic, only a new visibility
+  tier. This is the genuine tablet design the bundle called out as missing.
+- **Desktop** (`≥1280px`, `dash:`): the 3-column grid. Center column is
+  `minmax(300px, var(--size-dashboard-center))`, not a hard 360px, so it can yield space
+  to the team columns right at the 1280px boundary — the tightest point given the site
+  rail (240px at `lg:`) eating into content width.
+
+`PlayerMatchAnalysis` has its own, independent set of tiers (`pma`/`pma-md`/`pma-sm` —
+see the table above) for its sidebar+popup layout; it doesn't share breakpoints with the
+match dashboard.
+
+## Color & kits
+
+*TBD — lands in Ticket 2 (2h).*
+
+## Accessibility
+
+*TBD — lands in Ticket 3 (3e).*
+
+## Content model
+
+*TBD — lands in Ticket 4 (4d).*

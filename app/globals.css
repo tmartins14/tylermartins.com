@@ -53,26 +53,102 @@
   --font-body:var(--font-geist-sans), system-ui, sans-serif;
   --font-mono:var(--font-geist-mono), "SF Mono", Menlo, monospace;
   --radius-sm:4px; --radius:6px; --radius-lg:10px; --radius-xl:12px;
-  /* Dashboard-only breakpoint: 3-column grid ⟷ tabbed mobile stack (see
-     design_handoff_match_dashboard_mobile). Independent of the site-nav lg: split.
-     Design doc suggests ~720px, but at this component's actual fixed 360px center
-     column + toggle-group header widths, the grid clips/overlaps below ~1000px of
-     content width — and the site rail (lg:, w-60=240px) also eats into that once
-     the viewport crosses 1024px, so the true safe threshold (verified empirically
-     with the rail present) is much higher than either number alone suggests. Set
-     above both so the grid only appears once it renders cleanly; the tabbed
-     layout covers everything below it, including tablet widths. */
-  --breakpoint-dash:80rem;
+
+  /* ---- type ramp (DESIGN.md "Type") — every text node maps to one of these,
+     no arbitrary text-[Npx]. Family: display-* pair with the `.display` class
+     (Fraunces); text-lg/base/sm are body (Geist Sans, the default); mono-*
+     pair with `font-mono` (Geist Mono). mono-xs is reserve-only — never the
+     only carrier of information a user must read to operate a chart. ---- */
+  --text-display-1:clamp(40px, 5vw, 56px);
+  --text-display-2:34px;
+  --text-display-3:24px;
+  --text-display-4:20px;
+  --text-lg:16px;
+  --text-base:14px;
+  --text-sm:13px;
+  --text-mono-base:12px;
+  --text-mono-sm:11px;
+  --text-mono-xs:10px;
+  /* Dashboard breakpoints — three tiers, not two (Ticket 1d):
+     max-tablet (<768px) tabbed mobile stack (MobileDashboardTabs) · tablet
+     (768–1279px) stacked-dense, all three cards visible full-width, no tabs ·
+     dash (≥1280px) the 3-column grid. --breakpoint-dash stays 80rem: at this
+     component's true-scale pitches + toggle-group header widths, the grid
+     clips/overlaps below ~1000px of *content* width — and the site rail (lg:,
+     w-60=240px) eats into that once the viewport crosses 1024px, so the real
+     safe threshold (verified empirically with the rail present) is well above
+     the design doc's ~720px suggestion. That's exactly the gap --breakpoint-
+     tablet now fills instead of falling through to tabs. */
+  --breakpoint-tablet:48rem;  /* 768px */
+  --breakpoint-dash:80rem;    /* 1280px */
+
+  /* ---- hoisted layout constants (DESIGN.md "Spacing & layout constants") —
+     every breakpoint/width/pitch constant is a named token defined once here,
+     referenced by name (max-w-page, pma:/max-pma:, etc.) instead of a repeated
+     literal. ---- */
+  /* Page shell max-width — home, football landing, about, dashboard wrapper. */
+  --container-page:1180px;
+  /* PlayerMatchAnalysis page shell — wider than --container-page since it
+     holds the roster + popup two-column layout, not prose. */
+  --container-pma:1390px;
+  /* PlayerMatchAnalysis's own two-column split (roster+popup side-by-side at
+     this width, stacked/full-overlay popup below it) — independent of --breakpoint-dash. */
+  --breakpoint-pma:64rem;      /* 1024px */
+  --breakpoint-pma-md:56.25rem; /* 900px — popup body content grid goes 2-col */
+  --breakpoint-pma-sm:35rem;    /* 560px — shots/pass-sonar sub-grid goes 2-col */
+  /* Football landing page card thumbnail height. */
+  --size-card-thumb:150px;
+  /* Match dashboard center column width — fixed for now; becomes min/max in
+     the Ticket 1d tablet-tier rework, still reading from this one name. */
+  --size-dashboard-center:360px;
+
+  /* ---- motion tokens (DESIGN.md "Motion") — every transition/animation
+     references one of these; no raw ms/ease literals in components. Durations
+     aren't a Tailwind-recognized theme namespace for named values, so
+     components reach them through the duration arbitrary-value syntax with
+     var() pointed at --motion-fast, --motion-base, or --motion-slow below
+     (full pattern documented in DESIGN.md "Motion", not spelled out here as
+     a literal class string — Tailwind's content scanner treats bracket
+     patterns as real utilities even inside comments). Eases ARE a named
+     namespace, so ease-standard/ease-out/ease-in work as plain utility
+     classes (this also overrides Tailwind's built-in ease-out/ease-in
+     keywords with these curves — intentional, one easing language
+     site-wide). Archetype motion budget: Tool pages (dashboards, gallery)
+     get functional motion only — state transitions, scrubbing, hover;
+     Piece pages (future) get editorial motion. See the
+     prefers-reduced-motion rule below for the reduced-motion contract. ---- */
+  --motion-fast:120ms;
+  --motion-base:200ms;
+  --motion-slow:400ms;
+  --ease-standard:cubic-bezier(0.2,0,0,1);
+  --ease-out:cubic-bezier(0,0,0,1);
+  --ease-in:cubic-bezier(0.4,0,1,1);
 }
 
 @layer base {
   body {
     background:var(--background); color:var(--text);
     font-family:var(--font-geist-sans), system-ui, sans-serif;
-    transition:background .25s, color .25s;
+    transition:background var(--motion-base) var(--ease-standard),
+      color var(--motion-base) var(--ease-standard);
   }
   .display { font-family:var(--font-fraunces), Georgia, serif; font-weight:900;
     font-variation-settings:"opsz" 144; }
+
+  /* Reduced-motion contract: collapse to near-instant, kill decorative
+     transitions, and snap any playing animation straight to its end state
+     (the transport/controls stay usable — this hides interpolation, not
+     interactivity). Every animation in the app is expected to honor this via
+     the animation-fill-mode it already sets, since forcing duration to ~0
+     makes the browser jump to the last keyframe. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition-duration: 1ms !important;
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 /* ---- map shadcn's semantic vars onto footballd3 tokens ----

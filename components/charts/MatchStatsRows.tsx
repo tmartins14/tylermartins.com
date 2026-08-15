@@ -52,10 +52,10 @@ export function MatchStatsRows({ data }: { data: MatchStatsData }) {
         return (
           <div
             key={display}
-            className="grid items-center gap-[9px] leading-none"
+            className="grid items-center gap-2.25 leading-none"
             style={{ gridTemplateColumns: "44px 1fr 88px 1fr 44px" }}
           >
-            <span className="text-right font-mono text-[12.5px] leading-none text-focal">
+            <span className="text-right font-mono text-mono-base leading-none text-focal">
               {formatValue(r.home_value, r.format)}
             </span>
             <div className="flex justify-end">
@@ -64,7 +64,7 @@ export function MatchStatsRows({ data }: { data: MatchStatsData }) {
                 style={{ width: `${homeShare}%` }}
               />
             </div>
-            <span className="text-center font-mono text-[10px] leading-none tracking-[0.05em] text-faint uppercase">
+            <span className="text-center font-mono text-mono-xs leading-none tracking-[0.05em] text-faint uppercase">
               {display}
             </span>
             <div className="flex justify-start">
@@ -73,7 +73,7 @@ export function MatchStatsRows({ data }: { data: MatchStatsData }) {
                 style={{ width: `${awayShare}%` }}
               />
             </div>
-            <span className="font-mono text-[12.5px] leading-none text-secondary">
+            <span className="font-mono text-mono-base leading-none text-secondary">
               {formatValue(r.away_value, r.format)}
             </span>
           </div>

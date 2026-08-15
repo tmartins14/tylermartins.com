@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { createPitch } from "footballd3/pitch";
 import { createPlayAnimation } from "footballd3/playAnimation";
 import { CHART_THEME } from "@/lib/chart-theme";
+import { MAX_PX_PER_YARD } from "@/lib/pitch-scale";
 import { ToggleGroup } from "@/components/charts/ToggleGroup";
 
 export type GoalClip = {
@@ -63,12 +64,22 @@ export function PlayAnimationPanel({
     const svg = container$.append("svg");
 
     const pitch = createPitch(svg, {
-      pxPerYard: 3.2,
+      pxPerYard: MAX_PX_PER_YARD,
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 },
     });
 
+    // The frame-by-frame tween itself lives inside footballd3 (createPlayAnimation) —
+    // wiring its internal timing to --motion-* / prefers-reduced-motion directly is
+    // FD3-3 (library-internal, out of scope here). Until that lands, reduced-motion
+    // users get the same effect from the site side: a very high playbackSpeed
+    // collapses the interpolation to effectively instant while leaving the
+    // scrubber/transport (already seek-based, not animation-based) fully usable.
+    const reducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     const anim = createPlayAnimation(pitch, goals[activeGoalIdx], {
-      playbackSpeed: 2.0,
+      playbackSpeed: reducedMotion ? 50 : 2.0,
       ballColor: theme.elevated,
       ballStroke: theme.text,
       actorColor: theme.focal,
@@ -131,7 +142,7 @@ export function PlayAnimationPanel({
         <button
           type="button"
           onClick={togglePlay}
-          className="shrink-0 rounded-[3px] border border-border bg-elevated px-2.5 py-1 font-mono text-[11px] text-text"
+          className="shrink-0 rounded-[3px] border border-border bg-elevated px-2.5 py-1 font-mono text-mono-sm text-text"
         >
           {playing ? "❚❚ Pause" : "▶ Play"}
         </button>
@@ -145,7 +156,7 @@ export function PlayAnimationPanel({
           onChange={(e) => controllerRef.current?.controls.seek(Number(e.target.value))}
           className="flex-1"
         />
-        <span ref={timeLabelRef} className="w-10 shrink-0 font-mono text-[11px] text-faint">
+        <span ref={timeLabelRef} className="w-10 shrink-0 font-mono text-mono-sm text-faint">
           0.0s
         </span>
       </div>

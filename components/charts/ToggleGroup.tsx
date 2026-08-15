@@ -33,7 +33,7 @@ export function ToggleGroup<T extends string>({
           type="button"
           onClick={() => onChange(opt.value)}
           className={cn(
-            "relative border border-border px-2.5 py-[3px] font-mono text-[11px] font-medium whitespace-nowrap",
+            "relative border border-border px-2.5 py-0.75 font-mono text-mono-sm font-medium whitespace-nowrap",
             i > 0 && "-ml-px",
             i === 0 && "rounded-l-[3px]",
             i === options.length - 1 && "rounded-r-[3px]",

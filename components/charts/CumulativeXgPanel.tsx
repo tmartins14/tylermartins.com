@@ -64,7 +64,7 @@ export function CumulativeXgPanel({ data }: { data: CumulativeXgData }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div ref={containerRef} className="min-h-0 flex-1" />
-      <div className="mt-1.5 font-mono text-[11px] text-muted">{readout}</div>
+      <div className="mt-1.5 font-mono text-mono-sm text-muted">{readout}</div>
     </div>
   );
 }

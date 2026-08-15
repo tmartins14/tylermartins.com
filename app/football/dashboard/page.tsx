@@ -95,7 +95,7 @@ export default function MatchDashboard() {
 
   return (
     <div className="px-4 py-4 dash:px-9 dash:py-10">
-      <div className="mx-auto max-w-[1180px] dash:overflow-hidden dash:rounded-2xl dash:border dash:border-border-strong dash:bg-background dash:px-[30px] dash:pt-[26px] dash:pb-[30px] dash:shadow-[0_40px_90px_-50px_rgba(23,23,23,0.55)]">
+      <div className="mx-auto max-w-page dash:overflow-hidden dash:rounded-2xl dash:border dash:border-border-strong dash:bg-background dash:px-7.5 dash:pt-6.5 dash:pb-7.5 dash:shadow-[0_40px_90px_-50px_rgba(23,23,23,0.55)]">
         <div className="hidden dash:block">
           <MatchHeaderHero
             home={{ team: home.team, score: home.score, xg: homeXg }}
@@ -120,9 +120,12 @@ export default function MatchDashboard() {
           <div className="pointer-events-none absolute inset-x-0 top-full h-3 bg-gradient-to-b from-black/5 to-transparent" />
         </div>
 
+        {/* Desktop ≥1280px: 3-column grid. Center column is minmax, not a hard
+            360px, so it can give the team columns room right at the 1280px
+            boundary instead of forcing the layout to the edge of clipping. */}
         <div
           data-testid="dashboard-grid"
-          className={`hidden gap-[18px] dash:grid dash:grid-cols-[minmax(0,1fr)_360px_minmax(0,1fr)] ${
+          className={`hidden gap-4.5 dash:grid dash:grid-cols-[minmax(0,1fr)_minmax(300px,var(--size-dashboard-center))_minmax(0,1fr)] ${
             ALIGN_DIVIDERS ? "dash:items-stretch" : "dash:items-start"
           }`}
         >
@@ -131,14 +134,28 @@ export default function MatchDashboard() {
           {awayCard}
         </div>
 
-        <div className="mt-4 dash:hidden">
+        {/* Tablet 768–1279px: stacked-dense — all three cards visible full-width,
+            no tab switcher. Each card's own pitch panels already scale to their
+            measured container width (useContainerWidth + computePxPerYard), so
+            this tier needs no extra sizing logic of its own. */}
+        <div
+          data-testid="tablet-dashboard-stack"
+          className="hidden tablet:flex dash:hidden mt-4 flex-col gap-4"
+        >
+          {homeCard}
+          {matchCard}
+          {awayCard}
+        </div>
+
+        {/* Mobile <768px: tabbed stack (unchanged). */}
+        <div className="mt-4 tablet:hidden">
           <MobileDashboardTabs homeLabel={home.team} awayLabel={away.team} home={homeCard} match={matchCard} away={awayCard} />
         </div>
 
         <div className="mt-5 border-t border-border pt-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <StatsBombAttribution size={16} />
-            <span className="font-mono text-[11px] text-faint">
+            <span className="font-mono text-mono-sm text-faint">
               {metadata.competition} Final · match {metadata.match_id} · sample dataset
             </span>
           </div>

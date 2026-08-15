@@ -25,15 +25,15 @@ export function ComponentRow({
     <button
       type="button"
       onClick={onOpen}
-      className="grid w-full grid-cols-1 items-center gap-2 border-t border-border px-2 py-3 text-left transition-colors hover:bg-elevated sm:grid-cols-[170px_88px_1fr_132px] sm:items-center sm:gap-4"
+      className="grid w-full grid-cols-1 items-center gap-2 border-t border-border px-2 py-3 text-left transition-colors duration-[var(--motion-fast)] ease-standard hover:bg-elevated sm:grid-cols-[170px_88px_1fr_132px] sm:items-center sm:gap-4"
     >
-      <span className="order-1 font-mono text-[13.5px] font-semibold text-text sm:order-1">
+      <span className="order-1 font-mono text-sm font-semibold text-text sm:order-1">
         {entry.name}
       </span>
-      <span className="order-2 font-mono text-[10px] tracking-[0.06em] text-focal uppercase sm:order-2">
+      <span className="order-2 font-mono text-mono-xs tracking-[0.06em] text-focal uppercase sm:order-2">
         {entry.cat}
       </span>
-      <span className="order-3 line-clamp-2 text-[12px] leading-[1.45] text-muted sm:order-3">
+      <span className="order-3 line-clamp-2 text-sm leading-[1.45] text-muted sm:order-3">
         {entry.blurb}
       </span>
       <span className="order-4 flex h-[74px] w-[132px] items-center justify-center overflow-hidden rounded-[7px] border border-border bg-elevated sm:order-4 sm:justify-self-end">

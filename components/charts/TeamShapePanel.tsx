@@ -8,7 +8,7 @@ import { createTeamShape } from "footballd3/teamShape";
 import { CHART_THEME } from "@/lib/chart-theme";
 import { ToggleGroup } from "@/components/charts/ToggleGroup";
 import { useContainerWidth } from "@/hooks/useContainerWidth";
-import { computePxPerYard } from "@/lib/pitch-scale";
+import { computePxPerYard, MAX_PX_PER_YARD } from "@/lib/pitch-scale";
 
 export type TeamShapeData = {
   on_ball: {
@@ -106,15 +106,14 @@ export function TeamShapePanel({
     container$.selectAll("*").remove();
     const svg = container$.append("svg");
 
-    // pxPerYard is derived from the measured column width, capped at 3.2 (the
-    // desktop-tuned value that matches ShotMapPanel's width) — see FormationPanel
-    // for the same math.
+    // pxPerYard is derived from the measured column width, capped at
+    // MAX_PX_PER_YARD — see FormationPanel for the same math.
     const padding = 24;
     const pitch = createPitch(svg, {
       mode: "full",
       orientation: "vertical",
       flipAttack: true,
-      pxPerYard: computePxPerYard(width, 80, padding, 3.2),
+      pxPerYard: computePxPerYard(width, 80, padding, MAX_PX_PER_YARD),
       padding,
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 },
     });
@@ -177,7 +176,7 @@ export function TeamShapePanel({
             <select
               value={periodIdx}
               onChange={(e) => setPeriodIdx(Number(e.target.value))}
-              className="rounded-[3px] border border-border bg-background px-2 py-[3px] font-mono text-[11px] text-muted"
+              className="rounded-[3px] border border-border bg-background px-2 py-0.75 font-mono text-mono-sm text-muted"
             >
               {periods.map((p, i) => (
                 <option key={i} value={i}>
