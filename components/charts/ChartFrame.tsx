@@ -35,14 +35,14 @@ export function ChartFrame({
         <div>
           <div
             className={cn(
-              "font-mono text-[11px] tracking-[0.1em] uppercase",
+              "font-mono text-mono-sm tracking-[0.1em] uppercase",
               KICKER_COLOR[kickerColor]
             )}
           >
             {kicker}
           </div>
           {title ? (
-            <div className="mt-0.5 font-display text-[21px] font-semibold">{title}</div>
+            <div className="mt-0.5 font-display text-display-4 font-semibold">{title}</div>
           ) : null}
         </div>
         {right}

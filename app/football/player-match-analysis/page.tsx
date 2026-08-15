@@ -28,7 +28,7 @@ const AWAY_SCORE = 1;
 export default function PlayerMatchAnalysisPage() {
   return (
     <div className="px-4 py-4 dash:px-9 dash:py-10">
-      <div className="mx-auto max-w-[1390px]">
+      <div className="mx-auto max-w-pma">
         <PlayerMatchAnalysisClient
           formationByTeam={{
             Spain: formationSpainData as FormationData,

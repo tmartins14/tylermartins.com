@@ -47,7 +47,7 @@ export function MomentumBarPanel({ data }: { data: MomentumData }) {
   return (
     <div className="flex h-full flex-col">
       <div ref={containerRef} className="min-h-0 w-full flex-1" />
-      <div className="mt-2 flex flex-wrap items-center gap-4 font-mono text-[11px] text-muted">
+      <div className="mt-2 flex flex-wrap items-center gap-4 font-mono text-mono-sm text-muted">
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-2.5 w-2.5 rounded-sm bg-focal" />
           {data.home_team}

@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { createFormation } from "footballd3/formation";
 import { CHART_THEME } from "@/lib/chart-theme";
 import { useContainerWidth } from "@/hooks/useContainerWidth";
-import { computePxPerYard } from "@/lib/pitch-scale";
+import { computePxPerYard, MAX_PX_PER_YARD } from "@/lib/pitch-scale";
 
 export type FormationPlayer = {
   player_id: number;
@@ -69,12 +69,13 @@ export function FormationPanel({ data, colorToken, bench, selectedId = null, onS
     container$.selectAll("*").remove();
     const svg = container$.append("svg");
 
-    // pxPerYard is derived from the measured column width, capped at 3.2 — the
-    // desktop-tuned value that matches ShotMapPanel's width (both share the 80yd
-    // axis). At/above the cap this renders identically to the old fixed value;
-    // below it, the pitch shrinks to fit narrower viewports instead of overflowing.
+    // pxPerYard is derived from the measured column width, capped at
+    // MAX_PX_PER_YARD — the desktop-tuned value that matches ShotMapPanel's
+    // width (both share the 80yd axis). At/above the cap this renders
+    // identically to the old fixed value; below it, the pitch shrinks to fit
+    // narrower viewports instead of overflowing.
     const padding = 24;
-    const pxPerYard = computePxPerYard(width, 80, padding, 3.2);
+    const pxPerYard = computePxPerYard(width, 80, padding, MAX_PX_PER_YARD);
     const renderedWidth = 80 * pxPerYard + padding * 2;
 
     createFormation(

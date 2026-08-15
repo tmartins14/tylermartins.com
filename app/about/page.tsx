@@ -2,13 +2,13 @@ import { aboutContent } from "@/content/site";
 
 export default function AboutPage() {
   return (
-    <div className="max-w-[1180px] px-9 pt-14 pb-10">
+    <div className="max-w-page px-9 pt-14 pb-10">
       <div className="mb-4 font-mono text-xs tracking-[0.14em] text-focal uppercase">
         {aboutContent.eyebrow}
       </div>
-      <h1 className="display mb-[18px] text-[46px] leading-[1.03]">{aboutContent.heading}</h1>
+      <h1 className="display mb-4.5 text-display-1 leading-[1.03]">{aboutContent.heading}</h1>
 
-      <div className="max-w-[60ch] text-[17px] leading-[1.6] text-muted">
+      <div className="max-w-[60ch] text-lg leading-[1.6] text-muted">
         {aboutContent.paragraphs.map((paragraph, i) => (
           <p key={i} className="mb-5">
             {paragraph}

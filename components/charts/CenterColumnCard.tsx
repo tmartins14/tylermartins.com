@@ -33,8 +33,8 @@ export function CenterColumnCard({
     >
       <div className="mb-3 flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
         <div>
-          <div className="font-mono text-[11px] tracking-[0.1em] text-muted uppercase">Match</div>
-          <div className="display mt-0.5 text-[19px] font-semibold">Story of the game</div>
+          <div className="font-mono text-mono-sm tracking-[0.1em] text-muted uppercase">Match</div>
+          <div className="display mt-0.5 text-display-4 font-semibold">Story of the game</div>
         </div>
         <ToggleGroup
           options={[
@@ -64,10 +64,10 @@ export function CenterColumnCard({
 
       <div className="mt-4 flex min-h-[220px] flex-1 flex-col border-t border-border pt-3.5">
         <div className="mb-2 flex items-baseline justify-between">
-          <span className="font-mono text-[11px] tracking-[0.1em] text-faint uppercase">
+          <span className="font-mono text-mono-sm tracking-[0.1em] text-faint uppercase">
             Cumulative xG · race
           </span>
-          <span className="font-mono text-[10px] text-faint">always on</span>
+          <span className="font-mono text-mono-xs text-faint">always on</span>
         </div>
         <CumulativeXgPanel data={cumulativeXg} />
       </div>

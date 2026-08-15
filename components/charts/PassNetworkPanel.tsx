@@ -7,7 +7,7 @@ import { createPitch } from "footballd3/pitch";
 import { createPassNetwork } from "footballd3/passNetwork";
 import { CHART_THEME } from "@/lib/chart-theme";
 import { useContainerWidth } from "@/hooks/useContainerWidth";
-import { computePxPerYard } from "@/lib/pitch-scale";
+import { computePxPerYard, MAX_PX_PER_YARD } from "@/lib/pitch-scale";
 
 export type PassNetworkData = {
   windows: {
@@ -38,15 +38,14 @@ export function PassNetworkPanel({ data, colorToken }: PassNetworkPanelProps) {
     container$.selectAll("*").remove();
     const svg = container$.append("svg");
 
-    // pxPerYard is derived from the measured column width, capped at 3.2 (the
-    // desktop-tuned value that matches ShotMapPanel's width) — see FormationPanel
-    // for the same math.
+    // pxPerYard is derived from the measured column width, capped at
+    // MAX_PX_PER_YARD — see FormationPanel for the same math.
     const padding = 24;
     const pitch = createPitch(svg, {
       mode: "full",
       orientation: "vertical",
       flipAttack: true,
-      pxPerYard: computePxPerYard(width, 80, padding, 3.2),
+      pxPerYard: computePxPerYard(width, 80, padding, MAX_PX_PER_YARD),
       padding,
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 },
     });

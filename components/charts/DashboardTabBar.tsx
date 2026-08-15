@@ -28,7 +28,7 @@ export function DashboardTabBar<T extends string>({
   onChange: (value: T) => void;
 }) {
   return (
-    <div role="tablist" className="grid grid-cols-3 gap-[6px]">
+    <div role="tablist" className="grid grid-cols-3 gap-1.5">
       {options.map((opt) => {
         const active = opt.value === value;
         return (
@@ -39,7 +39,7 @@ export function DashboardTabBar<T extends string>({
             aria-selected={active}
             onClick={() => onChange(opt.value)}
             className={cn(
-              "min-h-11 rounded-[6px] border font-mono text-[11px] font-medium tracking-[0.08em] uppercase",
+              "min-h-11 rounded-[6px] border font-mono text-mono-sm font-medium tracking-[0.08em] uppercase",
               active ? tint[opt.colorToken] : "border-border text-muted"
             )}
           >

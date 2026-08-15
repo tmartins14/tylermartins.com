@@ -153,7 +153,7 @@ export function TerritoryPanel({
               type="button"
               onClick={() => onToggleLayer(key)}
               className={cn(
-                "rounded-full border px-2.5 py-1 font-mono text-[10px] whitespace-nowrap",
+                "rounded-full border px-2.5 py-1 font-mono text-mono-sm whitespace-nowrap",
                 active ? "border-focal bg-focal-soft text-focal" : "border-border text-muted"
               )}
             >

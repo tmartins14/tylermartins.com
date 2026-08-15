@@ -19,7 +19,7 @@ import { createMomentumChart } from "footballd3/momentumChart";
 import { createMomentumBarChart } from "footballd3/momentumBarChart";
 import { CHART_THEME } from "@/lib/chart-theme";
 import { useContainerWidth } from "@/hooks/useContainerWidth";
-import { computePxPerYard } from "@/lib/pitch-scale";
+import { computePxPerYard, MAX_PX_PER_YARD } from "@/lib/pitch-scale";
 import { FormationPanel } from "@/components/charts/FormationPanel";
 import { MatchStatsPanel } from "@/components/charts/MatchStatsPanel";
 import { PlayAnimationPanel } from "@/components/charts/PlayAnimationPanel";
@@ -45,7 +45,6 @@ import {
 
 const PROGRESSIVE_TOGGLE: Record<string, string> = { pass: "passes", carry: "carries", all: "both" };
 const PADDING = 24;
-const PITCH_MAX_PX_PER_YARD = 3.2;
 
 type MomentumBin = { start: number; end: number; value: number };
 
@@ -87,7 +86,7 @@ function FreshStage({
     const pitchTheme = { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 };
     const color = side === "home" ? theme.focal : theme.secondary;
     // Shared across every pitch-based case below, full or half — same scale everywhere.
-    const pxPerYard = computePxPerYard(boxW, 120, PADDING, PITCH_MAX_PX_PER_YARD);
+    const pxPerYard = computePxPerYard(boxW, 120, PADDING, MAX_PX_PER_YARD);
 
     switch (name) {
       case "pitch": {
@@ -314,14 +313,14 @@ function FreshStage({
       />
       {name === "shotMap" ? (
         <div
-          className="mt-2 font-mono text-[11px]"
+          className="mt-2 font-mono text-mono-sm"
           style={{ color: shotHover ? `var(--${side === "home" ? "focal" : "secondary"})` : "var(--faint)" }}
         >
           {shotReadout}
         </div>
       ) : null}
       {name === "momentumChart" && mode === "bars" ? (
-        <div className="mt-2 font-mono text-[11px] text-faint">{momReadout}</div>
+        <div className="mt-2 font-mono text-mono-sm text-faint">{momReadout}</div>
       ) : null}
     </div>
   );

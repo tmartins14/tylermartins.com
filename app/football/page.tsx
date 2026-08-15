@@ -3,14 +3,14 @@ import { footballCards, footballIndexContent } from "@/content/football";
 
 export default function FootballIndex() {
   return (
-    <div className="max-w-[1180px] px-9 pt-14 pb-10">
+    <div className="max-w-page px-9 pt-14 pb-10">
       <div className="mb-4 font-mono text-xs tracking-[0.14em] text-focal uppercase">
         {footballIndexContent.eyebrow}
       </div>
-      <h1 className="display mb-[18px] text-[46px] leading-[1.03]">
+      <h1 className="display mb-4.5 text-display-1 leading-[1.03]">
         {footballIndexContent.heading}
       </h1>
-      <div className="mb-10 max-w-[60ch] text-[17px] leading-[1.6] text-muted">
+      <div className="mb-10 max-w-[60ch] text-lg leading-[1.6] text-muted">
         {footballIndexContent.paragraphs.map((paragraph, i) => (
           <p key={i} className={i < footballIndexContent.paragraphs.length - 1 ? "mb-4" : undefined}>
             {paragraph}
@@ -18,12 +18,12 @@ export default function FootballIndex() {
         ))}
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-[18px]">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4.5">
         <Link
           href="/football/components"
           className="overflow-hidden rounded-lg border border-border bg-surface"
         >
-          <div className="flex h-[150px] items-center justify-center border-b border-border bg-elevated">
+          <div className="flex h-[var(--size-card-thumb)] items-center justify-center border-b border-border bg-elevated">
             <svg width="220" height="118" viewBox="0 0 220 118">
               <rect
                 x="8"
@@ -83,11 +83,11 @@ export default function FootballIndex() {
               />
             </svg>
           </div>
-          <div className="p-[22px]">
-            <div className="mb-2.5 font-mono text-[11px] tracking-[0.1em] text-focal uppercase">
+          <div className="p-5.5">
+            <div className="mb-2.5 font-mono text-mono-sm tracking-[0.1em] text-focal uppercase">
               {footballIndexContent.cardEyebrows.components}
             </div>
-            <div className="mb-1.5 font-display text-[23px] font-semibold">
+            <div className="mb-1.5 font-display text-display-3 font-semibold">
               {footballCards.components.title}
             </div>
             <div className="text-sm leading-[1.55] text-muted">
@@ -100,7 +100,7 @@ export default function FootballIndex() {
           href="/football/dashboard"
           className="overflow-hidden rounded-lg border border-border bg-surface"
         >
-          <div className="flex h-[150px] items-center justify-center border-b border-border bg-elevated">
+          <div className="flex h-[var(--size-card-thumb)] items-center justify-center border-b border-border bg-elevated">
             <svg width="220" height="118" viewBox="0 0 220 118">
               <rect
                 x="8"
@@ -154,11 +154,11 @@ export default function FootballIndex() {
               />
             </svg>
           </div>
-          <div className="p-[22px]">
-            <div className="mb-2.5 font-mono text-[11px] tracking-[0.1em] text-secondary uppercase">
+          <div className="p-5.5">
+            <div className="mb-2.5 font-mono text-mono-sm tracking-[0.1em] text-secondary uppercase">
               {footballIndexContent.cardEyebrows.dashboard}
             </div>
-            <div className="mb-1.5 font-display text-[23px] font-semibold">
+            <div className="mb-1.5 font-display text-display-3 font-semibold">
               {footballCards.dashboard.title}
             </div>
             <div className="text-sm leading-[1.55] text-muted">
@@ -171,7 +171,7 @@ export default function FootballIndex() {
           href="/football/player-match-analysis"
           className="overflow-hidden rounded-lg border border-border bg-surface"
         >
-          <div className="flex h-[150px] items-center justify-center border-b border-border bg-elevated">
+          <div className="flex h-[var(--size-card-thumb)] items-center justify-center border-b border-border bg-elevated">
             <svg width="220" height="118" viewBox="0 0 220 118">
               <rect
                 x="8"
@@ -205,11 +205,11 @@ export default function FootballIndex() {
               <circle cx="130" cy="90" r="6" fill="var(--focal)" />
             </svg>
           </div>
-          <div className="p-[22px]">
-            <div className="mb-2.5 font-mono text-[11px] tracking-[0.1em] text-focal uppercase">
+          <div className="p-5.5">
+            <div className="mb-2.5 font-mono text-mono-sm tracking-[0.1em] text-focal uppercase">
               {footballIndexContent.cardEyebrows.playerMatchAnalysis}
             </div>
-            <div className="mb-1.5 font-display text-[23px] font-semibold">
+            <div className="mb-1.5 font-display text-display-3 font-semibold">
               {footballCards.playerMatchAnalysis.title}
             </div>
             <div className="text-sm leading-[1.55] text-muted">

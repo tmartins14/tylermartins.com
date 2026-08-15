@@ -16,11 +16,11 @@ export function CategorySection({
   return (
     <section>
       <div className="mb-3 flex items-center gap-3">
-        <span className="font-mono text-[11px] tracking-[0.12em] text-focal uppercase">
+        <span className="font-mono text-mono-sm tracking-[0.12em] text-focal uppercase">
           {CATEGORY_LABELS[category]}
         </span>
         <span className="h-px flex-1 bg-border" />
-        <span className="font-mono text-[10px] text-faint">{entries.length}</span>
+        <span className="font-mono text-mono-xs text-faint">{entries.length}</span>
       </div>
       <div>
         {entries.map((entry) => (

@@ -199,20 +199,20 @@ export function PlayerMatchAnalysisClient({
   return (
     <div
       className={cn(
-        "grid gap-[14px]",
-        // Matches the popup's own max-[1023px]:absolute breakpoint exactly —
-        // must never overlap it, or both the two-column split and the mobile
-        // full-overlay rule are active at once in the gap between them.
-        "min-[1024px]:grid-cols-[316px_minmax(0,1fr)] min-[1024px]:items-start"
+        "grid gap-3.5",
+        // Matches the popup's own max-pma:absolute breakpoint exactly — both
+        // read from --breakpoint-pma, so the two-column split and the mobile
+        // full-overlay rule can never both be active in the same gap.
+        "pma:grid-cols-[316px_minmax(0,1fr)] pma:items-start"
       )}
     >
-      <div className="min-[1024px]:sticky min-[1024px]:top-[calc(var(--topbar-h)+16px)] rounded-xl border border-border bg-surface p-5">
-        <div className="font-mono text-[11px] tracking-[0.14em] text-focal uppercase">Player Match Analysis</div>
-        <div className="display mt-[5px] mb-0.5 text-[25px] font-black">
+      <div className="pma:sticky pma:top-[calc(var(--topbar-h)+16px)] rounded-xl border border-border bg-surface p-5">
+        <div className="font-mono text-mono-sm tracking-[0.14em] text-focal uppercase">Player Match Analysis</div>
+        <div className="display mt-1.25 mb-0.5 text-display-3 font-black">
           Spain <span style={{ color: theme.spain }}>{homeScore}</span>–
           <span style={{ color: theme.england }}>{awayScore}</span> England
         </div>
-        <div className="mb-3.5 font-mono text-[11px] text-faint">
+        <div className="mb-3.5 font-mono text-mono-sm text-faint">
           {competition} &middot; {venue} &middot; {matchDate}
         </div>
 
@@ -226,7 +226,7 @@ export function PlayerMatchAnalysisClient({
                   key={team}
                   type="button"
                   onClick={() => setViewTeam(team)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 font-mono text-[11px] font-medium"
+                  className="flex items-center gap-1.5 px-2.5 py-1 font-mono text-mono-sm font-medium"
                   style={{
                     border: `1px solid ${active ? color : theme.border}`,
                     marginLeft: i ? -1 : 0,
@@ -246,7 +246,7 @@ export function PlayerMatchAnalysisClient({
               );
             })}
           </div>
-          <div className="font-mono text-[10px] tracking-[0.1em] text-faint uppercase">
+          <div className="font-mono text-mono-xs tracking-[0.1em] text-faint uppercase">
             {`${formationByTeam[viewTeam].periods[0]?.formation} · Click a player`}
           </div>
         </div>
@@ -270,7 +270,7 @@ export function PlayerMatchAnalysisClient({
             data-testid="player-popup"
             className={cn(
               "overflow-hidden rounded-2xl border border-border-strong bg-background shadow-[0_40px_90px_-50px_rgba(23,23,23,0.55)]",
-              "max-[1023px]:absolute max-[1023px]:inset-x-0 max-[1023px]:top-0 max-[1023px]:z-40 max-[1023px]:min-h-full"
+              "max-pma:absolute max-pma:inset-x-0 max-pma:top-0 max-pma:z-40 max-pma:min-h-full"
             )}
           >
             {hasLoadError || !rosterEntry ? (
@@ -320,7 +320,7 @@ function PopupHeader({
   onClose: () => void;
 }) {
   return (
-    <div className="flex items-center gap-5 border-b border-border bg-surface px-[30px] py-6">
+    <div className="flex items-center gap-5 border-b border-border bg-surface px-7.5 py-6">
       <div className="relative shrink-0">
         <div
           className="flex h-[66px] w-[66px] items-center justify-center rounded-full bg-elevated"
@@ -329,19 +329,19 @@ function PopupHeader({
           <span className="display text-lg font-semibold">{initials(entry.display_name)}</span>
         </div>
         <span
-          className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full font-mono text-[10px] font-bold text-white"
+          className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full font-mono text-mono-xs font-bold text-white"
           style={{ background: teamColor }}
         >
           {entry.jersey_number}
         </span>
       </div>
       <div className="min-w-0 flex-1">
-        <div className="font-mono text-[11px] tracking-[0.08em] uppercase" style={{ color: teamColor }}>
+        <div className="font-mono text-mono-sm tracking-[0.08em] uppercase" style={{ color: teamColor }}>
           {entry.team}
           {entry.isSub ? ` · sub ${entry.on_minute}'` : ""}
         </div>
-        <h2 className="display truncate text-[30px] font-black">{entry.display_name}</h2>
-        <div className="font-mono text-[12px] text-muted">#{entry.jersey_number} &middot; {entry.position}</div>
+        <h2 className="display truncate text-display-2 font-black">{entry.display_name}</h2>
+        <div className="font-mono text-mono-base text-muted">#{entry.jersey_number} &middot; {entry.position}</div>
       </div>
       <button
         type="button"
@@ -389,10 +389,10 @@ function PopupBody({
   const [timelineSpeed, setTimelineSpeed] = useState<1 | 2 | 4>(1);
 
   return (
-    <div className="flex flex-col gap-[14px] p-[18px] min-[900px]:p-[22px]">
+    <div className="flex flex-col gap-3.5 p-4.5 pma-md:p-5.5">
       <div className="rounded-xl border border-border bg-surface p-3">
         <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-          <div className="font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Timeline</div>
+          <div className="font-mono text-mono-sm tracking-[0.08em] text-faint uppercase">Timeline</div>
           <div className="flex items-center gap-2">
             <div className="inline-flex shrink-0">
               {([1, 2, 4] as const).map((s, i) => {
@@ -404,7 +404,7 @@ function PopupBody({
                     onClick={() => setTimelineSpeed(s)}
                     style={{ position: "relative", zIndex: active ? 1 : 0 }}
                     className={cn(
-                      "border px-2 py-1 font-mono text-[10px] font-medium whitespace-nowrap",
+                      "border px-2 py-1 font-mono text-mono-sm font-medium whitespace-nowrap",
                       i === 0 ? "rounded-l-[5px]" : "-ml-px",
                       i === 2 && "rounded-r-[5px]",
                       active ? "border-focal bg-focal-soft text-focal" : "border-border text-muted"
@@ -425,7 +425,7 @@ function PopupBody({
                     onClick={() => setTimelineMode(m)}
                     style={{ position: "relative", zIndex: active ? 1 : 0 }}
                     className={cn(
-                      "border px-2.5 py-1 font-mono text-[10px] font-medium whitespace-nowrap",
+                      "border px-2.5 py-1 font-mono text-mono-sm font-medium whitespace-nowrap",
                       i === 0 ? "rounded-l-[5px]" : "-ml-px rounded-r-[5px]",
                       active ? "border-focal bg-focal-soft text-focal" : "border-border text-muted"
                     )}
@@ -449,7 +449,7 @@ function PopupBody({
       </div>
 
       <div ref={statCardsRef} className="rounded-xl border border-border bg-surface p-3">
-        <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Match contribution</div>
+        <div className="mb-1 font-mono text-mono-sm tracking-[0.08em] text-faint uppercase">Match contribution</div>
         <PlayerStatCardsPanel
           events={scrubEvents}
           possessionShares={possessionShares}
@@ -469,9 +469,9 @@ function PopupBody({
         />
       </div>
 
-      <div className="grid gap-[14px] min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
+      <div className="grid gap-3.5 pma-md:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
         <div className="flex flex-col rounded-xl border border-border bg-surface p-3">
-          <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Territory &amp; events</div>
+          <div className="mb-1 font-mono text-mono-sm tracking-[0.08em] text-faint uppercase">Territory &amp; events</div>
           {/* Stretched to align with the bottom of the right column's last
               card (Action feed) — TerritoryPanel distributes its own content
               evenly across that height instead of packing to the top. */}
@@ -487,9 +487,9 @@ function PopupBody({
           </div>
         </div>
 
-        <div className="flex flex-col gap-[14px]">
+        <div className="flex flex-col gap-3.5">
           <div className="rounded-xl border border-border bg-surface p-3">
-            <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Cumulative xT</div>
+            <div className="mb-1 font-mono text-mono-sm tracking-[0.08em] text-faint uppercase">Cumulative xT</div>
             {/* CumulativeXtPanel's own root is h-full flex-1 — it needs a flex
                 ancestor to resolve against, not just a fixed-height block, or
                 useContainerWidth reads height 0 and the panel never renders. */}
@@ -504,13 +504,13 @@ function PopupBody({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-[14px] min-[560px]:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3.5 pma-sm:grid-cols-2">
             <div className="rounded-xl border border-border bg-surface p-3">
-              <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Shots &middot; xG</div>
+              <div className="mb-1 font-mono text-mono-sm tracking-[0.08em] text-faint uppercase">Shots &middot; xG</div>
               <GoalMouthShotPanel events={scrubEvents} playerTeam={playerTeam} hoveredEventId={hoveredEventId} onHoverEvent={setHoveredEventId} />
             </div>
             <div className="rounded-xl border border-border bg-surface p-3">
-              <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Pass sonar</div>
+              <div className="mb-1 font-mono text-mono-sm tracking-[0.08em] text-faint uppercase">Pass sonar</div>
               <PassSonarPanel
                 events={scrubEvents}
                 playerTeam={playerTeam}
@@ -521,7 +521,7 @@ function PopupBody({
           </div>
 
           <div className="rounded-xl border border-border bg-surface p-3">
-            <div className="mb-1 font-mono text-[11px] tracking-[0.08em] text-faint uppercase">Action feed</div>
+            <div className="mb-1 font-mono text-mono-sm tracking-[0.08em] text-faint uppercase">Action feed</div>
             <ActionFeedPanel
               events={scrubEvents}
               playerTeam={playerTeam}
@@ -533,7 +533,7 @@ function PopupBody({
         </div>
       </div>
 
-      <div className="text-right font-mono text-[11px] text-faint">
+      <div className="text-right font-mono text-mono-sm text-faint">
         {competition} &middot; match {matchId}
       </div>
     </div>

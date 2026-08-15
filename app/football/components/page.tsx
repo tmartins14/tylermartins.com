@@ -30,7 +30,7 @@ export default function ComponentShowcase() {
         <div className="mb-4 font-mono text-xs tracking-[0.14em] text-focal uppercase">
           {metadata.eyebrow}
         </div>
-        <h1 className="display mb-4 text-[34px] leading-[1.05]">{metadata.title}</h1>
+        <h1 className="display mb-4 text-display-2 leading-[1.05]">{metadata.title}</h1>
         <Content
           homeTeam={TEAM_NAME.home}
           homeScore={matchStatsData.home.score}
@@ -38,7 +38,7 @@ export default function ComponentShowcase() {
           awayTeam={TEAM_NAME.away}
           components={{
             p: (props: ComponentProps<"p">) => (
-              <p className="text-[13.5px] leading-[1.6] text-muted" {...props} />
+              <p className="text-base leading-[1.6] text-muted" {...props} />
             ),
           }}
         />
