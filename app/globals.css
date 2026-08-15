@@ -73,6 +73,11 @@
   --text-display-2:34px;
   --text-display-3:24px;
   --text-display-4:20px;
+  /* Compact "big number" role (match score headers) — display-1's viewport-scaled
+     clamp reads oversized in a dense dashboard widget (grows with screen width,
+     capped at 56px; feedback after Ticket 1 landed: too large next to its
+     neighbors). Fixed, not fluid — this isn't a page hero. */
+  --text-score:40px;
   --text-lg:16px;
   --text-base:14px;
   --text-sm:13px;

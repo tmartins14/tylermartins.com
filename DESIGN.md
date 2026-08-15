@@ -39,6 +39,7 @@ lint rule enforces this, see "Drift enforcement" below). Defined in `app/globals
 | `text-display-2` | 34px | Fraunces | Tool-page H1 (dashboards, gallery); popup player name |
 | `text-display-3` | 24px | Fraunces | subsection headers; modal title; match-score line |
 | `text-display-4` | 20px | Fraunces | ChartFrame title; card titles |
+| `text-score` | 40px | Fraunces (`.display` class) | match-score "big number" (dashboard header) — fixed, not fluid; added post-launch when `display-1`'s viewport-scaled clamp read oversized in this compact widget context |
 | `text-lg` | 16px | Geist Sans (default) | lede / intro paragraph |
 | `text-base` | 14px | Geist Sans | default body |
 | `text-sm` | 13px | Geist Sans | dense secondary; nav links; gallery row name/blurb |

@@ -36,7 +36,7 @@ export function MatchHeaderHero({
           <div className="display text-display-2 leading-none">{home.team}</div>
           <div className="mt-1 font-mono text-mono-sm text-faint">xG {home.xg.toFixed(2)}</div>
         </div>
-        <div className="display text-display-1 leading-none">
+        <div className="display text-score leading-none">
           <span className="text-focal">{home.score}</span>{" "}
           <span className="text-display-3 text-faint">–</span>{" "}
           <span className="text-secondary">{away.score}</span>
