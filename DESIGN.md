@@ -118,11 +118,23 @@ split:
 
 - **Mobile** (`<768px`, below `--breakpoint-tablet`): `MobileDashboardTabs` — one of
   Spain / Match / England visible at a time via a tab bar. Unchanged from before Ticket 1d.
-- **Tablet** (`768–1279px`, `tablet:` and below `dash:`): stacked-dense — all three cards
-  (`tablet-dashboard-stack` testid) visible full-width in one column, no tab switcher.
-  Each card's pitch panels already measure their own container (`useContainerWidth` +
-  `computePxPerYard`), so this tier needed no new sizing logic, only a new visibility
-  tier. This is the genuine tablet design the bundle called out as missing.
+- **Tablet** (`768–1279px`, `tablet:` and below `dash:`): all three cards
+  (`tablet-dashboard-stack` testid) visible, no tab switcher, **width-capped**
+  (`--size-tablet-card`, 420px) rather than full-bleed. Single column 768–899px; at
+  `tablet-2col` (900px+) the two team cards sit side by side and the match card spans
+  both. This is the genuine tablet design the bundle called out as missing.
+  **First cut shipped full-bleed cards and was a real, reported regression**: a card's
+  pitch/chart stays capped at its own desktop-scale size (`MAX_PX_PER_YARD`,
+  `lib/pitch-scale.ts`) regardless of container width, so stretching the card to the
+  viewport was pure wasted whitespace around a small pitch, tripled down the page —
+  it read as both "too large" (disproportionate to the shrunken content next to it) and
+  "doesn't fit the screen" (~2x the scroll height for no more actual content). Fixed by
+  capping card width instead of the viewport dictating it. Grid tracks are plain `1fr`s
+  with per-card `max-width`, not a content-sized `minmax()` track — that combination
+  triggered a real ResizeObserver feedback loop with the pitch panels' own width
+  measurement at exactly 1024px (where this tier's 2-col split and the site rail's
+  `lg:` breakpoint coincide), hanging the page. Verified against a *specific* reported
+  window size (1159×697), not just round numbers — see `e2e/dashboard-responsive.spec.ts`.
 - **Desktop** (`≥1280px`, `dash:`): the 3-column grid. Center column is
   `minmax(300px, var(--size-dashboard-center))`, not a hard 360px, so it can yield space
   to the team columns right at the 1280px boundary — the tightest point given the site

@@ -86,16 +86,32 @@
   --text-mono-xs:10px;
   /* Dashboard breakpoints — three tiers, not two (Ticket 1d):
      max-tablet (<768px) tabbed mobile stack (MobileDashboardTabs) · tablet
-     (768–1279px) stacked-dense, all three cards visible full-width, no tabs ·
-     dash (≥1280px) the 3-column grid. --breakpoint-dash stays 80rem: at this
-     component's true-scale pitches + toggle-group header widths, the grid
-     clips/overlaps below ~1000px of *content* width — and the site rail (lg:,
-     w-60=240px) eats into that once the viewport crosses 1024px, so the real
-     safe threshold (verified empirically with the rail present) is well above
-     the design doc's ~720px suggestion. That's exactly the gap --breakpoint-
-     tablet now fills instead of falling through to tabs. */
-  --breakpoint-tablet:48rem;  /* 768px */
-  --breakpoint-dash:80rem;    /* 1280px */
+     (768–1279px) all three cards visible, no tabs, width-capped cards (see
+     --size-tablet-card below) — single column 768–899px, two-up (home/away
+     side by side, match card spanning below) at 900px+ via --breakpoint-
+     tablet-2col · dash (≥1280px) the 3-column grid. --breakpoint-dash stays
+     80rem: at this component's true-scale pitches + toggle-group header
+     widths, the grid clips/overlaps below ~1000px of *content* width — and
+     the site rail (lg:, w-60=240px) eats into that once the viewport crosses
+     1024px, so the real safe threshold (verified empirically with the rail
+     present) is well above the design doc's ~720px suggestion. That's
+     exactly the gap --breakpoint-tablet now fills instead of falling through
+     to tabs.
+     First cut of the tablet tier (full-width single-column cards, no cap)
+     shipped a real bug: the pitch/chart inside each card stays capped at its
+     desktop-scale size (MAX_PX_PER_YARD, lib/pitch-scale.ts) regardless of
+     container width, so a full-bleed card was mostly wasted whitespace
+     around a small centered pitch — three of those stacked roughly doubled
+     the page's scroll height for no benefit. --size-tablet-card fixes that
+     by capping each card to what its content actually needs. */
+  --breakpoint-tablet:48rem;       /* 768px */
+  --breakpoint-tablet-2col:56.25rem; /* 900px — two team cards fit side by side above this */
+  --breakpoint-dash:80rem;         /* 1280px */
+  /* Cap for tablet-tier cards (both the 768–899px single column and each cell
+     of the 900px+ two-column row) — sized to what a card's content (a pitch
+     capped at ~304px + padding, or the match card's stats/xG-race chart)
+     actually needs, not the full viewport width. */
+  --size-tablet-card:420px;
 
   /* ---- hoisted layout constants (DESIGN.md "Spacing & layout constants") —
      every breakpoint/width/pitch constant is a named token defined once here,

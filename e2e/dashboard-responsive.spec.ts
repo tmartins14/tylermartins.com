@@ -2,16 +2,27 @@ import { test, expect, type Page, type Locator } from "@playwright/test";
 
 const VIEWPORTS = [
   { name: "phone", width: 375, height: 812, layout: "tabs" as const },
-  // Real tablet tier (Ticket 1d) — stacked-dense, not the old tabs fallback.
-  // 768px is the exact --breakpoint-tablet boundary; 1024px covers mid-tablet
-  // (also where the site rail appears at lg:, so it's the trickiest width).
-  { name: "tablet-min", width: 768, height: 1024, layout: "stack" as const },
-  { name: "tablet-mid", width: 1024, height: 900, layout: "stack" as const },
+  // Real tablet tier (Ticket 1d) — all three cards visible, no tabs. Width-capped
+  // (--size-tablet-card), not full-bleed (Ticket 1d's first cut stretched cards to
+  // the viewport while the pitch inside stayed capped at its desktop size, so a
+  // card was mostly wasted whitespace around a small pitch — see the card-width
+  // assertion below, which exists specifically to catch that regression).
+  // 768px is the exact --breakpoint-tablet boundary (single column below 900px);
+  // 1024px/1159px are past --breakpoint-tablet-2col (900px, team cards side by
+  // side) — 1159x697 is a real reported window size, not a round number.
+  { name: "tablet-1col", width: 768, height: 1024, layout: "stack" as const },
+  { name: "tablet-2col", width: 1024, height: 900, layout: "stack" as const },
+  { name: "tablet-2col-reported", width: 1159, height: 697, layout: "stack" as const },
   // 1536px, not 1280: the site rail (w-60 = 240px, lg:1024+) eats into the viewport once it
   // appears, and the clamp cap (pxPerYard 3.2 / ~304px pitch width) isn't actually reached
   // until the remaining content width is this wide — verified empirically.
   { name: "desktop", width: 1536, height: 900, layout: "grid" as const },
 ];
+
+// --size-tablet-card is 420px (app/globals.css) — allow a little slack for
+// border/rounding, but a card meaningfully wider than this means the "cap card
+// width, don't stretch to the viewport" fix has regressed.
+const MAX_TABLET_CARD_WIDTH = 460;
 
 const TEAM_VIEWS = ["Formation", "Pass Net", "Shape"];
 const CENTER_VIEWS = ["Stats", "Momentum", "Goals"];
@@ -147,6 +158,39 @@ for (const viewport of VIEWPORTS) {
         await expect(scope.getByTestId("team-column-home")).toBeVisible();
         await expect(scope.getByTestId("center-column")).toBeVisible();
         await expect(scope.getByTestId("team-column-away")).toBeVisible();
+      });
+
+      test("tablet cards are width-capped, not stretched to the viewport", async ({
+        page,
+      }) => {
+        // Regression guard for the real bug reported after Ticket 1d shipped: a
+        // full-bleed card doesn't help because the pitch/chart inside it stays
+        // capped at its own desktop-scale size (MAX_PX_PER_YARD) regardless of
+        // container width — a wider card was just wasted whitespace around a
+        // small centered pitch, tripled down the page. This asserts the actual
+        // fix (--size-tablet-card), not just an indirect page-height proxy.
+        //
+        // Below --breakpoint-tablet-2col (900px) every card is single-column and
+        // capped to --size-tablet-card (420px). At/above it the two team columns
+        // sit side by side (still capped individually) and the match/center card
+        // spans both of them, so its own cap is roughly double + the grid gap.
+        await page.goto("/football/dashboard");
+        const scope = scopeFor(page, "stack");
+        const isTwoCol = viewport.width >= 900;
+        const caps = {
+          "team-column-home": MAX_TABLET_CARD_WIDTH,
+          "team-column-away": MAX_TABLET_CARD_WIDTH,
+          "center-column": isTwoCol ? MAX_TABLET_CARD_WIDTH * 2 + 32 : MAX_TABLET_CARD_WIDTH,
+        };
+
+        for (const [testId, cap] of Object.entries(caps)) {
+          const box = await scope.getByTestId(testId).boundingBox();
+          expect(box, `${testId} should have a bounding box`).not.toBeNull();
+          expect(
+            box!.width,
+            `${testId} is ${box!.width}px wide at ${viewport.width}px viewport (cap ${cap}px) — should be capped near --size-tablet-card, not stretched to fill the viewport`
+          ).toBeLessThanOrEqual(cap);
+        }
       });
     }
 
