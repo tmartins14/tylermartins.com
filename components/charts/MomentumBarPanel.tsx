@@ -14,7 +14,17 @@ export function MomentumBarPanel({ data }: { data: MomentumData }) {
   const { ref: containerRef, width, height } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
   const [hover, setHover] = useState<Bin | null>(null);
-  const mode = resolvedTheme === "dark" ? "dark" : "light";
+  // Gated behind `mounted` so the first client render matches the server's
+  // "light" default exactly — resolvedTheme is undefined during SSR and the
+  // first client render, and homeColor/awayColor below feed the legend
+  // swatches directly in JSX (unconditionally, not behind any state), so
+  // reading resolvedTheme straight into them here caused a real hydration
+  // mismatch for dark-preference visitors. Same fix as TeamColumnCard.tsx /
+  // PlayerMatchAnalysisClient.tsx.
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
+  const mode = mounted && resolvedTheme === "dark" ? "dark" : "light";
   const homeColor = kitEncoding("home", mode);
   const awayColor = kitEncoding("away", mode);
 
