@@ -44,7 +44,9 @@ export function GoalTimeline({
       ))}
       {goals.map((g, i) => {
         const isHome = g.team === homeTeam;
-        const color = isHome ? "var(--focal)" : "var(--secondary)";
+        // --team-home/--team-away (lib/kits.ts's kitEncoding, mirrored as CSS vars —
+        // see globals.css), never --focal/--secondary: this is team data, not chrome.
+        const color = isHome ? "var(--team-home)" : "var(--team-away)";
         const gy = isHome ? y - 16 : y + 16;
         const surname = g.player.split(" ").slice(-1)[0];
         return (

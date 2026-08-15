@@ -133,7 +133,67 @@ match dashboard.
 
 ## Color & kits
 
-*TBD — lands in Ticket 2 (2h).*
+**The rule:** every team-data mark (a bar, line, node, or pitch marker whose color
+identifies *which team*) reads its color from `lib/kits.ts`'s `kitEncoding(side, mode)` —
+never `focal`/`secondary` (brand chrome) and never a second, independently-maintained
+hex literal. That's the fix for the flip bug (Ticket 2b: three panels had home=focal/
+away=secondary, two had it backwards) and the fix for the color law leak (Ticket 2c:
+brand rose was doubling as "team A" in five components).
+
+**Kit table** (`lib/kits.ts`, StatsBomb carries no kit colors — this is an owned
+dataset):
+
+| Team | Kit | primary | accent | encoding (light) | encoding (dark) |
+|---|---|---|---|---|---|
+| Spain | home | `#C60B1E` | `#FFC400` | `#C60B1E` | `#E23744` |
+| England | home | `#FFFFFF` | `#001E3C` | `#001E3C` (white is unusable as ink on the shell) | `#7FA8D6` |
+
+Only `home` kits are seeded — the one match this site ships (`3943043`, per
+`DEFAULT_MATCH_ID`) had both sides in their home kit. `away`/`third` slots exist on the
+type but aren't required, unlike the handoff bundle's illustrative snippet — filling
+them in would mean inventing colors with no source.
+
+**`kitEncoding(side, mode, matchId?)`** is the one function every panel calls; `matchId`
+defaults to `DEFAULT_MATCH_ID` since every current view renders exactly one match.
+`kitChip(side)` returns the two-tone `{ primary, accent }` pair for the identity chip
+(swatch + border) — `TeamColumnCard`'s team label is the reference implementation:
+single-hue `kitEncoding` colors the data marks, the two-tone chip carries the full
+identity, which is what makes England legible despite an unusable white primary.
+
+**CSS-var mirror:** `--team-home`/`--team-away` in `app/globals.css` carry the same
+values for the few pure-CSS/server components (`GoalTimeline`) that color by team
+without a client-side theme hook. Keep these, `lib/kits.ts`, and `lib/chart-theme.ts`'s
+`spain`/`england` fields (which now derive from `kitEncoding`, not their own literals)
+in sync — same multi-copy pattern already used for `focal`/`secondary` between
+`globals.css` and `chart-theme.ts`.
+
+**Clash rule (2d):** `resolveMatchEncodings` drops the away side to its away/third kit
+if ΔE (CIE76, `deltaE()`) falls below 20, then to a curated fallback pair
+(`#0F766E`/`#C2410C`, proposed not locked) if still too close. Doesn't trigger for the
+seeded match (Spain red vs. England navy is nowhere near the threshold) — it exists for
+when a second match's kits actually clash.
+
+**Heat scale (2f):** `HEAT_SCALE` (`lib/chart-theme.ts`) — a warm-anchored sequential
+ramp (cream → amber/orange, light `#B45309` / dark `#F59E0B`), decoupled from team
+identity. `TerritoryPanel`'s heatmap uses it; the hull outline and event markers on the
+same chart stay team-colored (`kitEncoding`) since those *are* identity, not density.
+Proposed endpoints, not locked.
+
+**shotMap encoding (2e):** hue = team (`kitEncoding`), tier = outcome (`styleMode:
+"tier"`) — `lib/components.ts`'s gallery blurb now says so; it used to claim
+"color = outcome," which never matched what `ShotMapPanel` actually rendered.
+
+**Kicker rule (2g):** `ChartFrame`'s `kickerColor` defaults to `muted`; `focal`/
+`secondary` are reserved for non-data framing, never a chart that encodes real data.
+Audited — nothing currently opts into either.
+
+**Scope note:** the FootballD3 gallery (`components/showcase/ComponentStage.tsx`) still
+renders team A/B demos in `focal`/`secondary` — deliberately out of scope for this pass
+(not in the handoff bundle's file list; it's illustrative, not this-match-specific).
+Selection/highlight accents (`PassSonarPanel`, `GoalMouthShotPanel`, `TimelinePanel`,
+`PlayAnimationPanel`'s `actorColor`/`highlightColor`/`playedColor`) also still use
+`focal` — read as "currently relevant," not team-identity, so treated differently from
+the flip-bug fixes above. Flagged for review, not silently left out.
 
 ## Accessibility
 

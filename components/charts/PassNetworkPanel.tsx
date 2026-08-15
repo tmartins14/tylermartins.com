@@ -22,10 +22,14 @@ export type PassNetworkData = {
 
 type PassNetworkPanelProps = {
   data: PassNetworkData;
-  colorToken: "focal" | "secondary";
+  /** Resolved hex — the dashboard passes a kit encoding (lib/kits.ts). Takes
+   * precedence over `colorToken` when both are given. */
+  color?: string;
+  /** Legacy token lookup into CHART_THEME, kept for the gallery. Prefer `color`. */
+  colorToken?: "focal" | "secondary";
 };
 
-export function PassNetworkPanel({ data, colorToken }: PassNetworkPanelProps) {
+export function PassNetworkPanel({ data, color, colorToken }: PassNetworkPanelProps) {
   const { ref: containerRef, width } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
 
@@ -50,10 +54,10 @@ export function PassNetworkPanel({ data, colorToken }: PassNetworkPanelProps) {
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 },
     });
 
-    const color = theme[colorToken];
+    const resolvedColor = color ?? theme[colorToken ?? "focal"];
     createPassNetwork(pitch, data, {
-      nodeColor: color,
-      edgeColor: color,
+      nodeColor: resolvedColor,
+      edgeColor: resolvedColor,
       // Labels sit below each node (not on top of it) — a player's full name is far
       // wider than the node, so it needs to read against the pitch surface, not the
       // node fill. theme.text (not theme.elevated, which matches the pitch background
@@ -70,7 +74,7 @@ export function PassNetworkPanel({ data, colorToken }: PassNetworkPanelProps) {
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [data, colorToken, resolvedTheme, width, containerRef]);
+  }, [data, color, colorToken, resolvedTheme, width, containerRef]);
 
   return <div ref={containerRef} data-testid="pass-network-panel" className="flex justify-center" />;
 }

@@ -338,7 +338,7 @@ export function ComponentStage({
   /** Second, independent toggle value — currently only momentumChart's Horizontal/Vertical. */
   orientationMode?: string;
 }) {
-  const colorToken = side === "home" ? "focal" : "secondary";
+  const colorToken: "focal" | "secondary" = side === "home" ? "focal" : "secondary";
 
   switch (entry.name) {
     case "formation":
