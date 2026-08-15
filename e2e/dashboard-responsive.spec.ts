@@ -262,3 +262,29 @@ for (const viewport of VIEWPORTS) {
     }
   });
 }
+
+test.describe("type-ramp classes survive cn()/tailwind-merge", () => {
+  test.use({ viewport: { width: 1536, height: 900 } });
+
+  test("a ToggleGroup button renders at its ramp size, not the browser's inherited default", async ({
+    page,
+  }) => {
+    // Regression guard for a real bug: cn()'s tailwind-merge didn't know about
+    // this project's custom @theme font-size tokens (text-mono-sm etc.), so
+    // combining one with an ordinary conditional color class — the standard
+    // ToggleGroup/DashboardTabBar pattern, cn("text-mono-sm ...", isActive ?
+    // "text-focal" : "text-muted") — silently dropped the size class entirely.
+    // Every such button rendered at the browser's inherited 16px instead of
+    // 11px. Checks the real rendered pixel value in a real browser, not just
+    // that the class string looks right — that's what actually broke last time.
+    await page.goto("/football/dashboard");
+    // Both team cards have a "Formation" button — either one exercises the bug.
+    const button = page
+      .getByTestId("dashboard-grid")
+      .getByRole("button", { name: "Formation", exact: true })
+      .first();
+    await expect(button).toBeVisible();
+    const fontSize = await button.evaluate((el) => getComputedStyle(el).fontSize);
+    expect(fontSize, "ToggleGroup button should render at text-mono-sm (11px), not an inherited default").toBe("11px");
+  });
+});

@@ -51,6 +51,23 @@ Family tokens (`font-display`/`font-body`/`font-mono`) exist too, but display te
 almost always wants the `.display` class instead (adds weight 900 + optical size, not
 just the family).
 
+**`cn()` and custom ramp tokens — a real gotcha, already fixed once, don't reintroduce
+it.** `lib/utils.ts`'s `cn()` wraps `tailwind-merge`, which only knows Tailwind's own
+default scale. A truly custom class name (`text-display-2`, `text-mono-sm`, `text-score`
+— not `text-lg/base/sm`, those already existed as default keys we override) sharing the
+`text-` prefix with a *different* Tailwind group (text color) gets misclassified and
+**silently dropped** by tailwind-merge whenever it's merged alongside a class from the
+group it's mistaken for. This shipped as a real bug: every button using
+`cn("text-mono-sm ...", isActive ? "text-focal" : "text-muted")` — the standard
+ToggleGroup/DashboardTabBar pattern — rendered at the browser's inherited 16px, not
+11px, because the color class silently won the (bogus) conflict. Fixed by registering
+the custom scale with `extendTailwindMerge` in `lib/utils.ts`, once, for every call site
+— **any new custom `@theme` class name that shares a Tailwind prefix with an existing
+group must be added to that same `classGroups` config**, or it's just this bug again
+under a new token name. Regression guard:
+`e2e/dashboard-responsive.spec.ts`'s "type-ramp classes survive cn()" test — checks a
+real rendered `getComputedStyle` value in a real browser, not just the class string.
+
 ## Spacing & layout constants
 
 Arbitrary spacing (`p-[18px]`, `gap-[9px]`, ...) is banned by lint — Tailwind v4's
