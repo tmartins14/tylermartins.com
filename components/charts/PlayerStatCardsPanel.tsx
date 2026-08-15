@@ -61,5 +61,15 @@ export function PlayerStatCardsPanel({
     };
   }, [events, possessionShares, playerTeam, scrubbedMinute, columns]);
 
-  return <div ref={containerRef} data-testid="player-stat-cards-panel" />;
+  // These are real DOM stat cards (numbers + labels), not an SVG chart — role="region"
+  // groups them without hiding the individual card text from screen readers the way
+  // role="img" would (that would collapse everything into one opaque description).
+  return (
+    <div
+      ref={containerRef}
+      data-testid="player-stat-cards-panel"
+      role="region"
+      aria-label={`${playerTeam} selected player's match contribution stats, up to the scrubbed minute`}
+    />
+  );
 }

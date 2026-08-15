@@ -50,5 +50,12 @@ export function GoalMouthShotPanel({ events, playerTeam, hoveredEventId, onHover
     };
   }, [events, playerTeam, hoveredEventId, onHoverEvent, resolvedTheme, width, containerRef]);
 
-  return <div ref={containerRef} data-testid="goal-mouth-shot-panel" />;
+  return (
+    <div
+      ref={containerRef}
+      data-testid="goal-mouth-shot-panel"
+      role="img"
+      aria-label={`Shots on goal for ${playerTeam}'s selected player, viewed from the goal mouth`}
+    />
+  );
 }

@@ -95,7 +95,12 @@ export function ActionFeedPanel({ events, playerTeam, activeLayers, hoveredEvent
           onChange={setSortDir}
         />
       </div>
-      <div ref={containerRef} className="rounded-lg border border-border" />
+      <div
+        ref={containerRef}
+        className="rounded-lg border border-border"
+        role="region"
+        aria-label={`Action feed for ${playerTeam}'s selected player, sorted by ${sortBy === "xt" ? "expected threat" : "minute"}`}
+      />
     </div>
   );
 }

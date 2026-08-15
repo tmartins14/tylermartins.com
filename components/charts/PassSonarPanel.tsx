@@ -53,5 +53,13 @@ export function PassSonarPanel({ events, playerTeam, hoveredEventId, onHoverEven
     };
   }, [events, playerTeam, hoveredEventId, onHoverEvent, resolvedTheme, width, containerRef]);
 
-  return <div ref={containerRef} data-testid="pass-sonar-panel" className="flex justify-center" />;
+  return (
+    <div
+      ref={containerRef}
+      data-testid="pass-sonar-panel"
+      className="flex justify-center"
+      role="img"
+      aria-label={`Pass sonar for ${playerTeam}'s selected player — pass direction and distance by compass sector`}
+    />
+  );
 }
