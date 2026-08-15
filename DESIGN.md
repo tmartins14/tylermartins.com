@@ -231,4 +231,38 @@ the flip-bug fixes above. Flagged for review, not silently left out.
 
 ## Content model
 
-*TBD — lands in Ticket 4 (4d).*
+**Lineage (`concept` field, `lib/components.ts`).** `ComponentEntry` carries an
+optional `concept` block — `name`/`source`/`link`/`summary`, where an idea came
+from and what changed to make it practical. Unpopulated for now and **no render
+surface exists yet** (deliberately deferred to a future Piece-page treatment) —
+the field exists so lineage doesn't have to be retrofitted across 16+ components
+later. New components may populate it; nothing currently reads it.
+
+**Gallery sort dates.** All 16 components' `publishedDate` used to share one flat
+placeholder (`2026-07-28`, the site-integration date), making the gallery's
+newest-first sort a no-op. Backfilled with each component's real first-commit
+date from `football-analytics`' git history
+(`git log --follow --diff-filter=A -- src/footballd3/components/<name>`) — real
+data, not fabricated. `publishedDate` is sort-order-only, never rendered as
+visible text, so this only changed card order, not copy.
+
+**Async state kit (`components/charts/AsyncState.tsx`).** One shared treatment
+for any fetch-backed view, applied to `PlayerMatchAnalysisClient` (currently the
+only async-fed page):
+- `AsyncSkeleton` — pulsing blocks on `surface` (not `elevated` — a placeholder,
+  not a raised card), loosely shaped like the real popup so the swap doesn't
+  read as "the page changed." `animate-pulse` is stock Tailwind; the global
+  `prefers-reduced-motion: reduce` rule already forces every animation-duration
+  to 1ms sitewide, so no separate reduced-motion handling was needed here.
+- `AsyncError` — one-line `muted` mono, for a genuine fetch failure.
+- `AsyncEmpty` — same visual weight as `AsyncError` but distinct copy and
+  semantics: a real, expected outcome (e.g. a substitute with 1-2 touches),
+  never confused with a load failure. Threshold: fewer than 3 events for the
+  full match (`NEAR_ZERO_EVENTS_THRESHOLD`).
+
+**Homepage H1.** Was "Data, made visual and interactive." — generic, could be
+any data-viz portfolio. Tightened to the site's actual spine (translating new
+football-analytics ideas into usable tools); wording picked by Tyler from the
+handoff bundle's three options, not auto-chosen. `app/layout.tsx`'s meta
+description ("Match data, turned into tools.") was already on-spine and stays
+unchanged, per the bundle.
