@@ -11,6 +11,7 @@ import { CumulativeXtPanel } from "@/components/charts/CumulativeXtPanel";
 import { GoalMouthShotPanel } from "@/components/charts/GoalMouthShotPanel";
 import { PassSonarPanel } from "@/components/charts/PassSonarPanel";
 import { ActionFeedPanel } from "@/components/charts/ActionFeedPanel";
+import { AsyncSkeleton, AsyncError, AsyncEmpty } from "@/components/charts/AsyncState";
 import { useContainerWidth } from "@/hooks/useContainerWidth";
 import { scrubFilter, type PlayerEvent, type PlayerEventsFile } from "@/lib/playerEvents";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,11 @@ const FINAL_MINUTE = 94;
 // Stable reference (not a fresh `[]` literal on every render) so scrubEvents'
 // useMemo below doesn't invalidate every render while no player is selected.
 const EMPTY_EVENTS: PlayerEvent[] = [];
+// Ticket 4b — below this, a player's full-match event count is real data, not
+// a load failure, but too sparse for the charts below to say anything (a late
+// substitute with 1-2 touches, e.g. Ivan Toney's single event this match).
+// Distinct from a fetch error: this is an expected, correct outcome.
+const NEAR_ZERO_EVENTS_THRESHOLD = 3;
 
 type Team = "Spain" | "England";
 
@@ -194,6 +200,9 @@ export function PlayerMatchAnalysisClient({
 
   const fullEvents = playerEvents?.events ?? EMPTY_EVENTS;
   const scrubEvents = useMemo(() => scrubFilter(fullEvents, scrubbedMinute), [fullEvents, scrubbedMinute]);
+  // Only meaningful once data has actually loaded — playerEvents is null
+  // while loading, so this can't misfire as "empty" before the fetch settles.
+  const hasNearZeroEvents = playerEvents != null && fullEvents.length < NEAR_ZERO_EVENTS_THRESHOLD;
   const rosterEntry = selectedPlayerId != null ? roster.get(selectedPlayerId) : null;
 
   return (
@@ -262,7 +271,7 @@ export function PlayerMatchAnalysisClient({
 
       <div ref={popupRef} className="relative">
         {selectedPlayerId == null ? (
-          <div className="flex min-h-[240px] items-center justify-center rounded-2xl border border-border-strong bg-background p-10 text-center font-mono text-sm text-muted">
+          <div className="flex min-h-[240px] items-center justify-center rounded-2xl border border-border-strong bg-background p-10 text-center font-mono text-mono-sm text-muted">
             Select a starter or substitute to load their match analysis.
           </div>
         ) : (
@@ -274,7 +283,12 @@ export function PlayerMatchAnalysisClient({
             )}
           >
             {hasLoadError || !rosterEntry ? (
-              <div className="p-10 text-center font-mono text-sm text-muted">Couldn&apos;t load this player&apos;s data.</div>
+              <AsyncError message="Couldn't load this player's data." />
+            ) : !playerEvents || !heatmapBuckets ? (
+              // Skeleton stands in for the whole popup (header included) — the
+              // header itself has nothing real to show yet either, since
+              // rosterEntry alone doesn't carry this match's action data.
+              <AsyncSkeleton />
             ) : (
               <>
                 <PopupHeader
@@ -282,8 +296,10 @@ export function PlayerMatchAnalysisClient({
                   teamColor={theme[rosterEntry.team === "Spain" ? "spain" : "england"]}
                   onClose={closePopup}
                 />
-                {!playerEvents || !heatmapBuckets ? (
-                  <div className="p-10 text-center font-mono text-sm text-muted">Loading…</div>
+                {hasNearZeroEvents ? (
+                  <AsyncEmpty
+                    message={`${rosterEntry.display_name} recorded ${fullEvents.length} action${fullEvents.length === 1 ? "" : "s"} this match — not enough to chart.`}
+                  />
                 ) : (
                   <PopupBody
                     fullEvents={fullEvents}

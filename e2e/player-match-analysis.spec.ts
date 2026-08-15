@@ -55,6 +55,24 @@ test.describe("player match analysis", () => {
     await expect(page.locator(".fm-player", { hasText: "Lamine Yamal" })).toHaveCount(0);
   });
 
+  test("a player with near-zero events gets the empty-state message, not a mostly-blank popup", async ({ page }) => {
+    // Ticket 4b — Ivan Toney came on at 89' and recorded exactly 1 event this
+    // match (data/football/player_events/3943043/3834.json). Before the async
+    // state kit, this rendered the full PopupBody with charts that had
+    // essentially nothing to show, indistinguishable from a load bug.
+    await page.goto("/football/player-match-analysis");
+    await page.getByRole("button", { name: "England", exact: true }).click();
+    await page.locator(".fm-bench-row", { hasText: "Toney" }).click();
+
+    await expect(page.getByRole("heading", { name: "Ivan Toney" })).toBeVisible();
+    await expect(page.getByText(/Ivan Toney recorded 1 action this match/)).toBeVisible();
+    // The real popup header still renders (name/team/jersey) — only the body
+    // is replaced by the empty-state message, not the whole popup. `uppercase`
+    // is CSS-only styling; the actual text node stays mixed-case (same
+    // pattern as the "Spain · sub 67'" assertion above).
+    await expect(page.getByText("England · sub 89'", { exact: true })).toBeVisible();
+  });
+
   test("scrubbing the master timeline updates the stat cards reactively", async ({ page }) => {
     await page.goto("/football/player-match-analysis");
     await selectSpainStarter(page, "Lamine Yamal");

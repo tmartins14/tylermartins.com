@@ -1,6 +1,12 @@
 export const homeContent = {
   hero: {
-    headline: "Data, made visual and interactive.",
+    // Ticket 4c — was "Data, made visual and interactive." (generic, could be
+    // any data-viz portfolio). Tightened to the site's actual spine: taking a
+    // named football-analytics concept and making it into something usable,
+    // not just data-as-decoration. Meta description (app/layout.tsx:
+    // "Match data, turned into tools.") stays as-is per the bundle — already
+    // on-spine, this only needed to catch up to it.
+    headline: "I turn new football-analytics concepts into tools you can use.",
     subhead:
       "I'm Tyler, a data engineer who builds things on the side. This is where I turn whatever I'm into — starting with football — into tooling, visualizations, and interactive pieces. Different subjects, same thread: data.",
   },
