@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import * as d3 from "d3";
 import { useTheme } from "next-themes";
 import { createCumulativeXgChart } from "footballd3/cumulativeXgChart";
-import { CHART_THEME } from "@/lib/chart-theme";
 import { useContainerWidth } from "@/hooks/useContainerWidth";
+import { kitEncoding } from "@/lib/kits";
 
 export type CumulativeXgPoint = {
   minute: number;
@@ -39,15 +39,15 @@ export function CumulativeXgPanel({ data }: { data: CumulativeXgData }) {
     const container = containerRef.current;
     if (!container || !width || !height) return;
 
-    const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
+    const mode = resolvedTheme === "dark" ? "dark" : "light";
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
 
     createCumulativeXgChart(container$, data, {
       width,
       height,
-      homeColor: theme.secondary,
-      awayColor: theme.focal,
+      homeColor: kitEncoding("home", mode),
+      awayColor: kitEncoding("away", mode),
       showTooltip: false,
       onHover: setHover,
     });

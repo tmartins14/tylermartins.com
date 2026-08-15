@@ -47,7 +47,12 @@ export type BenchPlayer = {
 
 type FormationPanelProps = {
   data: FormationData;
-  colorToken: "focal" | "secondary" | "spain" | "england";
+  /** Resolved hex — the dashboard passes a kit encoding (lib/kits.ts), the gallery
+   * passes a raw theme color. Takes precedence over `colorToken` when both are given. */
+  color?: string;
+  /** Legacy token lookup into CHART_THEME, kept for the gallery/PlayerMatchAnalysis
+   * callers that don't (yet) resolve a color themselves. Prefer `color`. */
+  colorToken?: "focal" | "secondary" | "spain" | "england";
   /** Substitutes for this same team (substitutes_{match_id}.json's per-team array). Omit for a bench-less, read-only diagram. */
   bench?: BenchPlayer[];
   /** player_id of the currently selected player, or null. Rings the matching starter/bench row. */
@@ -56,7 +61,7 @@ type FormationPanelProps = {
   onSelect?: (playerId: number, team: string) => void;
 };
 
-export function FormationPanel({ data, colorToken, bench, selectedId = null, onSelect }: FormationPanelProps) {
+export function FormationPanel({ data, color, colorToken, bench, selectedId = null, onSelect }: FormationPanelProps) {
   const { ref: containerRef, width } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
 
@@ -65,6 +70,7 @@ export function FormationPanel({ data, colorToken, bench, selectedId = null, onS
     if (!container || width == null) return;
 
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
+    const resolvedColor = color ?? theme[colorToken ?? "focal"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
     const svg = container$.append("svg");
@@ -85,13 +91,13 @@ export function FormationPanel({ data, colorToken, bench, selectedId = null, onS
         pxPerYard,
         padding,
         theme: { background: theme.background, lines: theme.pitch, lineWeight: 1.1 },
-        nodeColor: theme[colorToken],
+        nodeColor: resolvedColor,
         labelColor: theme.text,
         backgroundColor: theme.background,
         nodeRadius: Math.max(8, renderedWidth * 0.032),
         // Team-colored (not always focal) — a focal-red ring read as wrong
         // against England's blue nodes once actually seen live.
-        selectedColor: theme[colorToken],
+        selectedColor: resolvedColor,
         selectedId,
         onPlayerClick: onSelect ? (player: FormationPlayer | BenchPlayer) => onSelect(player.player_id, data.metadata.team) : null,
       }
@@ -100,7 +106,7 @@ export function FormationPanel({ data, colorToken, bench, selectedId = null, onS
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [data, bench, colorToken, selectedId, onSelect, resolvedTheme, width, containerRef]);
+  }, [data, bench, color, colorToken, selectedId, onSelect, resolvedTheme, width, containerRef]);
 
   return <div ref={containerRef} data-testid="formation-panel" className="flex justify-center" />;
 }

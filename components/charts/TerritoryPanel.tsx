@@ -8,7 +8,7 @@ import { createHeatmap } from "footballd3/heatmap";
 import { createConvexHull } from "footballd3/convexHull";
 import { createEventScatter } from "footballd3/eventScatter";
 import { classifyLayer } from "footballd3/actionFeed";
-import { CHART_THEME } from "@/lib/chart-theme";
+import { CHART_THEME, HEAT_SCALE } from "@/lib/chart-theme";
 import { useContainerWidth } from "@/hooks/useContainerWidth";
 import { computePxPerYard } from "@/lib/pitch-scale";
 import { cn } from "@/lib/utils";
@@ -93,9 +93,13 @@ export function TerritoryPanel({
 
     const bucket = nearestBucket(heatmapBuckets.buckets, scrubbedMinute);
     if (bucket) {
+      // Warm-anchored, identity-decoupled (Ticket 2f) — the ramp's meaning stays
+      // constant regardless of which team/player is selected. Team identity lives
+      // in the hull/marker colors below, not the heat itself.
+      const heat = HEAT_SCALE[resolvedTheme === "dark" ? "dark" : "light"];
       createHeatmap(pitch, { grid: bucket.grid }, {
-        colorLow: theme.background,
-        colorHigh: teamColor,
+        colorLow: heat.low,
+        colorHigh: heat.high,
         maxOpacity: heatOpacity,
       });
     }

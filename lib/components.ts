@@ -71,7 +71,7 @@ export const components: ComponentEntry[] = [
   {
     name: "shotMap",
     cat: "shots",
-    blurb: "Shot scatter on a half-pitch. Circle area = xG; color = outcome.",
+    blurb: "Shot scatter on a half-pitch. Circle area = xG; color = team, tier = outcome.",
     code: "shotMap(g, shots, {\n  xg: 'statsbomb_xg'\n});",
     teamAware: true,
     stage: PITCH_STAGE,

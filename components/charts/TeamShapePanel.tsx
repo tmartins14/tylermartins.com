@@ -80,11 +80,16 @@ function drawCentroidCross(
 
 export function TeamShapePanel({
   data,
+  color,
   colorToken,
   hideControls = false,
 }: {
   data: TeamShapeData;
-  colorToken: "focal" | "secondary";
+  /** Resolved hex — the dashboard passes a kit encoding (lib/kits.ts). Takes
+   * precedence over `colorToken` when both are given. */
+  color?: string;
+  /** Legacy token lookup into CHART_THEME, kept for the gallery. Prefer `color`. */
+  colorToken?: "focal" | "secondary";
   /** Hide the on/off-ball toggle + period select, showing a fixed on-ball/period-0
    * view only — matches the "1A Broadcast" design's simplified single-view Team Shape. */
   hideControls?: boolean;
@@ -118,16 +123,16 @@ export function TeamShapePanel({
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.1 },
     });
 
-    const color = theme[colorToken];
+    const resolvedColor = color ?? theme[colorToken ?? "focal"];
     const teamShape = createTeamShape(pitch, data, {
       view,
-      nodeColor: color,
-      accentColor: color,
+      nodeColor: resolvedColor,
+      accentColor: resolvedColor,
       backgroundColor: theme.elevated,
     });
     controllerRef.current = teamShape;
     if (periodIdx !== 0) teamShape.updatePeriod(periodIdx);
-    drawCentroidCross(teamShape, data, view, periodIdx, color);
+    drawCentroidCross(teamShape, data, view, periodIdx, resolvedColor);
 
     return () => {
       controllerRef.current = null;
@@ -136,16 +141,16 @@ export function TeamShapePanel({
     // Mount effect intentionally excludes view/periodIdx — those drive the mounted
     // instance imperatively via the effects below, not a remount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, colorToken, resolvedTheme, width]);
+  }, [data, color, colorToken, resolvedTheme, width]);
 
   useEffect(() => {
     const teamShape = controllerRef.current;
     if (!teamShape) return;
     teamShape.update(view);
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
-    drawCentroidCross(teamShape, data, view, periodIdx, theme[colorToken]);
-    // periodIdx/data/colorToken/resolvedTheme read for the cross redraw, not to
-    // re-trigger this effect — updatePeriod's own effect below handles that case.
+    drawCentroidCross(teamShape, data, view, periodIdx, color ?? theme[colorToken ?? "focal"]);
+    // periodIdx/data/color/colorToken/resolvedTheme read for the cross redraw, not
+    // to re-trigger this effect — updatePeriod's own effect below handles that case.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view]);
 
@@ -154,7 +159,7 @@ export function TeamShapePanel({
     if (!teamShape) return;
     teamShape.updatePeriod(periodIdx);
     const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
-    drawCentroidCross(teamShape, data, view, periodIdx, theme[colorToken]);
+    drawCentroidCross(teamShape, data, view, periodIdx, color ?? theme[colorToken ?? "focal"]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [periodIdx]);
 

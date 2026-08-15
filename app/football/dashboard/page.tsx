@@ -60,7 +60,7 @@ export default function MatchDashboard() {
   const homeCard = (
     <TeamColumnCard
       teamName={home.team}
-      colorToken="focal"
+      side="home"
       formation={formationSpainData}
       passNetwork={passNetworkSpainData}
       teamShape={teamShapeSpainData}
@@ -82,7 +82,7 @@ export default function MatchDashboard() {
   const awayCard = (
     <TeamColumnCard
       teamName={away.team}
-      colorToken="secondary"
+      side="away"
       formation={formationEnglandData}
       passNetwork={passNetworkEnglandData}
       teamShape={teamShapeEnglandData}

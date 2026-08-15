@@ -3,6 +3,12 @@ import { cn } from "@/lib/utils";
 
 type ChartFrameProps = {
   kicker: string;
+  /** Defaults to `muted` — the color law (see DESIGN.md § Color law): in a chart
+   * that encodes real data, the kicker stays muted, never brand-tinted. `focal`/
+   * `secondary` are reserved for non-data framing only (e.g. a purely editorial
+   * card with no data marks to conflict with). Audited (Ticket 2g): nothing in
+   * this codebase currently opts into either — if a future caller does, it
+   * should be a deliberate non-data case, not an accidental leak. */
   kickerColor?: "focal" | "secondary" | "muted";
   title?: string;
   wide?: boolean;

@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import * as d3 from "d3";
 import { useTheme } from "next-themes";
 import { createMomentumBarChart } from "footballd3/momentumBarChart";
-import { CHART_THEME } from "@/lib/chart-theme";
 import type { MomentumData } from "@/components/charts/MomentumChartPanel";
 import { useContainerWidth } from "@/hooks/useContainerWidth";
+import { kitEncoding } from "@/lib/kits";
 
 type Bin = { start: number; end: number; value: number };
 
@@ -14,6 +14,9 @@ export function MomentumBarPanel({ data }: { data: MomentumData }) {
   const { ref: containerRef, width, height } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
   const [hover, setHover] = useState<Bin | null>(null);
+  const mode = resolvedTheme === "dark" ? "dark" : "light";
+  const homeColor = kitEncoding("home", mode);
+  const awayColor = kitEncoding("away", mode);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -22,7 +25,6 @@ export function MomentumBarPanel({ data }: { data: MomentumData }) {
     // view becomes visible, re-running this effect.
     if (!container || !width || !height) return;
 
-    const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
 
@@ -30,15 +32,15 @@ export function MomentumBarPanel({ data }: { data: MomentumData }) {
       width,
       height,
       orientation: "vertical",
-      homeColor: theme.focal,
-      awayColor: theme.secondary,
+      homeColor,
+      awayColor,
       onHover: setHover,
     });
 
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [data, resolvedTheme, width, height, containerRef]);
+  }, [data, homeColor, awayColor, width, height, containerRef]);
 
   const readout = hover
     ? `${hover.start}'–${hover.end}' · ${hover.value >= 0 ? data.home_team : data.away_team} threat ${hover.value >= 0 ? "+" : ""}${hover.value.toFixed(2)}`
@@ -49,11 +51,11 @@ export function MomentumBarPanel({ data }: { data: MomentumData }) {
       <div ref={containerRef} className="min-h-0 w-full flex-1" />
       <div className="mt-2 flex flex-wrap items-center gap-4 font-mono text-mono-sm text-muted">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-sm bg-focal" />
+          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: homeColor }} />
           {data.home_team}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-2.5 w-2.5 rounded-sm bg-secondary" />
+          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: awayColor }} />
           {data.away_team}
         </span>
         <span className="text-faint">{readout}</span>

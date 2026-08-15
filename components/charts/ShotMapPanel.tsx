@@ -21,20 +21,25 @@ export type Shot = {
 
 type ShotMapPanelProps = {
   shots: Shot[];
-  colorToken: "focal" | "secondary";
+  /** Resolved hex — the dashboard passes a kit encoding (lib/kits.ts). Takes
+   * precedence over `colorToken` when both are given. */
+  color?: string;
+  /** Legacy token lookup into CHART_THEME, kept for the gallery. Prefer `color`. */
+  colorToken?: "focal" | "secondary";
   shotScale?: number;
 };
 
-export function ShotMapPanel({ shots, colorToken, shotScale = 1 }: ShotMapPanelProps) {
+export function ShotMapPanel({ shots, color, colorToken, shotScale = 1 }: ShotMapPanelProps) {
   const { ref: containerRef, width } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
   const [hover, setHover] = useState<Shot | null>(null);
+  const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
+  const resolvedColor = color ?? theme[colorToken ?? "focal"];
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container || width == null) return;
 
-    const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
     const svg = container$.append("svg");
@@ -46,7 +51,7 @@ export function ShotMapPanel({ shots, colorToken, shotScale = 1 }: ShotMapPanelP
       orientation: "vertical",
       pxPerYard: computePxPerYard(width, 80, 24, MAX_PX_PER_YARD),
       theme: { background: theme.elevated, lines: theme.pitch, lineWeight: 1.2 },
-      color: theme[colorToken],
+      color: resolvedColor,
       styleMode: "tier",
       shotScale,
       mutedColor: theme.muted,
@@ -57,7 +62,8 @@ export function ShotMapPanel({ shots, colorToken, shotScale = 1 }: ShotMapPanelP
     return () => {
       container$.selectAll("*").remove();
     };
-  }, [shots, colorToken, shotScale, resolvedTheme, width, containerRef]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shots, resolvedColor, shotScale, resolvedTheme, width, containerRef]);
 
   const goalCount = shots.filter((s) => s.is_goal).length;
   const xgSum = shots.reduce((a, s) => a + s.xg, 0);
@@ -70,7 +76,7 @@ export function ShotMapPanel({ shots, colorToken, shotScale = 1 }: ShotMapPanelP
       <div ref={containerRef} data-testid="shot-map-panel" className="flex justify-center" />
       <div
         className="mt-2 font-mono text-mono-sm"
-        style={{ color: hover ? `var(--${colorToken})` : "var(--faint)" }}
+        style={{ color: hover ? resolvedColor : "var(--faint)" }}
       >
         {readout}
       </div>

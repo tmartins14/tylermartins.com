@@ -87,8 +87,8 @@ for (const viewport of VIEWPORTS) {
       const scope = scopeFor(page, viewport.layout);
 
       for (const [tabName, testId] of [
-        ["Spain", "team-column-focal"],
-        ["England", "team-column-secondary"],
+        ["Spain", "team-column-home"],
+        ["England", "team-column-away"],
       ] as const) {
         if (viewport.layout === "tabs") {
           await page.getByRole("tab", { name: tabName }).click();
@@ -116,23 +116,23 @@ for (const viewport of VIEWPORTS) {
       test("tab bar shows exactly one column panel at a time", async ({ page }) => {
         await page.goto("/football/dashboard");
         const scope = scopeFor(page, "tabs");
-        const focal = scope.getByTestId("team-column-focal");
+        const home = scope.getByTestId("team-column-home");
         const center = scope.getByTestId("center-column");
-        const secondary = scope.getByTestId("team-column-secondary");
+        const away = scope.getByTestId("team-column-away");
 
         await page.getByRole("tab", { name: "Spain" }).click();
-        await expect(focal).toBeVisible();
+        await expect(home).toBeVisible();
         await expect(center).toBeHidden();
-        await expect(secondary).toBeHidden();
+        await expect(away).toBeHidden();
 
         await page.getByRole("tab", { name: "Match" }).click();
         await expect(center).toBeVisible();
-        await expect(focal).toBeHidden();
-        await expect(secondary).toBeHidden();
+        await expect(home).toBeHidden();
+        await expect(away).toBeHidden();
 
         await page.getByRole("tab", { name: "England" }).click();
-        await expect(secondary).toBeVisible();
-        await expect(focal).toBeHidden();
+        await expect(away).toBeVisible();
+        await expect(home).toBeHidden();
         await expect(center).toBeHidden();
       });
     }
@@ -144,9 +144,9 @@ for (const viewport of VIEWPORTS) {
         await page.goto("/football/dashboard");
         const scope = scopeFor(page, "stack");
 
-        await expect(scope.getByTestId("team-column-focal")).toBeVisible();
+        await expect(scope.getByTestId("team-column-home")).toBeVisible();
         await expect(scope.getByTestId("center-column")).toBeVisible();
-        await expect(scope.getByTestId("team-column-secondary")).toBeVisible();
+        await expect(scope.getByTestId("team-column-away")).toBeVisible();
       });
     }
 
@@ -209,10 +209,10 @@ for (const viewport of VIEWPORTS) {
         };
 
         await expectWidthNear304(
-          grid.getByTestId("team-column-focal").getByTestId("shot-map-panel").locator("svg")
+          grid.getByTestId("team-column-home").getByTestId("shot-map-panel").locator("svg")
         );
         await expectWidthNear304(
-          grid.getByTestId("team-column-secondary").getByTestId("pass-network-panel").locator("svg")
+          grid.getByTestId("team-column-away").getByTestId("pass-network-panel").locator("svg")
         );
       });
     }

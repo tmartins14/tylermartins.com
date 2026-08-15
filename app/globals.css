@@ -21,6 +21,13 @@
   --radius:0.625rem;
   /* Fixed TopBar height (shared with the dashboard's mobile sticky header offset). */
   --topbar-h:60px;
+  /* Team encodings (Ticket 2b) — CSS-var mirror of lib/kits.ts's kitEncoding("home"/
+     "away") for the handful of pure-CSS/server components (GoalTimeline) that color
+     by team without a client-side useTheme() hook. Keep in sync with lib/kits.ts —
+     JS can't read a CSS var here or vice versa, so this is a second literal copy of
+     the same values, same as focal/secondary already are between here and
+     lib/chart-theme.ts. */
+  --team-home:#C60B1E; --team-away:#001E3C;
 }
 [data-theme="dark"] {
   --background:#1A1613; --surface:#211D18; --elevated:#2A2521;
@@ -30,6 +37,7 @@
   --secondary:#5B8AC0; --secondary-soft:rgba(91,138,192,0.16);
   --pitch:#5B8AC0; --grid:#2A2521;
   --rail-active-fg:#1A1613;
+  --team-home:#E23744; --team-away:#7FA8D6;
 }
 
 /* ---- expose tokens to Tailwind utilities (bg-focal, font-display, rounded-xl…) ---- */
@@ -49,6 +57,8 @@
   --color-pitch:var(--pitch);
   --color-grid:var(--grid);
   --color-rail-active-fg:var(--rail-active-fg);
+  --color-team-home:var(--team-home);
+  --color-team-away:var(--team-away);
   --font-display:var(--font-fraunces), Georgia, serif;
   --font-body:var(--font-geist-sans), system-ui, sans-serif;
   --font-mono:var(--font-geist-mono), "SF Mono", Menlo, monospace;

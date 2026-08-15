@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { useTheme } from "next-themes";
 import { createMomentumChart } from "footballd3/momentumChart";
-import { CHART_THEME } from "@/lib/chart-theme";
+import { kitEncoding } from "@/lib/kits";
 
 export type MomentumData = {
   home_team: string;
@@ -54,16 +54,22 @@ export function MomentumChartPanel({ data }: { data: MomentumData }) {
     const container = containerRef.current;
     if (!container) return;
 
-    const theme = CHART_THEME[resolvedTheme === "dark" ? "dark" : "light"];
+    const mode = resolvedTheme === "dark" ? "dark" : "light";
     const container$ = d3.select(container);
     container$.selectAll("*").remove();
 
+    // homeColor/awayColor key off the CHART's data field names, which
+    // flipForLeftHome unconditionally swaps (home_team <- away_team) — so
+    // "homeColor" here colors the real away team (England) and "awayColor"
+    // colors the real home team (Spain). Looks inverted next to the other
+    // panels' kitEncoding("home"/"away") calls; it isn't — it's the same
+    // Spain/England mapping, compensating for the swap above.
     createMomentumChart(container$, flipForLeftHome(data), {
       orientation: "vertical",
       width: 480,
       height: 300,
-      homeColor: theme.secondary,
-      awayColor: theme.focal,
+      homeColor: kitEncoding("away", mode),
+      awayColor: kitEncoding("home", mode),
     });
 
     return () => {
