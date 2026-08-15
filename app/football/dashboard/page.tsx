@@ -134,17 +134,38 @@ export default function MatchDashboard() {
           {awayCard}
         </div>
 
-        {/* Tablet 768–1279px: stacked-dense — all three cards visible full-width,
-            no tab switcher. Each card's own pitch panels already scale to their
-            measured container width (useContainerWidth + computePxPerYard), so
-            this tier needs no extra sizing logic of its own. */}
+        {/* Tablet 768–1279px: all three cards visible, no tab switcher — but
+            width-capped (--size-tablet-card), not full-bleed. A full-width card
+            doesn't help: the pitch/chart inside stays capped at its desktop-scale
+            size (MAX_PX_PER_YARD) regardless of container width, so stretching
+            the card just adds wasted whitespace around a small centered pitch,
+            repeated three times down the page (this was a real bug in the first
+            cut of this tier — roughly doubled the page's scroll height for no
+            benefit). Single column 768–899px (home → match → away, natural DOM
+            order); at tablet-2col (900px+) the two team cards sit side by side
+            and the match card spans both, reordered via `order` since the DOM
+            order (home, match, away) doesn't match that visual arrangement. */}
         <div
           data-testid="tablet-dashboard-stack"
-          className="hidden tablet:flex dash:hidden mt-4 flex-col gap-4"
+          className="hidden tablet:grid dash:hidden mt-4 grid-cols-1 gap-4 tablet-2col:grid-cols-2 tablet-2col:items-start"
         >
-          {homeCard}
-          {matchCard}
-          {awayCard}
+          {/* Plain 1fr/1fr tracks, not a content-sized minmax() track — that
+              triggered a ResizeObserver feedback loop with the pitch panels'
+              own width measurement (useContainerWidth) at exactly the width
+              where this tier's grid and the site rail's lg: breakpoint both
+              land (1024px), hanging the page. Each card caps its OWN width
+              and centers within its (now perfectly ordinary) grid cell
+              instead — same technique as the 768–899px single column below,
+              just applied per-cell instead of per-row. */}
+          <div className="mx-auto w-full max-w-[var(--size-tablet-card)] tablet-2col:order-1">
+            {homeCard}
+          </div>
+          <div className="mx-auto w-full max-w-[var(--size-tablet-card)] tablet-2col:order-3 tablet-2col:col-span-2 tablet-2col:max-w-[calc(var(--size-tablet-card)*2+1rem)]">
+            {matchCard}
+          </div>
+          <div className="mx-auto w-full max-w-[var(--size-tablet-card)] tablet-2col:order-2">
+            {awayCard}
+          </div>
         </div>
 
         {/* Mobile <768px: tabbed stack (unchanged). */}
