@@ -260,9 +260,9 @@ only async-fed page):
   never confused with a load failure. Threshold: fewer than 3 events for the
   full match (`NEAR_ZERO_EVENTS_THRESHOLD`).
 
-**Homepage H1.** Was "Data, made visual and interactive." — generic, could be
-any data-viz portfolio. Tightened to the site's actual spine (translating new
-football-analytics ideas into usable tools); wording picked by Tyler from the
-handoff bundle's three options, not auto-chosen. `app/layout.tsx`'s meta
-description ("Match data, turned into tools.") was already on-spine and stays
-unchanged, per the bundle.
+**Homepage H1.** The bundle flagged "Data, made visual and interactive." as
+generic (could be any data-viz portfolio) and offered three tightened
+alternatives leaning into the site's translator spine — explicitly Tyler's call,
+not auto-chosen. Reviewed and **kept as-is**: still "Data, made visual and
+interactive." `app/layout.tsx`'s meta description ("Match data, turned into
+tools.") is unaffected either way.
