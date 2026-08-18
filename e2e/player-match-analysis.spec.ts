@@ -151,4 +151,34 @@ test.describe("player match analysis @ mobile (390px)", () => {
     const grid = page.locator('[data-testid="player-stat-cards-panel"] .player-stat-cards');
     await expect(grid).toHaveCSS("grid-template-columns", /^[\d.]+px [\d.]+px$/);
   });
+
+  test("loading skeleton collapses to a single column, not a squished 3/2-across grid", async ({
+    page,
+  }) => {
+    // Regression guard for a real bug: AsyncSkeleton's placeholder grids used
+    // fixed grid-cols-3/grid-cols-2 with no responsive breakpoints, so on a
+    // phone-width popup the loading flash stayed multi-column and squished —
+    // unlike the real content underneath, which collapses to one column below
+    // pma-sm/pma-md. Reported live as "the responsive design is broken."
+    // Delay the API routes so the skeleton is actually observable, not a
+    // sub-frame flash.
+    await page.route("**/api/player-match-analysis/**", async (route) => {
+      await new Promise((r) => setTimeout(r, 500));
+      await route.continue();
+    });
+    await page.goto("/football/player-match-analysis");
+    await selectSpainStarter(page, "Lamine Yamal");
+
+    const skeleton = page.getByRole("status", { name: "Loading player data" });
+    await expect(skeleton).toBeVisible();
+
+    const grids = skeleton.locator(".grid");
+    const count = await grids.count();
+    expect(count).toBeGreaterThan(0);
+    for (let i = 0; i < count; i++) {
+      const columns = await grids.nth(i).evaluate((el) => getComputedStyle(el).gridTemplateColumns);
+      // A single column reports one track (no space-separated second value).
+      expect(columns.trim().split(/\s+/).length, `skeleton grid ${i} should be one column at 390px`).toBe(1);
+    }
+  });
 });

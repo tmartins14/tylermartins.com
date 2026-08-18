@@ -37,12 +37,17 @@ export function AsyncSkeleton() {
         </div>
       </div>
       <SkeletonBlock className="mt-6 h-16 w-full" />
-      <div className="mt-4 grid grid-cols-3 gap-3">
+      {/* Matches PopupBody's own breakpoints (pma-sm 560px / pma-md 900px),
+          not a fixed multi-column grid — a static grid-cols-N here stayed
+          3-across and 2-across even on a phone-width popup, squished against
+          the real content's single-column collapse below those widths (a
+          real regression, reported live: "responsive design is broken"). */}
+      <div className="mt-4 grid grid-cols-1 gap-3 pma-sm:grid-cols-3">
         <SkeletonBlock className="h-14" />
         <SkeletonBlock className="h-14" />
         <SkeletonBlock className="h-14" />
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-3">
+      <div className="mt-4 grid grid-cols-1 gap-3 pma-md:grid-cols-2">
         <SkeletonBlock className="h-40" />
         <SkeletonBlock className="h-40" />
       </div>
