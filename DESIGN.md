@@ -260,6 +260,16 @@ only async-fed page):
   never confused with a load failure. Threshold: fewer than 3 events for the
   full match (`NEAR_ZERO_EVENTS_THRESHOLD`).
 
+**Real bug, already fixed, don't reintroduce:** `AsyncSkeleton`'s placeholder
+grids first shipped as fixed `grid-cols-3`/`grid-cols-2`, with no responsive
+breakpoints — on a phone-width popup the loading flash stayed multi-column and
+squished, unlike the real `PopupBody` content underneath it, which collapses to
+one column below `pma-sm`/`pma-md`. Reported live as "the responsive design is
+broken." Any skeleton grid must use the same breakpoint tokens as the content
+it's standing in for, not a bare `grid-cols-N` — checked by a real
+`getComputedStyle().gridTemplateColumns` assertion at 390px in
+`e2e/player-match-analysis.spec.ts`, not just an eyeballed screenshot.
+
 **Homepage H1.** The bundle flagged "Data, made visual and interactive." as
 generic (could be any data-viz portfolio) and offered three tightened
 alternatives leaning into the site's translator spine — explicitly Tyler's call,
