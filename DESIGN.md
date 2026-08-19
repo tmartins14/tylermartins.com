@@ -342,4 +342,95 @@ anywhere.
 
 ## Content model
 
-*TBD — lands in Ticket 4 (4d).*
+**Lineage (`concept` field, `lib/components.ts`).** `ComponentEntry` carries an
+optional `concept` block — `name`/`source`/`link`/`summary`, where an idea came
+from and what changed to make it practical. Unpopulated for now and **no render
+surface exists yet** (deliberately deferred to a future Piece-page treatment) —
+the field exists so lineage doesn't have to be retrofitted across 16+ components
+later. New components may populate it; nothing currently reads it.
+
+**Gallery sort dates.** All 16 components' `publishedDate` used to share one flat
+placeholder (`2026-07-28`, the site-integration date), making the gallery's
+newest-first sort a no-op. Backfilled with each component's real first-commit
+date from `football-analytics`' git history
+(`git log --follow --diff-filter=A -- src/footballd3/components/<name>`) — real
+data, not fabricated. `publishedDate` is sort-order-only, never rendered as
+visible text, so this only changed card order, not copy.
+
+**Async state kit (`components/charts/AsyncState.tsx`).** One shared treatment
+for any fetch-backed view, applied to `PlayerMatchAnalysisClient` (currently the
+only async-fed page):
+- `AsyncSkeleton` — pulsing blocks on `surface` (not `elevated` — a placeholder,
+  not a raised card), loosely shaped like the real popup so the swap doesn't
+  read as "the page changed." `animate-pulse` is stock Tailwind; the global
+  `prefers-reduced-motion: reduce` rule already forces every animation-duration
+  to 1ms sitewide, so no separate reduced-motion handling was needed here.
+- `AsyncError` — one-line `muted` mono, for a genuine fetch failure.
+- `AsyncEmpty` — same visual weight as `AsyncError` but distinct copy and
+  semantics: a real, expected outcome (e.g. a substitute with 1-2 touches),
+  never confused with a load failure. Threshold: fewer than 3 events for the
+  full match (`NEAR_ZERO_EVENTS_THRESHOLD`).
+
+**Real bug, already fixed, don't reintroduce:** `AsyncSkeleton`'s placeholder
+grids first shipped as fixed `grid-cols-3`/`grid-cols-2`, with no responsive
+breakpoints — on a phone-width popup the loading flash stayed multi-column and
+squished, unlike the real `PopupBody` content underneath it, which collapses to
+one column below `pma-sm`/`pma-md`. Reported live as "the responsive design is
+broken." Any skeleton grid must use the same breakpoint tokens as the content
+it's standing in for, not a bare `grid-cols-N` — checked by a real
+`getComputedStyle().gridTemplateColumns` assertion at 390px in
+`e2e/player-match-analysis.spec.ts`, not just an eyeballed screenshot.
+
+**Homepage H1.** The bundle flagged "Data, made visual and interactive." as
+generic (could be any data-viz portfolio) and offered three tightened
+alternatives leaning into the site's translator spine — explicitly Tyler's call,
+not auto-chosen. Reviewed and **kept as-is**: still "Data, made visual and
+interactive." `app/layout.tsx`'s meta description ("Match data, turned into
+tools.") is unaffected either way.
+
+## Player Match Analysis — mobile popup fixes + card cleanup
+
+Three real bugs found and fixed post-Ticket-4, reported live by Tyler testing the
+dev build, not caught by any automated check beforehand — each is now covered by
+a permanent regression test proven via revert-and-retest.
+
+**Popup didn't actually cover the roster on mobile.** The mobile popup
+(`components/charts/PlayerMatchAnalysisClient.tsx`) was `position: absolute`
+relative to a wrapper `<div>` whose height collapsed to `0` the instant its only
+child (the popup) left normal flow — its `top: 0` then landed wherever that
+collapsed div naturally sat in the page (right after the roster above it), not
+the true top of the viewport, leaving some of the roster visible above the
+popup instead of hidden behind it. This predates Ticket 1 — confirmed by diffing
+against the pre-remediation baseline (commit `326ce3f`) in a worktree, byte-for-
+byte the same bug, just never noticed. Fixed with `position: fixed` +
+`inset-0` below the `pma` breakpoint instead — anchors to the viewport itself, so
+it can't be undermined by a parent collapsing; the old `scrollIntoView` timing
+hack is gone entirely. Regression guard: `e2e/player-match-analysis.spec.ts`
+checks `elementFromPoint` at the roster's own position resolves to the popup, not
+just that the popup is "on top" by z-index.
+
+**Popup content overflowed horizontally on mobile.** `PopupBody`'s chart-panel
+grid/flex wrappers (Territory & events, Cumulative xT, Shots·xG, Pass sonar) had
+no `min-w-0`. CSS Grid/flex items default to `min-width: auto`, refusing to
+shrink below their content's intrinsic width — each chart panel measures its own
+container via `useContainerWidth` (a `ResizeObserver`), so the wrapper and the
+chart reinforced each other into a state wider than the actual track (118px of
+overflow at 375px). **The page's own `scrollWidth` never showed this** — the
+popup is `position: fixed`, excluded from `document.scrollWidth` — only checking
+the *popup's own* `scrollWidth` vs `clientWidth` caught it. Any new panel added
+inside `PopupBody` needs `min-w-0` on its wrapping grid/flex item, or this
+recurs. Regression guard: same file, asserts `popup.scrollWidth - popup.clientWidth
+<= 1` at 390px.
+
+**Timeline + Match Contribution cards, cleaned up.** Not bugs — a design pass,
+options proposed and picked by Tyler:
+- Match Contribution stat cards (`.stat-card`, vendored
+  `football-analytics/.../playerStatCards.js`) are now centered (label + value),
+  not left-aligned. Found and fixed the same hardcoded-light-only-color gap as
+  the earlier `goalMouthShotPanel.js`/`cumulativeXtChart.js` fix while in the
+  file — `#8A8578` was literally the *stale* pre-Ticket-3c faint value.
+- Timeline card: the speed (`1×/2×/4×`) and mode (`Highlights`/`All events`)
+  toggles are grouped into one visual cluster (a divider between them, not two
+  independent floating rows); a divider now separates the highlight-reel zone
+  from the scrub-track zone in `TimelinePanel.tsx` (previously just a bare
+  `gap-3`, reading as one blended block).
