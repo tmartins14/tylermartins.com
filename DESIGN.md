@@ -276,3 +276,50 @@ alternatives leaning into the site's translator spine — explicitly Tyler's cal
 not auto-chosen. Reviewed and **kept as-is**: still "Data, made visual and
 interactive." `app/layout.tsx`'s meta description ("Match data, turned into
 tools.") is unaffected either way.
+
+## Player Match Analysis — mobile popup fixes + card cleanup
+
+Three real bugs found and fixed post-Ticket-4, reported live by Tyler testing the
+dev build, not caught by any automated check beforehand — each is now covered by
+a permanent regression test proven via revert-and-retest.
+
+**Popup didn't actually cover the roster on mobile.** The mobile popup
+(`components/charts/PlayerMatchAnalysisClient.tsx`) was `position: absolute`
+relative to a wrapper `<div>` whose height collapsed to `0` the instant its only
+child (the popup) left normal flow — its `top: 0` then landed wherever that
+collapsed div naturally sat in the page (right after the roster above it), not
+the true top of the viewport, leaving some of the roster visible above the
+popup instead of hidden behind it. This predates Ticket 1 — confirmed by diffing
+against the pre-remediation baseline (commit `326ce3f`) in a worktree, byte-for-
+byte the same bug, just never noticed. Fixed with `position: fixed` +
+`inset-0` below the `pma` breakpoint instead — anchors to the viewport itself, so
+it can't be undermined by a parent collapsing; the old `scrollIntoView` timing
+hack is gone entirely. Regression guard: `e2e/player-match-analysis.spec.ts`
+checks `elementFromPoint` at the roster's own position resolves to the popup, not
+just that the popup is "on top" by z-index.
+
+**Popup content overflowed horizontally on mobile.** `PopupBody`'s chart-panel
+grid/flex wrappers (Territory & events, Cumulative xT, Shots·xG, Pass sonar) had
+no `min-w-0`. CSS Grid/flex items default to `min-width: auto`, refusing to
+shrink below their content's intrinsic width — each chart panel measures its own
+container via `useContainerWidth` (a `ResizeObserver`), so the wrapper and the
+chart reinforced each other into a state wider than the actual track (118px of
+overflow at 375px). **The page's own `scrollWidth` never showed this** — the
+popup is `position: fixed`, excluded from `document.scrollWidth` — only checking
+the *popup's own* `scrollWidth` vs `clientWidth` caught it. Any new panel added
+inside `PopupBody` needs `min-w-0` on its wrapping grid/flex item, or this
+recurs. Regression guard: same file, asserts `popup.scrollWidth - popup.clientWidth
+<= 1` at 390px.
+
+**Timeline + Match Contribution cards, cleaned up.** Not bugs — a design pass,
+options proposed and picked by Tyler:
+- Match Contribution stat cards (`.stat-card`, vendored
+  `football-analytics/.../playerStatCards.js`) are now centered (label + value),
+  not left-aligned. Found and fixed the same hardcoded-light-only-color gap as
+  the earlier `goalMouthShotPanel.js`/`cumulativeXtChart.js` fix while in the
+  file — `#8A8578` was literally the *stale* pre-Ticket-3c faint value.
+- Timeline card: the speed (`1×/2×/4×`) and mode (`Highlights`/`All events`)
+  toggles are grouped into one visual cluster (a divider between them, not two
+  independent floating rows); a divider now separates the highlight-reel zone
+  from the scrub-track zone in `TimelinePanel.tsx` (previously just a bare
+  `gap-3`, reading as one blended block).

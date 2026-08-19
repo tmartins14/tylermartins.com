@@ -125,15 +125,48 @@ test.describe("player match analysis @ mobile (390px)", () => {
 
   test("popup becomes a full overlay over the lineup panel, closable with ✕", async ({ page }) => {
     await page.goto("/football/player-match-analysis");
+
+    // Regression guard for a real bug: the popup used to be `position:
+    // absolute` relative to a wrapper div whose height collapsed to 0 the
+    // instant its only child left normal flow — its `top: 0` then landed
+    // wherever that collapsed div happened to sit in the page (right after
+    // the roster above it), not the true top of the viewport, leaving some
+    // of the roster visible above the popup instead of fully hidden behind
+    // it. Reported live as "pops up over the formation selector." `fixed`
+    // (checked below) anchors to the viewport itself, sidestepping the
+    // collapse entirely — verified below via elementFromPoint, which
+    // resolves actual visual occlusion, not just DOM/layout position.
+    const formationPanel = page.getByTestId("formation-panel");
+    await expect(formationPanel).toBeVisible();
+
     await selectSpainStarter(page, "Lamine Yamal");
 
     const popup = page.getByTestId("player-popup");
     await expect(popup).toBeVisible();
-    await expect(popup).toHaveCSS("position", "absolute");
+    await expect(popup).toHaveCSS("position", "fixed");
 
     const box = await popup.boundingBox();
     expect(box).not.toBeNull();
     expect(box!.width).toBeGreaterThan(350); // spans (near) the full 390px viewport, not a narrow column
+    expect(box!.x, "popup should sit flush at the left edge, not offset").toBeLessThanOrEqual(1);
+    expect(box!.y, "popup should sit flush at the top edge, not offset").toBeLessThanOrEqual(1);
+
+    // The actual regression: the roster/formation panel stays in the DOM at
+    // its normal in-flow position (fixed doesn't remove siblings from flow),
+    // so a geometric bounding-box check alone can't tell "hidden" from
+    // "merely covered." Ask the browser what's actually on top at a point
+    // inside the formation panel's own box instead — elementFromPoint
+    // returns whatever's visually topmost there, occlusion included.
+    const formationBox = await formationPanel.boundingBox();
+    expect(formationBox).not.toBeNull();
+    const topElementIsPopup = await page.evaluate(
+      ({ x, y }) => {
+        const el = document.elementFromPoint(x, y);
+        return el?.closest('[data-testid="player-popup"]') != null;
+      },
+      { x: formationBox!.x + formationBox!.width / 2, y: formationBox!.y + formationBox!.height / 2 }
+    );
+    expect(topElementIsPopup, "the popup overlay should be the topmost element over the formation panel's position, fully covering it").toBe(true);
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(1);
@@ -141,6 +174,7 @@ test.describe("player match analysis @ mobile (390px)", () => {
     await page.getByRole("button", { name: "Close player analysis" }).click();
     await expect(popup).toBeHidden();
     await expect(page.getByText("Select a starter or substitute")).toBeVisible();
+    await expect(formationPanel).toBeVisible();
   });
 
   test("stat cards go 2 columns at this width", async ({ page }) => {
@@ -180,5 +214,28 @@ test.describe("player match analysis @ mobile (390px)", () => {
       // A single column reports one track (no space-separated second value).
       expect(columns.trim().split(/\s+/).length, `skeleton grid ${i} should be one column at 390px`).toBe(1);
     }
+  });
+
+  test("popup content fits without horizontal overflow", async ({ page }) => {
+    // Regression guard for a real bug: PopupBody's chart-panel grid items
+    // (Territory & events, Cumulative xT, Shots · xG, Pass sonar) had no
+    // min-w-0, and CSS Grid/flex items default to min-width: auto — each
+    // panel measures its own container via useContainerWidth
+    // (hooks/useContainerWidth.ts), so without min-w-0 the wrapper "wants"
+    // to be as wide as whatever the chart naturally renders, reinforcing
+    // into a stable state wider than the actual track. The *document* never
+    // showed this (the popup is `position: fixed`, excluded from
+    // document.scrollWidth) — only the popup's own scrollWidth caught it:
+    // 474px of content in a 375px box. Reported live as unwanted
+    // side-scrolling; the fix must make every card fit inside the popup's
+    // own width, not just avoid page-level overflow.
+    await page.goto("/football/player-match-analysis");
+    await selectSpainStarter(page, "Lamine Yamal");
+    await expect(page.getByRole("heading", { name: "Lamine Yamal" })).toBeVisible();
+    await expect(page.getByText("Match contribution", { exact: true })).toBeVisible();
+
+    const popup = page.getByTestId("player-popup");
+    const overflow = await popup.evaluate((el) => el.scrollWidth - el.clientWidth);
+    expect(overflow, "popup content should fit within its own width, not require horizontal scroll").toBeLessThanOrEqual(1);
   });
 });
