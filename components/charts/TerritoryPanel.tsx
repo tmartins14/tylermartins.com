@@ -156,6 +156,7 @@ export function TerritoryPanel({
               key={key}
               type="button"
               onClick={() => onToggleLayer(key)}
+              aria-pressed={active}
               className={cn(
                 "rounded-full border px-2.5 py-1 font-mono text-mono-sm whitespace-nowrap",
                 active ? "border-focal bg-focal-soft text-focal" : "border-border text-muted"
@@ -166,7 +167,12 @@ export function TerritoryPanel({
           );
         })}
       </div>
-      <div ref={containerRef} className="flex justify-center" />
+      <div
+        ref={containerRef}
+        className="flex justify-center"
+        role="img"
+        aria-label={`Territory heatmap and event markers for ${playerTeam}'s selected player, up to the scrubbed minute`}
+      />
     </div>
   );
 }

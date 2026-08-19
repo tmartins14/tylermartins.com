@@ -57,5 +57,13 @@ export function CumulativeXtPanel({ events, finalMinute, playerTeam, hoveredEven
     };
   }, [events, finalMinute, playerTeam, hoveredEventId, onHoverEvent, resolvedTheme, width, height, containerRef]);
 
-  return <div ref={containerRef} data-testid="cumulative-xt-panel" className="min-h-0 flex-1" />;
+  return (
+    <div
+      ref={containerRef}
+      data-testid="cumulative-xt-panel"
+      className="min-h-0 flex-1"
+      role="img"
+      aria-label={`Cumulative expected threat for ${playerTeam}'s selected player, over the scrubbed portion of the match`}
+    />
+  );
 }

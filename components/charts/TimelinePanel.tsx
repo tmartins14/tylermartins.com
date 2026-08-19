@@ -179,14 +179,32 @@ export function TimelinePanel({ events, maxMinute, scrubbedMinute, mode, speedMu
 
   return (
     <div className="flex flex-col gap-3">
-      <div ref={reelContainerRef} data-testid="highlight-reel-panel" />
+      <div
+        ref={reelContainerRef}
+        data-testid="highlight-reel-panel"
+        role="img"
+        aria-label="Highlight reel — animated replay of the match's key events"
+      />
       {/* Divider between the two distinct tools this card combines — browsing
           curated highlights (above) vs. scrubbing to any exact minute
           (below) — previously just a bare gap, reading as one blended block
           instead of two clearly separate zones. The outer flex's existing
           gap-3 already provides the spacing; this just adds the rule. */}
       <div className="border-t border-border">
-        <div ref={trackContainerRef} data-testid="master-scrubber-panel" className="min-w-0 pt-3" />
+        {/* The scrubber itself is a footballd3-rendered D3 control, not a
+            native <input>, so it can't carry real role="slider" value
+            semantics from here without reaching into the vendored library's
+            internals — out of scope for a site-side wrapper fix (same FD3-*
+            boundary as the rest of footballd3's interactive-control
+            internals). A described container is what's achievable at this
+            layer. */}
+        <div
+          ref={trackContainerRef}
+          data-testid="master-scrubber-panel"
+          className="min-w-0 pt-3"
+          role="img"
+          aria-label={`Match timeline scrubber, currently at minute ${Math.round(scrubbedMinute)} of ${Math.round(maxMinute)}`}
+        />
       </div>
     </div>
   );

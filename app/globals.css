@@ -13,7 +13,13 @@
 :root {
   --background:#FAF7F0; --surface:#FFFDF8; --elevated:#FFFFFF;
   --border:#E5E5E5; --border-strong:#D6D3CC;
-  --text:#171717; --muted:#525252; --faint:#8A8578;
+  --text:#171717; --muted:#525252;
+  /* Ticket 3c — was #8A8578 (~3.4:1 on --background, below the 4.5:1 AA floor,
+     and it's used at 10–11px, the smallest text on the page). Verified with a
+     real contrast calculation (not eyeballed) against every light-mode
+     surface faint renders on — 5.36:1 (background), 5.64:1 (surface), 5.74:1
+     (elevated). Keep in sync with lib/chart-theme.ts's `faint`. */
+  --faint:#6B6656;
   --focal:#9F1239; --focal-soft:rgba(159,18,57,0.13);
   --secondary:#1E3A5F; --secondary-soft:rgba(30,58,95,0.12);
   --pitch:#1E3A5F; --grid:#ECE8DF;
@@ -28,11 +34,23 @@
      the same values, same as focal/secondary already are between here and
      lib/chart-theme.ts. */
   --team-home:#C60B1E; --team-away:#001E3C;
+  /* Ticket 3a — one token, applied to every focusable element via the global
+     :focus-visible rule below, so no component hand-rolls its own focus ring
+     (or forgets one). Same value as --focal — already the site's one accent
+     color for "this needs your attention," a focus ring included. */
+  --focus-ring:var(--focal);
 }
 [data-theme="dark"] {
   --background:#1A1613; --surface:#211D18; --elevated:#2A2521;
   --border:#34302A; --border-strong:#403A32;
-  --text:#F5F0E6; --muted:#A39E95; --faint:#78716C;
+  --text:#F5F0E6; --muted:#A39E95;
+  /* Ticket 3c — was #78716C (~3.75:1 on --background). The bundle only
+     flagged light mode, but dark mode was failing too (not assumed — checked):
+     3.75:1 (background), worse against lighter surfaces. New value clears
+     4.5:1 against every dark-mode surface faint renders on, including the
+     hardest case (elevated, the lightest dark surface): 5.51:1 (background),
+     5.14:1 (surface), 4.65:1 (elevated). */
+  --faint:#948E80;
   --focal:#F43F5E; --focal-soft:rgba(244,63,94,0.17);
   --secondary:#5B8AC0; --secondary-soft:rgba(91,138,192,0.16);
   --pitch:#5B8AC0; --grid:#2A2521;
@@ -179,6 +197,25 @@
       animation-iteration-count: 1 !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+/* Ticket 3a — one focus ring, every focusable element, sitewide. Deliberately
+   in @layer utilities (not @layer base): Tailwind's own utilities (including
+   `outline-none`, used on a few modal/drawer wrapper containers so the outer
+   shell itself doesn't show a ring while focus is trapped inside it) live in
+   that layer too, and same-layer same-specificity rules resolve by source
+   order — base-layer rules lose to utilities-layer rules regardless of where
+   they appear in the file, so this has to be here to actually win. Verified
+   empirically (not assumed) before relying on it — see the Ticket 3 PR.
+   components/ui/button.tsx keeps its own richer focus-visible ring on top of
+   this; harmless, not fought — every other custom interactive element
+   (ToggleGroup, DashboardTabBar, gallery rows, nav, modal triggers, ...) had
+   no visible keyboard focus at all before this rule existed. */
+@layer utilities {
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
   }
 }
 

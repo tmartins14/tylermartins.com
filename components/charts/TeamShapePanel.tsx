@@ -192,7 +192,13 @@ export function TeamShapePanel({
           ) : null}
         </div>
       ) : null}
-      <div ref={containerRef} data-testid="team-shape-panel" className="flex justify-center" />
+      <div
+        ref={containerRef}
+        data-testid="team-shape-panel"
+        className="flex justify-center"
+        role="img"
+        aria-label={`Team shape diagram, ${view === "on-ball" ? "on-ball" : "off-ball"} average positions with a centroid marker`}
+      />
     </div>
   );
 }

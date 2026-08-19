@@ -43,7 +43,7 @@ export function MatchStatsRows({ data }: { data: MatchStatsData }) {
   })).filter((r) => r.row);
 
   return (
-    <div className="flex h-full flex-col justify-evenly">
+    <div className="flex h-full flex-col justify-evenly" role="table" aria-label="Match stats comparison">
       {rows.map(({ display, row }) => {
         const r = row!;
         const total = r.home_value + r.away_value || 1;
@@ -52,6 +52,8 @@ export function MatchStatsRows({ data }: { data: MatchStatsData }) {
         return (
           <div
             key={display}
+            role="row"
+            aria-label={`${display}: ${data.home.team} ${formatValue(r.home_value, r.format)}, ${data.away.team} ${formatValue(r.away_value, r.format)}`}
             className="grid items-center gap-2.25 leading-none"
             style={{ gridTemplateColumns: "44px 1fr 88px 1fr 44px" }}
           >

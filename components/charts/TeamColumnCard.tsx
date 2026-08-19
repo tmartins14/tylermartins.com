@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { ToggleGroup } from "@/components/charts/ToggleGroup";
 import { FormationPanel, type FormationData } from "@/components/charts/FormationPanel";
@@ -37,7 +37,19 @@ export function TeamColumnCard({
 }) {
   const [view, setView] = useState<View>(defaultView);
   const { resolvedTheme } = useTheme();
-  const mode = resolvedTheme === "dark" ? "dark" : "light";
+  // Gated behind `mounted` so the first client render matches the server's
+  // "light" default exactly, avoiding a hydration mismatch — next-themes'
+  // resolvedTheme is undefined during SSR and the first client render (before
+  // the stored/system preference resolves), so reading it directly here
+  // rendered "light" server-side but "dark" client-side for a dark-preference
+  // visitor the instant hydration completed (same class of bug already fixed
+  // once in PlayerMatchAnalysisClient.tsx — this file just hadn't gotten the
+  // same treatment). Standard next-themes hydration guard, same pattern as
+  // ThemeToggle.tsx / PlayerMatchAnalysisClient.tsx.
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
+  const mode = mounted && resolvedTheme === "dark" ? "dark" : "light";
   const color = kitEncoding(side, mode);
   const chip = kitChip(side);
 

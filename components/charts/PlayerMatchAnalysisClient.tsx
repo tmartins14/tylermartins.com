@@ -83,8 +83,9 @@ export function PlayerMatchAnalysisClient({
   // here would render "light" server-side but "dark" client-side for a
   // dark-preference visitor the instant hydration completes. Every other
   // panel on this page reads resolvedTheme inside a useEffect instead
-  // (client-only, never runs during SSR) — this file is the only place
-  // that used it directly in JSX.
+  // (client-only, never runs during SSR) — this file reads it directly in
+  // JSX, same as TeamColumnCard.tsx (which got this same fix separately
+  // after shipping without it — same class of bug, same guard).
   const [mounted, setMounted] = useState(false);
   // Standard next-themes hydration guard (same pattern as ThemeToggle.tsx):
   // resolvedTheme is unknown on the server, so theme-dependent values must

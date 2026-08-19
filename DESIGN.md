@@ -225,9 +225,120 @@ Selection/highlight accents (`PassSonarPanel`, `GoalMouthShotPanel`, `TimelinePa
 `focal` — read as "currently relevant," not team-identity, so treated differently from
 the flip-bug fixes above. Flagged for review, not silently left out.
 
+## `useTheme()` — a real hydration gotcha, bit the codebase twice
+
+next-themes' `resolvedTheme` is `undefined` during SSR and the first client render —
+it can't know the visitor's stored/system theme preference until a client effect
+resolves it, so SSR always renders as if the theme were "light". Reading
+`resolvedTheme` **directly into JSX** (an inline `style` color, a swatch `background`)
+is a real hydration-mismatch bug for any dark-theme visitor: the server HTML says
+light, the client's first render says dark, and React logs a mismatch and gives up
+patching that whole subtree rather than "fixing it up."
+
+This has shipped twice: first in `PlayerMatchAnalysisClient.tsx`, then — reported live
+via a real console error, not caught in review — in `TeamColumnCard.tsx`'s team-name
+label color and `MomentumBarPanel.tsx`'s legend swatch backgrounds. Both computed
+`kitEncoding(side, mode)` from `resolvedTheme` directly at the top of the component and
+rendered it unconditionally in JSX.
+
+**The rule:** if a component reads `resolvedTheme` to compute something that renders
+in JSX, gate it behind a `mounted` boolean flipped `true` in a `useEffect` (client-only,
+never runs during SSR) — the first client render then matches the server's light
+default exactly, and the real theme takes over on the next render, after hydration has
+already settled. Same pattern in `TeamColumnCard.tsx`, `MomentumBarPanel.tsx`,
+`PlayerMatchAnalysisClient.tsx`, and `ThemeToggle.tsx` (the original source of the
+pattern). Every other chart panel only reads `resolvedTheme` inside a `useEffect`
+driving D3's own imperative, client-only rendering — safe as-is, nothing to change
+there.
+
+**Not every theme-derived JSX usage needs the guard** — `ShotMapPanel`'s hover-readout
+color is theme-derived but only renders behind `hover ? resolvedColor : "var(--faint)"`,
+and `hover` is guaranteed `null` on both the server and the first client render, so
+that branch can't diverge before hydration completes. Checked case by case, not
+applied reflexively to every `useTheme()` call site.
+
+**Regression guard:** `e2e/dashboard-responsive.spec.ts`'s "no hydration mismatch for
+a dark-theme visitor" test — sets `localStorage.theme = "dark"` before the page's own
+scripts run (via `page.addInitScript`, matching a real returning visitor) and asserts
+no hydration-related console error fires. Proven to actually catch this class of bug
+by reverting the guard and re-running.
+
 ## Accessibility
 
-*TBD — lands in Ticket 3 (3e).*
+**Contrast.** `--faint` (used for the lightest body/caption text, e.g. match-metadata
+captions and axis labels) was re-measured against every surface it actually sits on
+and re-picked to clear WCAG 2 AA (4.5:1) with margin, not just against the page
+background:
+- Light: `#8A8578` → `#6B6656` (5.36–5.74:1 across surfaces)
+- Dark: `#78716C` → `#948E80` (4.65–5.51:1 across surfaces)
+
+Both are mirrored in `lib/chart-theme.ts` (`faint`) — kept in sync with
+`app/globals.css`'s `--faint` deliberately, since chart labels and DOM text need to
+read as the same color. Contrast was computed via the WCAG relative-luminance formula
+against real rendered surface colors, not eyeballed.
+
+**Focus visibility.** Added a global `:focus-visible` outline (`--focus-ring`, mapped
+to `--focal`) in `app/globals.css`, placed in `@layer utilities` rather than
+`@layer base` — Tailwind's own `outline-none` utility lives in `@layer utilities`, so
+a same-layer override was required to actually win the cascade (verified against the
+compiled CSS, not assumed). Real keyboard `Tab` navigation was used to trigger this
+(`:focus-visible` doesn't fire from `.focus()` calls), confirmed with Playwright.
+
+**Chart/SVG accessibility.** Every D3-rendered chart panel now carries either
+`role="img"` + a computed `aria-label` (for panels that are genuinely just a picture —
+formations, pass networks, team shape, shot maps, goal timelines) or `role="region"`
+(for panels that contain real DOM text a screen reader should read directly, e.g.
+`PlayerStatCardsPanel`, `ActionFeedPanel` — deliberately not `role="img"`, which would
+hide that text). Panels with a live-updating hover readout (momentum, cumulative
+xG/xT, goals-buildup) also carry `aria-live="polite"`. Toggle-style controls
+(territory view chips, play/pause) carry `aria-pressed`. The match-stats comparison
+rows use `role="table"`/`role="row"` with a computed per-row `aria-label`, since
+they're not a real `<table>`.
+
+**Known gap, not fixed in this pass:** the gallery item modal (Base UI `Dialog`,
+`components/showcase/ComponentModal.tsx`) doesn't trap focus — `Tab` can escape from
+the dialog to background content while it's open. Out of scope for this ticket (no
+modal work was in the handoff bundle's file list); flagging it here rather than
+leaving it silently undiscovered.
+
+## Social & metadata
+
+Every route now resolves real Open Graph / Twitter Card tags instead of Next.js
+defaults, via `metadataBase` (`app/layout.tsx`, site's real domain — required for any
+relative image URL in metadata to resolve at all).
+
+**Important non-obvious behavior, confirmed against `node_modules/next/dist/docs`:**
+metadata is only *shallowly* merged across nested route segments — a page that
+exports its own `openGraph`/`twitter` object **replaces** the parent layout's
+entirely, not per-field. It also does **not** inherit the root's file-convention
+`opengraph-image.tsx` (confirmed empirically: a nested route with no `images` field
+renders zero `og:image` tags, even though `app/opengraph-image.tsx` exists at the
+root). So `/football/dashboard` and `/football/player-match-analysis` each repeat the
+full set of fields they want — `url`, `siteName`, `locale`, `images: ["/opengraph-image"]`
+— rather than relying on inheritance. Any new route that defines its own
+`openGraph`/`twitter` object needs to do the same, or it'll silently lose the shared
+image and site identity fields.
+
+**OG image** (`app/opengraph-image.tsx`, 1200×630, shared across every route):
+Fraunces-900 wordmark + a shot-map hero viz on the paper surface, in the same ink
+discipline as the rest of the site (focal red / secondary navy, nothing else). Two
+Google Fonts are fetched at render time (Fraunces for the headline, Inter for
+subhead/footer) — **each registered under its own explicit name and referenced by
+that name**, never the generic `"sans-serif"` keyword. Satori has no real fallback
+for a generic family name; if a font family used anywhere in the tree isn't in the
+`fonts` array, Satori resolves per-glyph against whatever *is* registered, patching
+between that font and its own internal default. Confirmed by shipping this with only
+Fraunces registered and the body text declared `fontFamily: "sans-serif"`: the
+rendered text came out visibly mixed serif/bold, glyph by glyph, because the Fraunces
+Google Fonts query was subset to only the headline's characters. Fixed by fetching a
+second real font (Inter) and referencing both by name; each font's `text=` subset
+param is scoped to exactly the string(s) that font renders, not shared across fonts.
+
+`app/icon.tsx` (32×32) and `app/apple-icon.tsx` (180×180) replace the generic
+Next.js default favicon/touch-icon with the same crimson-square "T" mark. Unused
+default public assets (`public/{file,globe,next,vercel,window}.svg`,
+`app/favicon.ico`) were deleted after confirming via grep they weren't referenced
+anywhere.
 
 ## Content model
 
