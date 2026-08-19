@@ -137,11 +137,17 @@ export function PlayAnimationPanel({
           onChange={selectGoal}
         />
       </div>
-      <div ref={containerRef} className="flex justify-center" />
+      <div
+        ref={containerRef}
+        className="flex justify-center"
+        role="img"
+        aria-label="Goal play animation — ball and player movement leading to the goal"
+      />
       <div className="mt-2.5 flex items-center gap-2.5">
         <button
           type="button"
           onClick={togglePlay}
+          aria-pressed={playing}
           className="shrink-0 rounded-[3px] border border-border bg-elevated px-2.5 py-1 font-mono text-mono-sm text-text"
         >
           {playing ? "❚❚ Pause" : "▶ Play"}
@@ -154,6 +160,7 @@ export function PlayAnimationPanel({
           step={0.1}
           defaultValue={0}
           onChange={(e) => controllerRef.current?.controls.seek(Number(e.target.value))}
+          aria-label="Play animation scrub position, seconds"
           className="flex-1"
         />
         <span ref={timeLabelRef} className="w-10 shrink-0 font-mono text-mono-sm text-faint">

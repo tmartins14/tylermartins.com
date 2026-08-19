@@ -26,6 +26,31 @@ import { metadata as contentMetadata } from "./content.mdx";
 export const metadata: Metadata = {
   title: contentMetadata.title,
   description: contentMetadata.description,
+  // Next.js merges metadata per top-level key across nested segments, but a
+  // segment that defines its own `openGraph`/`twitter` object REPLACES the
+  // parent's entirely rather than merging inside it (confirmed against
+  // node_modules/next/dist/docs/.../generate-metadata.md's "Merging" section)
+  // — including the root layout's og:image, og:url, og:site_name, and
+  // og:locale. So every field this route wants has to be repeated here, not
+  // just the ones that differ from the layout default. The shared
+  // app/opengraph-image.tsx file convention only auto-attaches at its own
+  // (root) segment too — confirmed empirically, it does not cascade to
+  // nested routes — so the image has to be referenced explicitly as well.
+  openGraph: {
+    title: contentMetadata.title,
+    description: contentMetadata.description,
+    url: "/football/dashboard",
+    siteName: "tylermartins.com",
+    type: "website",
+    locale: "en_US",
+    images: ["/opengraph-image"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: contentMetadata.title,
+    description: contentMetadata.description,
+    images: ["/opengraph-image"],
+  },
 };
 
 // Tweakable props exposed by the design spec — defaults match "1A Broadcast".

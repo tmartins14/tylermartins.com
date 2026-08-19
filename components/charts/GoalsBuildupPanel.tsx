@@ -124,17 +124,24 @@ export function GoalsBuildupPanel({
           onChange={selectGoal}
         />
       </div>
-      <div ref={containerRef} data-testid="goals-buildup-panel" className="flex justify-center" />
+      <div
+        ref={containerRef}
+        data-testid="goals-buildup-panel"
+        className="flex justify-center"
+        role="img"
+        aria-label={goal ? `Goal buildup freeze-frame, ${goal.scorer} ${goal.minute}'` : "Goal buildup freeze-frame"}
+      />
       <input
         type="range"
         min={0}
         max={clip.frames.length - 1}
         value={step}
         onChange={(e) => setStep(Number(e.target.value))}
+        aria-label="Goal buildup frame"
         className="mt-2.5 w-full accent-focal"
       />
       {goal ? (
-        <div className="mt-2 font-mono text-mono-sm text-muted">
+        <div className="mt-2 font-mono text-mono-sm text-muted" aria-live="polite">
           <span className="text-focal">
             {goal.scorer} {goal.minute}&apos;
           </span>

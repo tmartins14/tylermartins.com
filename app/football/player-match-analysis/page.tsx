@@ -12,6 +12,26 @@ import { metadata as contentMetadata } from "./content.mdx";
 export const metadata: Metadata = {
   title: contentMetadata.title,
   description: contentMetadata.description,
+  // See the matching comment in app/football/dashboard/page.tsx — a nested
+  // segment's own `openGraph`/`twitter` object replaces the root layout's
+  // entirely (not a deep merge), and the shared opengraph-image.tsx file
+  // convention doesn't cascade to nested routes either, so every field this
+  // route wants — including the image — has to be repeated here.
+  openGraph: {
+    title: contentMetadata.title,
+    description: contentMetadata.description,
+    url: "/football/player-match-analysis",
+    siteName: "tylermartins.com",
+    type: "website",
+    locale: "en_US",
+    images: ["/opengraph-image"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: contentMetadata.title,
+    description: contentMetadata.description,
+    images: ["/opengraph-image"],
+  },
 };
 
 // Real, fixed facts about this specific historical match (not part of any

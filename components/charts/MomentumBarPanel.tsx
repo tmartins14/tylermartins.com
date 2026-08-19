@@ -14,7 +14,17 @@ export function MomentumBarPanel({ data }: { data: MomentumData }) {
   const { ref: containerRef, width, height } = useContainerWidth<HTMLDivElement>();
   const { resolvedTheme } = useTheme();
   const [hover, setHover] = useState<Bin | null>(null);
-  const mode = resolvedTheme === "dark" ? "dark" : "light";
+  // Gated behind `mounted` so the first client render matches the server's
+  // "light" default exactly — resolvedTheme is undefined during SSR and the
+  // first client render, and homeColor/awayColor below feed the legend
+  // swatches directly in JSX (unconditionally, not behind any state), so
+  // reading resolvedTheme straight into them here caused a real hydration
+  // mismatch for dark-preference visitors. Same fix as TeamColumnCard.tsx /
+  // PlayerMatchAnalysisClient.tsx.
+  const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => setMounted(true), []);
+  const mode = mounted && resolvedTheme === "dark" ? "dark" : "light";
   const homeColor = kitEncoding("home", mode);
   const awayColor = kitEncoding("away", mode);
 
@@ -48,7 +58,12 @@ export function MomentumBarPanel({ data }: { data: MomentumData }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div ref={containerRef} className="min-h-0 w-full flex-1" />
+      <div
+        ref={containerRef}
+        className="min-h-0 w-full flex-1"
+        role="img"
+        aria-label={`Momentum bar chart, ${data.home_team} versus ${data.away_team} — bars lean toward whichever team had the attacking threat in each window`}
+      />
       <div className="mt-2 flex flex-wrap items-center gap-4 font-mono text-mono-sm text-muted">
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: homeColor }} />
@@ -58,7 +73,7 @@ export function MomentumBarPanel({ data }: { data: MomentumData }) {
           <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: awayColor }} />
           {data.away_team}
         </span>
-        <span className="text-faint">{readout}</span>
+        <span className="text-faint" aria-live="polite">{readout}</span>
       </div>
     </div>
   );

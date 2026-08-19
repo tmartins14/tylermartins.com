@@ -76,5 +76,13 @@ export function PassNetworkPanel({ data, color, colorToken }: PassNetworkPanelPr
     };
   }, [data, color, colorToken, resolvedTheme, width, containerRef]);
 
-  return <div ref={containerRef} data-testid="pass-network-panel" className="flex justify-center" />;
+  return (
+    <div
+      ref={containerRef}
+      data-testid="pass-network-panel"
+      className="flex justify-center"
+      role="img"
+      aria-label="Pass network diagram — average player position and pass volume between teammates"
+    />
+  );
 }

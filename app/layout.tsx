@@ -23,9 +23,33 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Ticket 3d — metadataBase resolves every relative URL-based metadata field
+// (the OG/twitter images below) to an absolute URL; required or Next.js
+// build-errors on any relative image path. Site's own domain, not a
+// placeholder — this is what it's actually deployed at.
+const SITE_URL = "https://tylermartins.com";
+const DEFAULT_DESCRIPTION = "Match data, turned into tools.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  // Plain string, not a title.template — that would suffix every child
+  // route's <title> with "· tylermartins.com" site-wide, a visible change
+  // beyond what this ticket asked for (OG/social metadata, not tab titles).
   title: "Tyler Martins",
-  description: "Match data, turned into tools.",
+  description: DEFAULT_DESCRIPTION,
+  openGraph: {
+    title: "Tyler Martins",
+    description: DEFAULT_DESCRIPTION,
+    url: SITE_URL,
+    siteName: "tylermartins.com",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tyler Martins",
+    description: DEFAULT_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({

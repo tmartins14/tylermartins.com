@@ -13,7 +13,7 @@ export const CHART_THEME = {
     border: "#E5E5E5",
     text: "#171717",
     muted: "#525252",
-    faint: "#8A8578",
+    faint: "#6B6656", // Ticket 3c — was #8A8578, ~3.4:1 on background, below AA. Keep in sync with globals.css.
     focal: "#9F1239",
     secondary: "#1E3A5F",
     pitch: "#1E3A5F",
@@ -32,7 +32,7 @@ export const CHART_THEME = {
     border: "#34302A",
     text: "#F5F0E6",
     muted: "#A39E95",
-    faint: "#78716C",
+    faint: "#948E80", // Ticket 3c — was #78716C, also below AA (verified, bundle only flagged light).
     focal: "#F43F5E",
     secondary: "#5B8AC0",
     pitch: "#5B8AC0",
