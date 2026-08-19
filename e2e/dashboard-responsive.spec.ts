@@ -288,3 +288,41 @@ test.describe("type-ramp classes survive cn()/tailwind-merge", () => {
     expect(fontSize, "ToggleGroup button should render at text-mono-sm (11px), not an inherited default").toBe("11px");
   });
 });
+
+test.describe("no hydration mismatch for a dark-theme visitor", () => {
+  // Regression guard for a real bug: TeamColumnCard and MomentumBarPanel read
+  // next-themes' `resolvedTheme` directly into JSX (team-name label color,
+  // legend swatch background) instead of gating it behind a `mounted` check.
+  // `resolvedTheme` is undefined during SSR and the first client render — SSR
+  // always renders "light" — so a visitor whose persisted/system theme is
+  // actually dark got a real attribute mismatch the instant hydration ran,
+  // logged as a console error and silently un-patched by React. Only
+  // reproduces for an actual dark-theme visitor, which is why plain
+  // navigation in the other tests here never caught it — the theme has to be
+  // set *before* the page's own hydration runs, matching how a returning
+  // visitor's persisted preference actually loads.
+  test.use({ viewport: { width: 1536, height: 900 } });
+
+  for (const path of ["/football/dashboard", "/football/player-match-analysis"]) {
+    test(`${path} hydrates cleanly for a visitor with theme already set to dark`, async ({ page }) => {
+      const hydrationErrors: string[] = [];
+      page.on("console", (msg) => {
+        if (msg.type() === "error" && /hydrat/i.test(msg.text())) {
+          hydrationErrors.push(msg.text());
+        }
+      });
+      // Runs before any page script, including next-themes' own blocking
+      // script — matches what a returning dark-theme visitor's browser
+      // actually has in localStorage before the page loads at all.
+      await page.addInitScript(() => {
+        window.localStorage.setItem("theme", "dark");
+      });
+      await page.goto(path);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+      // Let hydration fully settle — the console listener above catches
+      // anything React logs during/after reconciliation.
+      await page.waitForTimeout(500);
+      expect(hydrationErrors, `hydration mismatch(es) logged on ${path}:\n${hydrationErrors.join("\n\n")}`).toEqual([]);
+    });
+  }
+});

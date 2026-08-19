@@ -225,6 +225,44 @@ Selection/highlight accents (`PassSonarPanel`, `GoalMouthShotPanel`, `TimelinePa
 `focal` — read as "currently relevant," not team-identity, so treated differently from
 the flip-bug fixes above. Flagged for review, not silently left out.
 
+## `useTheme()` — a real hydration gotcha, bit the codebase twice
+
+next-themes' `resolvedTheme` is `undefined` during SSR and the first client render —
+it can't know the visitor's stored/system theme preference until a client effect
+resolves it, so SSR always renders as if the theme were "light". Reading
+`resolvedTheme` **directly into JSX** (an inline `style` color, a swatch `background`)
+is a real hydration-mismatch bug for any dark-theme visitor: the server HTML says
+light, the client's first render says dark, and React logs a mismatch and gives up
+patching that whole subtree rather than "fixing it up."
+
+This has shipped twice: first in `PlayerMatchAnalysisClient.tsx`, then — reported live
+via a real console error, not caught in review — in `TeamColumnCard.tsx`'s team-name
+label color and `MomentumBarPanel.tsx`'s legend swatch backgrounds. Both computed
+`kitEncoding(side, mode)` from `resolvedTheme` directly at the top of the component and
+rendered it unconditionally in JSX.
+
+**The rule:** if a component reads `resolvedTheme` to compute something that renders
+in JSX, gate it behind a `mounted` boolean flipped `true` in a `useEffect` (client-only,
+never runs during SSR) — the first client render then matches the server's light
+default exactly, and the real theme takes over on the next render, after hydration has
+already settled. Same pattern in `TeamColumnCard.tsx`, `MomentumBarPanel.tsx`,
+`PlayerMatchAnalysisClient.tsx`, and `ThemeToggle.tsx` (the original source of the
+pattern). Every other chart panel only reads `resolvedTheme` inside a `useEffect`
+driving D3's own imperative, client-only rendering — safe as-is, nothing to change
+there.
+
+**Not every theme-derived JSX usage needs the guard** — `ShotMapPanel`'s hover-readout
+color is theme-derived but only renders behind `hover ? resolvedColor : "var(--faint)"`,
+and `hover` is guaranteed `null` on both the server and the first client render, so
+that branch can't diverge before hydration completes. Checked case by case, not
+applied reflexively to every `useTheme()` call site.
+
+**Regression guard:** `e2e/dashboard-responsive.spec.ts`'s "no hydration mismatch for
+a dark-theme visitor" test — sets `localStorage.theme = "dark"` before the page's own
+scripts run (via `page.addInitScript`, matching a real returning visitor) and asserts
+no hydration-related console error fires. Proven to actually catch this class of bug
+by reverting the guard and re-running.
+
 ## Accessibility
 
 **Contrast.** `--faint` (used for the lightest body/caption text, e.g. match-metadata
