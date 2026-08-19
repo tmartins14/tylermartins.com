@@ -179,8 +179,25 @@ export function TimelinePanel({ events, maxMinute, scrubbedMinute, mode, speedMu
 
   return (
     <div className="flex flex-col gap-3">
-      <div ref={reelContainerRef} data-testid="highlight-reel-panel" />
-      <div ref={trackContainerRef} data-testid="master-scrubber-panel" className="min-w-0" />
+      <div
+        ref={reelContainerRef}
+        data-testid="highlight-reel-panel"
+        role="img"
+        aria-label="Highlight reel — animated replay of the match's key events"
+      />
+      {/* The scrubber itself is a footballd3-rendered D3 control, not a native
+          <input>, so it can't carry real role="slider" value semantics from
+          here without reaching into the vendored library's internals — out
+          of scope for a site-side wrapper fix (same FD3-* boundary as the
+          rest of footballd3's interactive-control internals). A described
+          container is what's achievable at this layer. */}
+      <div
+        ref={trackContainerRef}
+        data-testid="master-scrubber-panel"
+        className="min-w-0"
+        role="img"
+        aria-label={`Match timeline scrubber, currently at minute ${Math.round(scrubbedMinute)} of ${Math.round(maxMinute)}`}
+      />
     </div>
   );
 }

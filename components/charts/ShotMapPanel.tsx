@@ -73,10 +73,17 @@ export function ShotMapPanel({ shots, color, colorToken, shotScale = 1 }: ShotMa
 
   return (
     <div>
-      <div ref={containerRef} data-testid="shot-map-panel" className="flex justify-center" />
+      <div
+        ref={containerRef}
+        data-testid="shot-map-panel"
+        className="flex justify-center"
+        role="img"
+        aria-label={`Shot map — ${shots.length} shots, ${goalCount} goals, ${xgSum.toFixed(2)} total xG. Circle size is xG, color is team, fill/outline tier is outcome.`}
+      />
       <div
         className="mt-2 font-mono text-mono-sm"
         style={{ color: hover ? resolvedColor : "var(--faint)" }}
+        aria-live="polite"
       >
         {readout}
       </div>

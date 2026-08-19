@@ -108,5 +108,14 @@ export function FormationPanel({ data, color, colorToken, bench, selectedId = nu
     };
   }, [data, bench, color, colorToken, selectedId, onSelect, resolvedTheme, width, containerRef]);
 
-  return <div ref={containerRef} data-testid="formation-panel" className="flex justify-center" />;
+  const formationLabel = data.periods[0]?.formation;
+  return (
+    <div
+      ref={containerRef}
+      data-testid="formation-panel"
+      className="flex justify-center"
+      role="img"
+      aria-label={`${data.metadata.team} starting formation${formationLabel ? `, ${formationLabel}` : ""} on a half-pitch diagram`}
+    />
+  );
 }

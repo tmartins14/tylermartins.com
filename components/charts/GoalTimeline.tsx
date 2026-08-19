@@ -18,6 +18,11 @@ export function GoalTimeline({
   const x = (m: number) => 40 + (m / maxMinute) * (W - 80);
   const ticks = [0, 15, 30, 45, 60, 75, 90];
 
+  const summary =
+    goals.length > 0
+      ? `Goal timeline: ${goals.map((g) => `${g.player} ${g.minute}'`).join(", ")}`
+      : "Goal timeline: no goals";
+
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
@@ -25,6 +30,8 @@ export function GoalTimeline({
       height={H}
       preserveAspectRatio="none"
       style={{ display: "block" }}
+      role="img"
+      aria-label={summary}
     >
       <line x1={40} y1={y} x2={W - 40} y2={y} stroke="var(--border-strong)" strokeWidth={1} />
       {ticks.map((t) => (
