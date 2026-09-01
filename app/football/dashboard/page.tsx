@@ -10,6 +10,7 @@ import teamShapeSpainData from "@/data/football/team_shape_3943043_spain.json";
 import teamShapeEnglandData from "@/data/football/team_shape_3943043_england.json";
 import goalAnimationData from "@/data/football/goal_animation_3943043.json";
 import cumulativeXgData from "@/data/football/cumulative_xg_3943043.json";
+import matchSummaryData from "@/data/football/match_summary_3943043.json";
 
 import { MatchHeaderHero } from "@/components/charts/MatchHeaderHero";
 import { MobileMatchHeader } from "@/components/charts/MobileMatchHeader";
@@ -20,6 +21,7 @@ import { type Shot } from "@/components/charts/ShotMapPanel";
 import { type MatchStatsData } from "@/components/charts/MatchStatsRows";
 import { type GoalClip } from "@/components/charts/PlayAnimationPanel";
 import { type CumulativeXgData } from "@/components/charts/CumulativeXgPanel";
+import { type MatchSummaryData } from "@/components/charts/MatchSummaryPanel";
 import { StatsBombAttribution } from "@/components/StatsBombAttribution";
 import { metadata as contentMetadata } from "./content.mdx";
 
@@ -77,6 +79,7 @@ export default function MatchDashboard() {
   const awayShots = shots.filter((s) => s.team === away.team);
   const goals = goalAnimationData.goals as GoalClip[];
   const cumulativeXg = cumulativeXgData as CumulativeXgData;
+  const matchSummary = matchSummaryData as MatchSummaryData;
 
   const xgRow = matchStats.rows.find((r) => r.label === "xG");
   const homeXg = xgRow?.home_value ?? 0;
@@ -129,6 +132,7 @@ export default function MatchDashboard() {
             venue={VENUE}
             date={MATCH_DATE}
             goals={momentumData.goals}
+            matchSummary={matchSummary}
           />
         </div>
 
@@ -141,6 +145,7 @@ export default function MatchDashboard() {
             away={{ team: away.team, score: away.score, xg: awayXg }}
             competition={`${metadata.competition} · Final`}
             goals={momentumData.goals}
+            matchSummary={matchSummary}
           />
           <div className="pointer-events-none absolute inset-x-0 top-full h-3 bg-gradient-to-b from-black/5 to-transparent" />
         </div>

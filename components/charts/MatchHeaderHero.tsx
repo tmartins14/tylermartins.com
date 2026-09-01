@@ -1,4 +1,6 @@
 import { GoalTimeline } from "@/components/charts/GoalTimeline";
+import { MatchSummaryModal } from "@/components/charts/MatchSummaryModal";
+import { type MatchSummaryData } from "@/components/charts/MatchSummaryPanel";
 
 type TeamHeader = { team: string; score: number; xg: number };
 type Goal = { minute: number; team: string; player: string };
@@ -10,6 +12,7 @@ export function MatchHeaderHero({
   venue,
   date,
   goals,
+  matchSummary,
 }: {
   home: TeamHeader;
   away: TeamHeader;
@@ -17,6 +20,7 @@ export function MatchHeaderHero({
   venue: string;
   date: string;
   goals: Goal[];
+  matchSummary: MatchSummaryData;
 }) {
   return (
     <div className="mb-5 rounded-[14px] border border-border bg-surface px-7 py-6">
@@ -24,10 +28,13 @@ export function MatchHeaderHero({
         <div className="font-mono text-mono-sm tracking-[0.14em] text-focal uppercase">
           {competition}
         </div>
-        <div className="text-right font-mono text-mono-sm text-faint">
-          {venue}
-          <br />
-          {date}
+        <div className="flex items-center gap-4">
+          <MatchSummaryModal matchSummary={matchSummary} />
+          <div className="text-right font-mono text-mono-sm text-faint">
+            {venue}
+            <br />
+            {date}
+          </div>
         </div>
       </div>
 
