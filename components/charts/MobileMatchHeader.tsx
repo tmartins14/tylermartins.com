@@ -1,4 +1,6 @@
 import { GoalTimeline } from "@/components/charts/GoalTimeline";
+import { MatchSummaryModal } from "@/components/charts/MatchSummaryModal";
+import { type MatchSummaryData } from "@/components/charts/MatchSummaryContent";
 
 type TeamHeader = { team: string; score: number; xg: number };
 type Goal = { minute: number; team: string; player: string };
@@ -10,16 +12,21 @@ export function MobileMatchHeader({
   away,
   competition,
   goals,
+  matchSummary,
 }: {
   home: TeamHeader;
   away: TeamHeader;
   competition: string;
   goals: Goal[];
+  matchSummary: MatchSummaryData;
 }) {
   return (
     <div>
-      <div className="mb-2 text-center font-mono text-mono-xs tracking-[0.14em] text-focal uppercase">
-        {competition}
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="font-mono text-mono-xs tracking-[0.14em] text-focal uppercase">
+          {competition}
+        </div>
+        <MatchSummaryModal matchSummary={matchSummary} />
       </div>
       <div className="flex items-center justify-center gap-6">
         <div className="text-right">
