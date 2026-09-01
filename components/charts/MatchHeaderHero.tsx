@@ -1,6 +1,6 @@
 import { GoalTimeline } from "@/components/charts/GoalTimeline";
 import { MatchSummaryModal } from "@/components/charts/MatchSummaryModal";
-import { type MatchSummaryData } from "@/components/charts/MatchSummaryPanel";
+import { type MatchSummaryData } from "@/components/charts/MatchSummaryContent";
 
 type TeamHeader = { team: string; score: number; xg: number };
 type Goal = { minute: number; team: string; player: string };

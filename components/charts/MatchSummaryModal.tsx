@@ -2,7 +2,7 @@
 
 import { Dialog } from "@base-ui/react/dialog";
 import { FileText, X } from "lucide-react";
-import { MatchSummaryPanel, type MatchSummaryData } from "@/components/charts/MatchSummaryPanel";
+import { MatchSummaryContent, type MatchSummaryData } from "@/components/charts/MatchSummaryContent";
 
 type MatchSummaryModalProps = {
   matchSummary: MatchSummaryData;
@@ -35,7 +35,7 @@ export function MatchSummaryModal({ matchSummary }: MatchSummaryModalProps) {
             </Dialog.Close>
           </div>
           <div className="overflow-y-auto px-5 py-5">
-            <MatchSummaryPanel data={matchSummary} />
+            <MatchSummaryContent data={matchSummary} />
           </div>
         </Dialog.Popup>
       </Dialog.Portal>

@@ -21,7 +21,7 @@ import { type Shot } from "@/components/charts/ShotMapPanel";
 import { type MatchStatsData } from "@/components/charts/MatchStatsRows";
 import { type GoalClip } from "@/components/charts/PlayAnimationPanel";
 import { type CumulativeXgData } from "@/components/charts/CumulativeXgPanel";
-import { type MatchSummaryData } from "@/components/charts/MatchSummaryPanel";
+import { type MatchSummaryData } from "@/components/charts/MatchSummaryContent";
 import { StatsBombAttribution } from "@/components/StatsBombAttribution";
 import { metadata as contentMetadata } from "./content.mdx";
 
