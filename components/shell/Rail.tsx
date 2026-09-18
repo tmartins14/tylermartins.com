@@ -38,12 +38,11 @@ export function RailNavContent() {
             key={section.slug}
             href={sectionHref}
             className={cn(
-              "flex items-center justify-between rounded-md px-2.5 py-2.25 font-mono text-sm",
+              "flex items-center rounded-md px-2.5 py-2.25 font-mono text-sm",
               active ? "bg-focal text-rail-active-fg" : "text-text"
             )}
           >
-            <span>{section.label}</span>
-            <span className="text-mono-xs opacity-70">{section.count}</span>
+            {section.label}
           </Link>
         );
       })}

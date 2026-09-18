@@ -147,6 +147,12 @@
   --breakpoint-pma-sm:35rem;    /* 560px — shots/pass-sonar sub-grid goes 2-col */
   /* Football landing page card thumbnail height. */
   --size-card-thumb:150px;
+  /* Homepage teaser card floor height. Grid `stretch` equalizes cards within
+     one row automatically, but a section with only one card (no siblings to
+     stretch against) has no row to inherit that height from — so it's pinned
+     to the same floor as the populated Football row instead of drifting to
+     whatever its own content happens to need. */
+  --size-home-card:305px;
   /* Match dashboard center column width — fixed for now; becomes min/max in
      the Ticket 1d tablet-tier rework, still reading from this one name. */
   --size-dashboard-center:360px;
