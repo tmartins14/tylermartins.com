@@ -16,6 +16,13 @@ export const homeContent = {
     dashboard: { eyebrow: "Match dashboard", cta: "Open the dashboard →" },
     playerMatchAnalysis: { eyebrow: "Player analysis", cta: "Explore player match analysis →" },
   },
+  aiTeaser: {
+    eyebrow: "AI",
+    intro: "Structured data turned into generated summaries, embedded in the rest of the site.",
+  },
+  aiCards: {
+    matchSummary: { eyebrow: "AI showcase", cta: "See the AI match summary →" },
+  },
 };
 
 export const aboutContent = {

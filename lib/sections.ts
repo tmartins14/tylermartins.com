@@ -6,7 +6,6 @@ export type ContentType = {
 export type Section = {
   slug: string;
   label: string;
-  count: number;
   contentTypes: ContentType[];
 };
 
@@ -19,11 +18,15 @@ export const sections: Section[] = [
   {
     slug: "football",
     label: "Football",
-    count: 17,
     contentTypes: [
       { slug: "components", label: "FootballD3 Gallery" },
       { slug: "dashboard", label: "Match Analysis Dashboard" },
       { slug: "player-match-analysis", label: "Player Match Analysis" },
     ],
+  },
+  {
+    slug: "ai",
+    label: "AI",
+    contentTypes: [{ slug: "match-summary", label: "Match Summary" }],
   },
 ];

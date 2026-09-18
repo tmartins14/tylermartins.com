@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { homeContent } from "@/content/site";
 import { footballCards } from "@/content/football";
+import { aiCards } from "@/content/ai";
 
 export default function Home() {
   return (
@@ -98,6 +99,39 @@ export default function Home() {
           <div className="mt-3.5 font-mono text-xs text-focal">
             {homeContent.cards.playerMatchAnalysis.cta}
           </div>
+        </Link>
+      </div>
+
+      <div className="mt-10 mb-4 font-mono text-xs tracking-[0.14em] text-focal uppercase">
+        {homeContent.aiTeaser.eyebrow}
+      </div>
+      <p className="mb-6 max-w-[56ch] text-sm leading-[1.55] text-muted">
+        {homeContent.aiTeaser.intro}
+      </p>
+
+      {/* auto-fill, not auto-fit: with a single card, auto-fit collapses the
+          empty tracks and stretches this one to the full row width instead of
+          matching the Football cards' column width above. auto-fill keeps
+          the phantom empty tracks so the fr-share (and therefore the card's
+          width) matches a card in a full 3-up row. min-h matches the
+          Football row's height — grid `stretch` equalizes cards within a
+          row automatically, but this row only has one card, so there's no
+          sibling to stretch against. */}
+      <div className="grid max-w-page grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-4.5">
+        <Link
+          href="/ai/match-summary"
+          className="min-h-[var(--size-home-card)] rounded-lg border border-border bg-surface p-6"
+        >
+          <div className="mb-3 font-mono text-mono-sm tracking-[0.1em] text-focal uppercase">
+            {homeContent.aiCards.matchSummary.eyebrow}
+          </div>
+          <div className="mb-2 font-display text-2xl font-semibold">
+            {aiCards.matchSummary.title}
+          </div>
+          <div className="mb-4.5 text-sm leading-[1.55] text-muted">
+            {aiCards.matchSummary.blurb}
+          </div>
+          <div className="font-mono text-xs text-focal">{homeContent.aiCards.matchSummary.cta}</div>
         </Link>
       </div>
     </div>
