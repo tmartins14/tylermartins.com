@@ -71,6 +71,13 @@ export default function MatchSummaryShowcase() {
               to a static JSON file; the site only ever reads that file, no model call happens at
               request time.
             </p>
+            <p className="mb-3 text-base leading-[1.6] text-text">
+              The two calls use different settings: Sonnet 5 at low effort for the outcome
+              section, Opus 5 at medium effort for tactics. They were picked from a five-run
+              comparison of models and effort levels on this match, weighing cost, speed, and
+              what each run got wrong. It&apos;s a default, to revisit once there&apos;s an
+              automated evaluation.
+            </p>
             <p className="text-base leading-[1.6] text-text">
               Splitting the two calls was deliberate. A field like &quot;standout performer&quot;
               reads as objective, but which stats count as key and who counts as standout is an
@@ -86,11 +93,12 @@ export default function MatchSummaryShowcase() {
               Known limitations
             </div>
             <p className="mb-3 text-base leading-[1.6] text-text">
-              The tactics prose above mislabels both teams&apos; off-ball centroids as
-              &quot;on-ball&quot; — a labeling error, not a data error; the underlying coordinates
-              are correct. It&apos;s still there because the one verification pass was a targeted
-              re-check against a previously known issue, not a fresh, full claim-by-claim trace of
-              the current text.
+              Two errors from the hand check are still in the text above. The headline&apos;s
+              &quot;sweep of the group&apos;s heavyweights&quot; isn&apos;t in the source data,
+              and the tactics prose calls Saka England&apos;s highest-positioned player using
+              on-ball coordinates, where Kane&apos;s is further forward. They&apos;re left in
+              on purpose. The check was a targeted pass over numbers, comparisons, players,
+              formations, and substitutions, not every sentence.
             </p>
             <p className="text-base leading-[1.6] text-text">
               More broadly: this was checked once, by hand, on one match. There&apos;s no
