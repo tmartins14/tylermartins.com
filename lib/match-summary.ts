@@ -1,5 +1,7 @@
 import matchSummaryData from "@/data/football/match_summary_3943043.json";
+import matchSummaryComparisonData from "@/data/football/match_summary_comparison_3943043.json";
 import type { MatchSummaryData } from "@/components/charts/MatchSummaryContent";
+import type { MatchSummaryComparisonData } from "@/components/charts/MatchSummaryComparison";
 
 /**
  * Shared loader for the one generated match-summary fixture. Both the
@@ -9,4 +11,13 @@ import type { MatchSummaryData } from "@/components/charts/MatchSummaryContent";
  */
 export function getMatchSummary(): MatchSummaryData {
   return matchSummaryData as MatchSummaryData;
+}
+
+/**
+ * The five-run model × effort comparison behind the summary's routing. A slim copy
+ * of football-analytics' output/3943043/comparison-3943043.json (no raw outputs),
+ * written by `compare_models --export-site` — a manual copy, like the summary JSON.
+ */
+export function getMatchSummaryComparison(): MatchSummaryComparisonData {
+  return matchSummaryComparisonData as MatchSummaryComparisonData;
 }

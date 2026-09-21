@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { getMatchSummary } from "@/lib/match-summary";
+import { getMatchSummary, getMatchSummaryComparison } from "@/lib/match-summary";
 import { MatchSummaryContent } from "@/components/charts/MatchSummaryContent";
+import { MatchSummaryComparison } from "@/components/charts/MatchSummaryComparison";
 import { StatsBombAttribution } from "@/components/StatsBombAttribution";
 import { metadata as contentMetadata } from "./content.mdx";
 
@@ -31,6 +32,7 @@ export const metadata: Metadata = {
 
 export default function MatchSummaryShowcase() {
   const matchSummary = getMatchSummary();
+  const comparison = getMatchSummaryComparison();
 
   return (
     <div className="px-4 py-4 dash:px-9 dash:py-10">
@@ -45,6 +47,8 @@ export default function MatchSummaryShowcase() {
         <div className="mb-8 overflow-hidden rounded-2xl border border-border-strong bg-background p-5.5 shadow-[0_40px_90px_-50px_rgba(0,0,0,0.7)] dash:p-7">
           <MatchSummaryContent data={matchSummary} />
         </div>
+
+        <MatchSummaryComparison data={comparison} />
 
         <div className="mx-auto flex max-w-[72ch] flex-col gap-8">
           <section>
@@ -73,9 +77,9 @@ export default function MatchSummaryShowcase() {
             </p>
             <p className="mb-3 text-base leading-[1.6] text-text">
               The two calls use different settings: Sonnet 5 at low effort for the outcome
-              section, Opus 5 at medium effort for tactics. They were picked from a five-run
-              comparison of models and effort levels on this match, weighing cost, speed, and
-              what each run got wrong. It&apos;s a default, to revisit once there&apos;s an
+              section, Opus 5 at medium effort for tactics. They were picked from a{" "}
+              <a href="#comparison" className="underline">five-run comparison</a> of models and
+              effort levels on this match, weighing cost, speed, and what each run got wrong. It&apos;s a default, to revisit once there&apos;s an
               automated evaluation.
             </p>
             <p className="text-base leading-[1.6] text-text">
