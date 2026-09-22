@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { getMatchSummary } from "@/lib/match-summary";
-import { MatchSummaryContent } from "@/components/charts/MatchSummaryContent";
+import { getMatchSummary, getMatchSummaryComparison } from "@/lib/match-summary";
+import { MatchSummaryTabs } from "@/components/charts/MatchSummaryTabs";
+import { MatchSummaryComparison } from "@/components/charts/MatchSummaryComparison";
 import { StatsBombAttribution } from "@/components/StatsBombAttribution";
 import { metadata as contentMetadata } from "./content.mdx";
 
@@ -31,6 +32,7 @@ export const metadata: Metadata = {
 
 export default function MatchSummaryShowcase() {
   const matchSummary = getMatchSummary();
+  const comparison = getMatchSummaryComparison();
 
   return (
     <div className="px-4 py-4 dash:px-9 dash:py-10">
@@ -42,9 +44,14 @@ export default function MatchSummaryShowcase() {
           <h1 className="display mb-4 text-display-2 leading-[1.05]">{contentMetadata.title}</h1>
         </div>
 
-        <div className="mb-8 overflow-hidden rounded-2xl border border-border-strong bg-background p-5.5 shadow-[0_40px_90px_-50px_rgba(0,0,0,0.7)] dash:p-7">
-          <MatchSummaryContent data={matchSummary} />
+        <div
+          id="summary"
+          className="mb-8 overflow-hidden rounded-2xl border border-border-strong bg-background p-5.5 shadow-[0_40px_90px_-50px_rgba(0,0,0,0.7)] dash:p-7"
+        >
+          <MatchSummaryTabs summary={matchSummary} comparison={comparison} />
         </div>
+
+        <MatchSummaryComparison data={comparison} />
 
         <div className="mx-auto flex max-w-[72ch] flex-col gap-8">
           <section>
@@ -54,8 +61,10 @@ export default function MatchSummaryShowcase() {
             <p className="text-base leading-[1.6] text-text">
               Takes the full StatsBomb event data for a match and generates a structured outcome
               (headline, key stats, standout performers) plus free-form tactics prose. It lives
-              inside the Match Analysis Dashboard&apos;s Match Summary modal — the output above is
-              the same generated content, shown here without the dialog.
+              inside the Match Analysis Dashboard&apos;s Match Summary modal, which shows the
+              &quot;Shipped&quot; tab above — the same generated content, without the dialog. The
+              other tabs are alternate models and effort levels tested alongside it, not live on
+              the dashboard.
             </p>
           </section>
 
@@ -70,6 +79,15 @@ export default function MatchSummaryShowcase() {
               section, once for free-form tactics prose. The result is written once per match ID
               to a static JSON file; the site only ever reads that file, no model call happens at
               request time.
+            </p>
+            <p className="mb-3 text-base leading-[1.6] text-text">
+              The two calls use different settings: Sonnet 5 at low effort for the outcome
+              section, Opus 5 at medium effort for tactics — the &quot;Shipped&quot; tab above.
+              Flip through the other tabs to see what four alternative configurations produced,
+              or see the full <a href="#comparison" className="underline">comparison table</a>{" "}
+              below. The routing was picked from measured cost, speed, and what each run got
+              wrong, not guessed — a default, to revisit once there&apos;s an automated
+              evaluation.
             </p>
             <p className="text-base leading-[1.6] text-text">
               Splitting the two calls was deliberate. A field like &quot;standout performer&quot;
@@ -86,18 +104,16 @@ export default function MatchSummaryShowcase() {
               Known limitations
             </div>
             <p className="mb-3 text-base leading-[1.6] text-text">
-              The tactics prose above mislabels both teams&apos; off-ball centroids as
-              &quot;on-ball&quot; — a labeling error, not a data error; the underlying coordinates
-              are correct. It&apos;s still there because the one verification pass was a targeted
-              re-check against a previously known issue, not a fresh, full claim-by-claim trace of
-              the current text.
+              Each tab above lists what a hand check found wrong in that run, left in on
+              purpose. The check was a targeted pass over numbers, comparisons, players,
+              formations, and substitutions, not every sentence.
             </p>
             <p className="text-base leading-[1.6] text-text">
               More broadly: this was checked once, by hand, on one match. There&apos;s no
               automated evaluation yet — that&apos;s planned, not built — so a new match, or a
               re-run of this one, could reintroduce issues this pass happened to catch. And
               nothing here regenerates live: this page and the dashboard both read the same
-              static file, generated once, not on demand.
+              static file(s), generated once, not on demand.
             </p>
           </section>
 
