@@ -1,7 +1,7 @@
 /**
  * Types and helpers shared by MatchSummaryComparison (the results table) and
- * MatchSummaryRunTabs (the per-run showcase) — kept in a plain module, not a
- * component file, so the two don't import from each other.
+ * MatchSummaryTabs (the tabbed run-by-run showcase) — kept in a plain module,
+ * not a component file, so the two don't import from each other.
  */
 
 export type ComparisonOutcomeOutput = {

@@ -1,4 +1,3 @@
-import { MatchSummaryRunTabs } from "@/components/charts/MatchSummaryRunTabs";
 import { modelName, type MatchSummaryComparisonData } from "@/lib/match-summary-comparison";
 
 const usd = (value: number | null | undefined) => (value == null ? "—" : `$${value.toFixed(2)}`);
@@ -28,9 +27,10 @@ function Split({ main, sub }: { main: string; sub: string }) {
 }
 
 /**
- * All five model × effort runs on one match: a summary table (cost, time, tokens,
- * error counts) plus a tabbed MatchSummaryRunTabs showing each run's actual
- * generated text. Server component — the data is a static JSON file.
+ * The five comparison runs at a glance: cost, time, tokens, and error counts.
+ * Each run's actual generated text — including the shipped default — lives in
+ * the tabs above (MatchSummaryTabs); this table is the compact index into
+ * them, not a second copy of the text. Server component — static JSON data.
  */
 export function MatchSummaryComparison({ data }: { data: MatchSummaryComparisonData }) {
   const motmHeading = data.motm ? `MOTM (${data.motm.player})` : "MOTM";
@@ -45,7 +45,8 @@ export function MatchSummaryComparison({ data }: { data: MatchSummaryComparisonD
         a tactics call. Cost and tokens come from the API&apos;s own usage numbers, not
         estimates. Errors are called out by hand rather than scored: there&apos;s no automated
         evaluation yet, so a wrong claim is recorded, not disqualifying. One run per
-        combination, and output varies between runs, so small gaps are noise.
+        combination, and output varies between runs, so small gaps are noise. Read any
+        run&apos;s full text in the tabs <a href="#summary" className="underline">above</a>.
       </p>
 
       <div
@@ -110,21 +111,16 @@ export function MatchSummaryComparison({ data }: { data: MatchSummaryComparisonD
       </div>
 
       {data.motm && (
-        <p className="mb-4 max-w-[82ch] text-sm leading-relaxed text-muted">
+        <p className="mb-2.5 max-w-[82ch] text-sm leading-relaxed text-muted">
           <span className="font-semibold text-text">{motmHeading}:</span> {data.motm.note}
         </p>
       )}
 
-      <h3 className="mb-2.5 font-mono text-mono-sm tracking-[0.1em] text-faint uppercase">
-        Read each run
-      </h3>
-      <MatchSummaryRunTabs data={data} />
-
-      <p className="mt-4 max-w-[82ch] font-mono text-mono-sm text-faint">
+      <p className="max-w-[82ch] font-mono text-mono-sm text-faint">
         Cost is each call&apos;s token usage at list prices as of {data.created}; time is
-        wall-clock for both calls; the &quot;chosen&quot; tags are the current default, to
-        revisit once there&apos;s an automated evaluation. Full record:
-        ai/match_summary/output/{data.match_id}/comparison-{data.match_id}.json.
+        wall-clock for both calls; the &quot;chosen&quot; tags mark the runs whose config the
+        shipped default uses — a default, to revisit once there&apos;s an automated
+        evaluation. Full record: ai/match_summary/output/{data.match_id}/comparison-{data.match_id}.json.
       </p>
     </section>
   );

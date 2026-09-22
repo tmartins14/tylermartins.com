@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getMatchSummary, getMatchSummaryComparison } from "@/lib/match-summary";
-import { MatchSummaryContent } from "@/components/charts/MatchSummaryContent";
+import { MatchSummaryTabs } from "@/components/charts/MatchSummaryTabs";
 import { MatchSummaryComparison } from "@/components/charts/MatchSummaryComparison";
 import { StatsBombAttribution } from "@/components/StatsBombAttribution";
 import { metadata as contentMetadata } from "./content.mdx";
@@ -44,8 +44,11 @@ export default function MatchSummaryShowcase() {
           <h1 className="display mb-4 text-display-2 leading-[1.05]">{contentMetadata.title}</h1>
         </div>
 
-        <div className="mb-8 overflow-hidden rounded-2xl border border-border-strong bg-background p-5.5 shadow-[0_40px_90px_-50px_rgba(0,0,0,0.7)] dash:p-7">
-          <MatchSummaryContent data={matchSummary} />
+        <div
+          id="summary"
+          className="mb-8 overflow-hidden rounded-2xl border border-border-strong bg-background p-5.5 shadow-[0_40px_90px_-50px_rgba(0,0,0,0.7)] dash:p-7"
+        >
+          <MatchSummaryTabs summary={matchSummary} comparison={comparison} />
         </div>
 
         <MatchSummaryComparison data={comparison} />
@@ -58,8 +61,10 @@ export default function MatchSummaryShowcase() {
             <p className="text-base leading-[1.6] text-text">
               Takes the full StatsBomb event data for a match and generates a structured outcome
               (headline, key stats, standout performers) plus free-form tactics prose. It lives
-              inside the Match Analysis Dashboard&apos;s Match Summary modal — the output above is
-              the same generated content, shown here without the dialog.
+              inside the Match Analysis Dashboard&apos;s Match Summary modal, which shows the
+              &quot;Shipped&quot; tab above — the same generated content, without the dialog. The
+              other tabs are alternate models and effort levels tested alongside it, not live on
+              the dashboard.
             </p>
           </section>
 
@@ -77,10 +82,12 @@ export default function MatchSummaryShowcase() {
             </p>
             <p className="mb-3 text-base leading-[1.6] text-text">
               The two calls use different settings: Sonnet 5 at low effort for the outcome
-              section, Opus 5 at medium effort for tactics. They were picked from a{" "}
-              <a href="#comparison" className="underline">five-run comparison</a> of models and
-              effort levels on this match, weighing cost, speed, and what each run got wrong. It&apos;s a default, to revisit once there&apos;s an
-              automated evaluation.
+              section, Opus 5 at medium effort for tactics — the &quot;Shipped&quot; tab above.
+              Flip through the other tabs to see what four alternative configurations produced,
+              or see the full <a href="#comparison" className="underline">comparison table</a>{" "}
+              below. The routing was picked from measured cost, speed, and what each run got
+              wrong, not guessed — a default, to revisit once there&apos;s an automated
+              evaluation.
             </p>
             <p className="text-base leading-[1.6] text-text">
               Splitting the two calls was deliberate. A field like &quot;standout performer&quot;
@@ -97,11 +104,8 @@ export default function MatchSummaryShowcase() {
               Known limitations
             </div>
             <p className="mb-3 text-base leading-[1.6] text-text">
-              Two errors from the hand check are still in the text above. The headline&apos;s
-              &quot;sweep of the group&apos;s heavyweights&quot; isn&apos;t in the source data,
-              and the tactics prose calls Saka England&apos;s highest-positioned player using
-              on-ball coordinates, where Kane&apos;s is further forward. They&apos;re left in
-              on purpose. The check was a targeted pass over numbers, comparisons, players,
+              Each tab above lists what a hand check found wrong in that run, left in on
+              purpose. The check was a targeted pass over numbers, comparisons, players,
               formations, and substitutions, not every sentence.
             </p>
             <p className="text-base leading-[1.6] text-text">
@@ -109,7 +113,7 @@ export default function MatchSummaryShowcase() {
               automated evaluation yet — that&apos;s planned, not built — so a new match, or a
               re-run of this one, could reintroduce issues this pass happened to catch. And
               nothing here regenerates live: this page and the dashboard both read the same
-              static file, generated once, not on demand.
+              static file(s), generated once, not on demand.
             </p>
           </section>
 

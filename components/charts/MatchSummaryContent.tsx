@@ -12,6 +12,7 @@ export type MatchSummaryData = {
     competition: string;
     match_label: string;
     models: { outcome: string; tactics: string };
+    effort: { outcome: string; tactics: string };
   };
 };
 
@@ -111,7 +112,8 @@ export function MatchSummaryContent({ data }: { data: MatchSummaryData }) {
 
       <div className="font-mono text-mono-xs text-faint">
         {data.metadata.match_label} · {data.metadata.competition} · outcome:{" "}
-        {data.metadata.models.outcome} · tactics: {data.metadata.models.tactics}
+        {data.metadata.models.outcome} ({data.metadata.effort.outcome}) · tactics:{" "}
+        {data.metadata.models.tactics} ({data.metadata.effort.tactics})
       </div>
     </div>
   );
