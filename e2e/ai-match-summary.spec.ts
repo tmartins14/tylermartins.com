@@ -32,15 +32,53 @@ test.describe("ai match summary — model & effort comparison", () => {
     await expect(page.locator("#comparison tbody tr", { hasText: "Chosen · Tactics" })).toContainText("Opus 5");
   });
 
-  test("each run has an expandable list of what was wrong", async ({ page }) => {
-    await page.goto("/ai/match-summary");
-    const details = page.locator("#comparison details");
-    await expect(details).toHaveCount(5);
-    const first = details.first();
-    await expect(first.locator("li").first()).toBeHidden();
-    await first.locator("summary").click();
-    await expect(first.locator("li").first()).toBeVisible();
-    await expect(first).toContainText("Outcome");
+  test.describe("run tabs — the actual generated text per run", () => {
+    const RUN_LABELS = [
+      "Haiku 4.5 · none",
+      "Sonnet 5 · medium",
+      "Opus 5 · medium",
+      "Sonnet 5 · low",
+      "Sonnet 5 · high",
+    ];
+
+    test("all five runs are selectable and each has a headline", async ({ page }) => {
+      await page.goto("/ai/match-summary");
+      const section = page.locator("#comparison");
+      for (const label of RUN_LABELS) {
+        await section.getByRole("button", { name: label, exact: true }).click();
+        await expect(section.locator("h4").first()).not.toBeEmpty();
+      }
+    });
+
+    test("switching tabs changes the shown text and tags the chosen runs", async ({ page }) => {
+      await page.goto("/ai/match-summary");
+      const section = page.locator("#comparison");
+      const headlineFor = async (label: string) => {
+        await section.getByRole("button", { name: label, exact: true }).click();
+        return section.locator("h4").first().innerText();
+      };
+
+      const haiku = await headlineFor("Haiku 4.5 · none");
+      const sonnetLow = await headlineFor("Sonnet 5 · low");
+      expect(sonnetLow).not.toBe(haiku);
+      // Scoped past the h4: the table above also carries a "Chosen · Outcome" badge.
+      const tabPanel = section.locator("h4").locator("..");
+      await expect(tabPanel.getByText("Chosen · Outcome")).toBeVisible();
+
+      await headlineFor("Opus 5 · medium");
+      await expect(tabPanel.getByText("Chosen · Tactics")).toBeVisible();
+    });
+
+    test("shows what was wrong for the active run, collapsed by default", async ({ page }) => {
+      await page.goto("/ai/match-summary");
+      const section = page.locator("#comparison");
+      await section.getByRole("button", { name: "Opus 5 · medium", exact: true }).click();
+      const details = section.locator("details");
+      await expect(details).toHaveCount(1);
+      await expect(details.locator("li").first()).toBeHidden();
+      await details.locator("summary").click();
+      await expect(details.locator("li").first()).toBeVisible();
+    });
   });
 
   test.describe("@ phone (390px)", () => {

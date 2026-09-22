@@ -1,49 +1,6 @@
-export type ComparisonCall = {
-  section: string;
-  latency_s: number;
-  input_tokens: number | null;
-  output_tokens: number | null;
-  cost_usd: number | null;
-};
+import { MatchSummaryRunTabs } from "@/components/charts/MatchSummaryRunTabs";
+import { modelName, type MatchSummaryComparisonData } from "@/lib/match-summary-comparison";
 
-export type ComparisonCell = {
-  n: number;
-  model: string;
-  effort: string | null;
-  status: string;
-  totals: {
-    input_tokens: number;
-    output_tokens: number;
-    total_tokens: number;
-    total_usd: number;
-    latency_s: number;
-  } | null;
-  calls: { outcome: ComparisonCall; tactics: ComparisonCall };
-  grading: {
-    outcome_grounding: string | null;
-    motm: string | null;
-    tactics_grounding: string | null;
-    notes?: string[];
-  };
-};
-
-/** Slim copy of football-analytics' comparison-3943043.json (no raw model outputs). */
-export type MatchSummaryComparisonData = {
-  match_id: number;
-  created: string;
-  spent_usd: number;
-  routing: { outcome: number; tactics: number } | null;
-  motm: { player: string; note: string } | null;
-  cells: ComparisonCell[];
-};
-
-const MODEL_NAMES: Record<string, string> = {
-  "claude-haiku-4-5": "Haiku 4.5",
-  "claude-sonnet-5": "Sonnet 5",
-  "claude-opus-5": "Opus 5",
-};
-
-const modelName = (id: string) => MODEL_NAMES[id] ?? id;
 const usd = (value: number | null | undefined) => (value == null ? "—" : `$${value.toFixed(2)}`);
 const seconds = (value: number | null | undefined) => (value == null ? "—" : `${Math.round(value)}s`);
 const count = (value: number | null | undefined) => (value == null ? "—" : value.toLocaleString("en-US"));
@@ -71,8 +28,9 @@ function Split({ main, sub }: { main: string; sub: string }) {
 }
 
 /**
- * All five model × effort runs on one match: cost, time, tokens, and the errors a
- * hand check found in each. Server component — the data is a static JSON file.
+ * All five model × effort runs on one match: a summary table (cost, time, tokens,
+ * error counts) plus a tabbed MatchSummaryRunTabs showing each run's actual
+ * generated text. Server component — the data is a static JSON file.
  */
 export function MatchSummaryComparison({ data }: { data: MatchSummaryComparisonData }) {
   const motmHeading = data.motm ? `MOTM (${data.motm.player})` : "MOTM";
@@ -151,31 +109,22 @@ export function MatchSummaryComparison({ data }: { data: MatchSummaryComparisonD
         </table>
       </div>
 
-      <div className="mb-4">
-        {data.cells.map((cell) => (
-          <details key={cell.n} className="border-b border-border py-2.5 first:border-t">
-            <summary className="cursor-pointer font-mono text-mono-base text-text">
-              {modelName(cell.model)} · {cell.effort ?? "no effort setting"} — what was wrong
-            </summary>
-            <ul className="mt-2.5 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-text">
-              {(cell.grading.notes ?? []).map((note) => (
-                <li key={note}>{note}</li>
-              ))}
-            </ul>
-          </details>
-        ))}
-      </div>
-
       {data.motm && (
-        <p className="mb-2.5 max-w-[82ch] text-sm leading-relaxed text-muted">
+        <p className="mb-4 max-w-[82ch] text-sm leading-relaxed text-muted">
           <span className="font-semibold text-text">{motmHeading}:</span> {data.motm.note}
         </p>
       )}
-      <p className="max-w-[82ch] font-mono text-mono-sm text-faint">
+
+      <h3 className="mb-2.5 font-mono text-mono-sm tracking-[0.1em] text-faint uppercase">
+        Read each run
+      </h3>
+      <MatchSummaryRunTabs data={data} />
+
+      <p className="mt-4 max-w-[82ch] font-mono text-mono-sm text-faint">
         Cost is each call&apos;s token usage at list prices as of {data.created}; time is
         wall-clock for both calls; the &quot;chosen&quot; tags are the current default, to
-        revisit once there&apos;s an automated evaluation. Full record, with each run&apos;s raw
-        output: ai/match_summary/output/{data.match_id}/comparison-{data.match_id}.json.
+        revisit once there&apos;s an automated evaluation. Full record:
+        ai/match_summary/output/{data.match_id}/comparison-{data.match_id}.json.
       </p>
     </section>
   );
