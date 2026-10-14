@@ -6,6 +6,11 @@ context repo). **The two are kept in sync** — whichever changes, the other get
 in the same commit. `app/globals.css` is the source of truth for actual values; if this
 doc and `globals.css` disagree, `globals.css` wins and this doc is stale — fix the doc.
 
+> **Task history:** see
+> [`docs/specs/2026-08-design-system-remediation.md`](docs/specs/2026-08-design-system-remediation.md)
+> for the 4-ticket remediation this doc tracks, and why each bug below got
+> written down individually instead of folded into a generic changelog.
+
 Built incrementally across the 4-ticket design remediation (`design-handoff-bundle.md`,
 repo root). Sections below start as stubs where that ticket hasn't landed yet.
 
