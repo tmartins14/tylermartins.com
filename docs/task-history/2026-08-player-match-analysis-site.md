@@ -6,7 +6,7 @@ completed: 2026-08-10
 repo: tylermartins.com
 area: app/football/player-match-analysis
 related_prs: [10]
-related_docs: [../../../football-analytics/docs/specs/2026-08-player-match-analysis.md]
+related_docs: [../../../football-analytics/docs/task-history/2026-08-player-match-analysis.md]
 tags: [player-match-analysis, footballd3, deploy, responsiveness]
 ---
 
@@ -17,7 +17,7 @@ tags: [player-match-analysis, footballd3, deploy, responsiveness]
 Built the Player Match Analysis page (lineup selector, scrubbable timeline
 with a highlight reel, heatmaps, action feed) on top of the extractors and
 footballd3 components added in the sibling `football-analytics` repo (see
-its `docs/specs/2026-08-player-match-analysis.md`), through a dense run of
+its `docs/task-history/2026-08-player-match-analysis.md`), through a dense run of
 review-fix commits, then hit and fixed the deploy problem that's since
 become this repo's best-known gotcha: Vercel installs `footballd3` from
 npm, not the local workspace symlink, so a library change isn't live until
@@ -81,7 +81,7 @@ published-npm-in-prod split this task first hit is still exactly how
 
 ## Where to look for more
 
-- `../../../football-analytics/docs/specs/2026-08-player-match-analysis.md` —
+- `../../../football-analytics/docs/task-history/2026-08-player-match-analysis.md` —
   the data/components side of this same feature.
 - `SPEC_TEMPLATE.md` (sibling repo root) — this task's breakpoint-overlap
   fix, as the template's worked example.

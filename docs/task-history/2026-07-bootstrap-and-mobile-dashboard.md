@@ -16,7 +16,7 @@ tags: [bootstrap, mobile, dashboard]
 
 The site's first six commits: `create-next-app` scaffold, the first page,
 the match dashboard (consuming the then-brand-new `footballd3` package —
-see `football-analytics`'s `docs/specs/2026-06-footballd3-statsbomb-libraries.md`),
+see `football-analytics`'s `docs/task-history/2026-06-footballd3-statsbomb-libraries.md`),
 first deploy, then three small PRs making that dashboard usable on mobile
 (tabbed layout, a missing Momentum view, a header-painting bug).
 

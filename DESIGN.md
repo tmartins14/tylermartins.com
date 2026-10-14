@@ -7,7 +7,7 @@ in the same commit. `app/globals.css` is the source of truth for actual values; 
 doc and `globals.css` disagree, `globals.css` wins and this doc is stale — fix the doc.
 
 > **Task history:** see
-> [`docs/specs/2026-08-design-system-remediation.md`](docs/specs/2026-08-design-system-remediation.md)
+> [`docs/task-history/2026-08-design-system-remediation.md`](docs/task-history/2026-08-design-system-remediation.md)
 > for the 4-ticket remediation this doc tracks, and why each bug below got
 > written down individually instead of folded into a generic changelog.
 

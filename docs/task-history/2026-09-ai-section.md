@@ -6,7 +6,7 @@ completed: 2026-09-22
 repo: tylermartins.com
 area: app/ai
 related_prs: [20, 21, 22, 23]
-related_docs: [ai-section-spec.md, ../../../football-analytics/docs/specs/2026-08-match-summary-module1.md, ../../../football-analytics/docs/specs/2026-09-module2-sampling-and-comparison.md]
+related_docs: [../specs/ai-section-spec.md, ../../../football-analytics/docs/task-history/2026-08-match-summary-module1.md, ../../../football-analytics/docs/task-history/2026-09-module2-sampling-and-comparison.md]
 tags: [ai-section, match-summary, spec-kit, showcase]
 ---
 
@@ -42,7 +42,7 @@ D3 component the way the rest of the gallery does.
 
 Added the `.specify/` tree and the ten `speckit-*` skills (same stock
 templates as the sibling repo — see its
-`docs/specs/2026-09-spec-kit-scaffolding.md`). `.specify/memory/
+`docs/task-history/2026-09-spec-kit-scaffolding.md`). `.specify/memory/
 constitution.md` was never filled in here either.
 
 ### 2026-09-18 — the AI section itself (PR #22)
@@ -61,7 +61,7 @@ the sibling repo's side. Merged to `main` along with everything above.
 ### 2026-09-21 → 2026-09-22 — sync to the Module 2 routing decision (PR #23)
 
 Surfaced the sibling repo's Module 2 model/effort comparison (see its
-`docs/specs/2026-09-module2-sampling-and-comparison.md`) on the page
+`docs/task-history/2026-09-module2-sampling-and-comparison.md`) on the page
 itself, not just the chosen output: synced the match summary to the
 chosen routing and updated its disclaimer (`0904b9a`), showed the model
 and effort comparison on the page (`fea504b`), showed each comparison
@@ -84,6 +84,6 @@ once for the Module 2 routing change.
 
 - `docs/specs/ai-section-spec.md` — the actual spec for this section
   (pre-existing, left as-is — see this folder's `README.md`).
-- `../../../football-analytics/docs/specs/2026-10-data-spec-v2-tactical-findings.md`
+- `../../../football-analytics/docs/task-history/2026-10-data-spec-v2-tactical-findings.md`
   — the work this page will need to sync to next.
 - `app/ai/`, `components/charts/MatchSummary*` — the code.
