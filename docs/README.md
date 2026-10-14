@@ -12,6 +12,12 @@ Two kinds of document live here, for two different questions:
   `DESIGN.md`/`~/dev/context/style.md` are already kept in sync). Start at
   `task-history/README.md` for the index.
 
+**Every task done in this repo gets a `task-history/` entry — no
+exceptions.** A `specs/` doc is optional (Tyler provides one when a task
+warrants planning it out first; plenty of tasks don't get one), but the
+record of what actually happened is not: write the `task-history/` doc as
+part of finishing the task, not as a follow-up to remember later.
+
 ## Where to start
 
 - **Human, wants the lay of the land:** `task-history/README.md`'s index
