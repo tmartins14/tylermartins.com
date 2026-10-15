@@ -2,10 +2,10 @@
 title: AI section and match-summary showcase
 status: done
 started: 2026-08-31
-completed: 2026-09-22
+completed: 2026-10-15
 repo: tylermartins.com
 area: app/ai
-related_prs: [20, 21, 22, 23]
+related_prs: [20, 21, 22, 23, 26]
 related_docs: [../specs/ai-section-spec.md, ../../../football-analytics/docs/task-history/2026-08-match-summary-module1.md, ../../../football-analytics/docs/task-history/2026-09-module2-sampling-and-comparison.md]
 tags: [ai-section, match-summary, spec-kit, showcase]
 ---
@@ -70,20 +70,32 @@ summary into one tabbed component, dropping the now-redundant separate
 run list (`f1ee85f`). Branch `feature/match-summary-routing`, merged via
 PR #23.
 
+### 2026-10-15 — sync to DATA-SPEC-v2 Part 5 (PR #26)
+
+The sync this doc's Outcome section (below, as of the previous pass)
+flagged as still ahead: copied the sibling repo's Part 5 output — the
+tactics section now runs on a deterministic findings layer instead of
+free prose, re-verified three times against the live API with no
+recurrence of the eight previously known defects — into
+`data/football/match_summary_3943043.json`, and rewrote
+`MatchSummaryContent.tsx`/`MatchSummaryTabs.tsx`'s hardcoded disclaimer
+text to match (both issue lists are now empty; the old two errors no
+longer appear in this text). The five comparison-cell tabs are untouched
+— they come from `compare_models.py`, unmerged on the sibling repo's
+`feature/match-summary-model-effort` branch, out of scope for this sync.
+
 ## Outcome
 
 Done and live: `/ai` and `/ai/match-summary` are real routes, including
-the Module 2 comparison surfaced in PR #23. **Not yet reflecting
-DATA-SPEC-v2** (the sibling repo's tactical-findings rewrite of the
-tactics section, Parts 0–4 complete as of this documentation pass, Part 5
-— the real regenerated output — still ahead): the page will need another
-sync pass once that regenerates, the same kind of pass PR #23 already did
-once for the Module 2 routing change.
+the Module 2 comparison surfaced in PR #23, now showing DATA-SPEC-v2
+Part 5's findings-layer output as of PR #26. **Still not synced:** the
+five comparison-cell tabs, which won't reflect the findings layer until
+`compare_models.py` is re-run against it on the sibling repo's side.
 
 ## Where to look for more
 
 - `docs/specs/ai-section-spec.md` — the actual spec for this section
   (pre-existing, left as-is — see this folder's `README.md`).
 - `../../../football-analytics/docs/task-history/2026-10-data-spec-v2-tactical-findings.md`
-  — the work this page will need to sync to next.
+  — the sibling-repo work this page now reflects (Parts 0–5).
 - `app/ai/`, `components/charts/MatchSummary*` — the code.

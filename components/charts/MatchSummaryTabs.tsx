@@ -8,14 +8,12 @@ import { modelName, type MatchSummaryComparisonData } from "@/lib/match-summary-
 // The shipped default mixes routing — outcome and tactics come from different
 // (model, effort) configs — so it isn't literally one of the five uniform
 // comparison cells. Its issue list is a hand-maintained duplicate of
-// MatchSummaryContent.tsx's DISCLAIMER_ISSUES (same two facts, phrased to match
-// the "Outcome:"/"Tactics:" bullet style the comparison cells use below). If the
-// shipped text is ever regenerated, update both lists together.
-const SHIPPED_ISSUES = [
-  "Outcome: all 7 key_stats match the source data.",
-  "Outcome error: the headline's \"sweep of the group's heavyweights\" isn't in the source data — outside knowledge the model was told not to use.",
-  "Tactics error: the tactics prose calls Saka England's highest-positioned player, citing on-ball coordinates (75.5). Kane's on-ball position (77.7) is further forward; the claim only holds for Saka's pass-network position (82.6).",
-];
+// MatchSummaryContent.tsx's DISCLAIMER_ISSUES (same facts). As of DATA-SPEC-v2
+// Part 5 (2026-10-14), the tactics section runs on a deterministic findings
+// layer instead of free prose: three live runs passed the grounding check and
+// none of the eight previously known defects recurred, so this list is empty.
+// If the shipped text is ever regenerated, update both lists together.
+const SHIPPED_ISSUES: string[] = [];
 
 const usd = (value: number | null | undefined) => (value == null ? "—" : `$${value.toFixed(2)}`);
 const seconds = (value: number | null | undefined) => (value == null ? "—" : `${Math.round(value)}s`);
